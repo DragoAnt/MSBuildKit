@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>A minimal sample library that shows a package built with DragoAnt.MSBuildKit and every nuget.org check passing.</Description>
+    <PackageTags>sample;msbuild;nuget;packaging</PackageTags>
+  </PropertyGroup>
+
+</Project>

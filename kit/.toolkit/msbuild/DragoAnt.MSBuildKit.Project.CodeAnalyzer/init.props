@@ -1,0 +1,10 @@
+<Project>
+
+  <!-- Opt-in: the authoring project imports $(CodeAnalyzerCommonPropsPath) itself; importing it here would
+       turn every project into a Roslyn component. -->
+  <PropertyGroup>
+    <CodeAnalyzerCommonPropsPath>$(MSBuildThisFileDirectory)code.analyzer.props</CodeAnalyzerCommonPropsPath>
+    <MSKit_CodeAnalyzerSatelliteAttached>true</MSKit_CodeAnalyzerSatelliteAttached>
+  </PropertyGroup>
+
+</Project>
