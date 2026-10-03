@@ -70,6 +70,7 @@ $clean_env $ci_env GITHUB_EVENT_NAME=release GITHUB_REF_TYPE=tag GITHUB_REF_NAME
   dotnet pack "$sample/MinimalLibrary.slnx" -c Release -nologo -o "$out/packages" > "$out/pack.log" 2>&1 \
   && pass "sample packs on a CI tag build with the checks as errors" || { bad "sample pack (see $out/pack.log)"; tail -n 30 "$out/pack.log"; }
 
+command -v unzip >/dev/null 2>&1 || { echo "self-test: unzip is required"; exit 1; }
 nupkg="$out/packages/DragoAnt.Samples.MinimalLibrary.0.1.0.nupkg"
 if [ -f "$nupkg" ]; then
   unzip -p "$nupkg" DragoAnt.Samples.MinimalLibrary.nuspec | tr -d '\r' > "$out/sample.nuspec"
