@@ -15,10 +15,10 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(MSKit_ImplicitPackageVersions)'=='True' AND '$(ManagePackageVersionsCentrally)'!='true'">
-    <PackageReference Update="Microsoft.CodeAnalysis.Common" Condition="'%(PackageReference.Version)'==''" Version="$(MSKit_PackageVersion_MicrosoftCodeAnalysis)" />
-    <PackageReference Update="Microsoft.CodeAnalysis.CSharp" Condition="'%(PackageReference.Version)'==''" Version="$(MSKit_PackageVersion_MicrosoftCodeAnalysis)" />
-    <PackageReference Update="Microsoft.CodeAnalysis.Workspaces.Common" Condition="'%(PackageReference.Version)'==''" Version="$(MSKit_PackageVersion_MicrosoftCodeAnalysis)" />
-    <PackageReference Update="Microsoft.CodeAnalysis.Analyzers" Condition="'%(PackageReference.Version)'==''" Version="$(MSKit_PackageVersion_MicrosoftCodeAnalysisAnalyzers)" />
+    <PackageReference Update="Microsoft.CodeAnalysis.Common"><Version Condition="'%(Version)'==''">$(MSKit_PackageVersion_MicrosoftCodeAnalysis)</Version></PackageReference>
+    <PackageReference Update="Microsoft.CodeAnalysis.CSharp"><Version Condition="'%(Version)'==''">$(MSKit_PackageVersion_MicrosoftCodeAnalysis)</Version></PackageReference>
+    <PackageReference Update="Microsoft.CodeAnalysis.Workspaces.Common"><Version Condition="'%(Version)'==''">$(MSKit_PackageVersion_MicrosoftCodeAnalysis)</Version></PackageReference>
+    <PackageReference Update="Microsoft.CodeAnalysis.Analyzers"><Version Condition="'%(Version)'==''">$(MSKit_PackageVersion_MicrosoftCodeAnalysisAnalyzers)</Version></PackageReference>
   </ItemGroup>
 
 </Project>

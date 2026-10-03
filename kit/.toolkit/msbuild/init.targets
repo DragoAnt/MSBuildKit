@@ -8,7 +8,6 @@
   <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Locals.Compile/init.targets" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Locals.Compile/init.targets')" />
   <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Locals.DirectorySecrets/init.targets" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Locals.DirectorySecrets/init.targets')" />
   <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Locals.Secrets/init.targets" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Locals.Secrets/init.targets')" />
-  <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Project.RoslynComponent/init.targets" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Project.RoslynComponent/init.targets')" />
   <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Project.CodeAnalyzer/init.targets" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Project.CodeAnalyzer/init.targets')" />
   <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Project.SourceGenerator/init.targets" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Project.SourceGenerator/init.targets')" />
   <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit/init.targets" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit/init.targets')" />
@@ -16,6 +15,9 @@
   <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Testing/init.targets" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Testing/init.targets')" />
   <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Testing.XUnit.v3/init.targets" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Testing.XUnit.v3/init.targets')" />
   <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit/init.last.targets" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit/init.last.targets')" />
+  <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Project.RoslynComponent/init.last.targets" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Project.RoslynComponent/init.last.targets')" />
+  <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Testing.XUnit.v3/init.last.targets" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Testing.XUnit.v3/init.last.targets')" />
+  <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Testing/init.last.targets" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Testing/init.last.targets')" />
   <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Project.CodeAnalyzer/init.last.targets" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Project.CodeAnalyzer/init.last.targets')" />
   <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.PrivateAssets/init.last.targets" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.PrivateAssets/init.last.targets')" />
   <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.PackageAsProj/init.last.targets" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.PackageAsProj/init.last.targets')" />
