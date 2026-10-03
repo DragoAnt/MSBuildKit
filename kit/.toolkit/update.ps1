@@ -29,7 +29,7 @@ param(
     [string] $Sha256,
     # GitHub repository to download releases from.
     [string] $Repo = 'DragoAnt/MSBuildKit',
-    # Repository root; default: the folder that contains .toolkit/, else the current folder.
+    # Repository root; default: the current folder.
     [string] $Root
 )
 
@@ -39,9 +39,7 @@ $ErrorActionPreference = 'Stop'
 function Say([string] $text) { Write-Host "update: $text" }
 function Fail([string] $text) { throw "update: error: $text" }
 
-if (-not $Root) {
-    $Root = if ((Split-Path -Leaf $PSScriptRoot) -eq '.toolkit') { Split-Path -Parent $PSScriptRoot } else { (Get-Location).Path }
-}
+if (-not $Root) { $Root = (Get-Location).Path }
 $Root = (Resolve-Path $Root).Path
 $toolkit = Join-Path $Root '.toolkit'
 $kitJsonPath = Join-Path $toolkit 'kit.json'
@@ -105,6 +103,9 @@ try {
     if (-not (Test-Path (Join-Path $newToolkit 'msbuild/init.props'))) { Fail 'the kit build has no .toolkit/msbuild/init.props' }
     $partsPath = Join-Path $newToolkit 'kit.parts'
     if (-not (Test-Path $partsPath)) { Fail 'the kit build has no .toolkit/kit.parts' }
+    if ((Test-Path $toolkit) -and (Resolve-Path $newToolkit).Path -eq (Resolve-Path $toolkit).Path) {
+        Fail 'the target .toolkit is the kit source itself; run from the repository you want to update, or pass -Root'
+    }
     $parts = [ordered]@{}
     foreach ($line in Get-Content $partsPath) {
         $line = $line.Trim()
