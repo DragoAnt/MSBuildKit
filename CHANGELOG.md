@@ -11,4 +11,4 @@ All notable changes to this project are documented here. The format follows [Kee
 - nuget.org packaging defaults and nineteen `MSKIT_PKG` checks, warnings locally and errors on CI.
 - Microsoft.Testing.Platform v2 test projects with xUnit v3, Cobertura coverage, TRX and JUnit reports.
 - `update.sh` and `update.ps1`: install or update `.toolkit/` from a SHA-256 checked release zip, with optional parts and a dry run.
-- `samples/MinimalLibrary`, the `tests/run.sh` self-test, and the CI and release workflows.
+- `samples/MinimalLibrary`, the `tests/run.sh` self-test, and the CI and release workflows, with every action pinned to a full commit SHA.
