@@ -40,6 +40,8 @@ version_case "pull request 15" "0.1.0-pr.15.7" GITHUB_EVENT_NAME=pull_request GI
 version_case "tag v2.0.0" "2.0.0" GITHUB_EVENT_NAME=release GITHUB_REF_TYPE=tag GITHUB_REF_NAME=v2.0.0 GITHUB_REF=refs/tags/v2.0.0
 version_case "tag 2.0.0" "2.0.0" GITHUB_EVENT_NAME=release GITHUB_REF_TYPE=tag GITHUB_REF_NAME=2.0.0 GITHUB_REF=refs/tags/2.0.0
 version_case "tag v2.1.0-beta.1" "2.1.0-beta.1" GITHUB_EVENT_NAME=release GITHUB_REF_TYPE=tag GITHUB_REF_NAME=v2.1.0-beta.1 GITHUB_REF=refs/tags/v2.1.0-beta.1
+explicit=$($clean_env $ci_env GITHUB_EVENT_NAME=release GITHUB_REF_TYPE=tag GITHUB_REF_NAME=v9.9.9 GITHUB_REF=refs/tags/v9.9.9 dotnet msbuild "$lib" -nologo -p:Version=3.4.5 -getProperty:Version 2>&1 | tr -d '' | tail -n 1)
+[ "$explicit" = "3.4.5" ] && pass "version -p:Version=3.4.5 on a tag build -> $explicit (caller wins)" || bad "explicit -p:Version: expected 3.4.5, got '$explicit'"
 
 if $clean_env $ci_env GITHUB_EVENT_NAME=release GITHUB_REF_TYPE=tag GITHUB_REF_NAME=release-x GITHUB_REF=refs/tags/release-x \
     dotnet restore "$lib" -nologo > "$out/invalid-tag.log" 2>&1; then
@@ -54,12 +56,13 @@ $clean_env dotnet build "$sample/MinimalLibrary.slnx" -c Release -nologo > "$out
 
 if [ "$run_tests" -eq 1 ]; then
   if (cd "$sample" && $clean_env dotnet test --solution MinimalLibrary.slnx -c Release --no-build \
-      --coverage --coverage-output-format cobertura --report-trx --results-directory "$out/TestResults") > "$out/test.log" 2>&1; then
+      --coverage --coverage-output-format cobertura --report-trx --report-xunit-junit --results-directory "$out/TestResults") > "$out/test.log" 2>&1; then
     pass "sample tests pass"
   else
     bad "sample tests (see $out/test.log)"; tail -n 30 "$out/test.log"
   fi
   ls "$out/TestResults"/*.trx > /dev/null 2>&1 && pass "TRX written" || bad "no TRX in $out/TestResults"
+  find "$out/TestResults" -iname "*junit*" | grep -q . && pass "JUnit written" || bad "no JUnit report in $out/TestResults"
   find "$out/TestResults" -name '*.cobertura.xml' | grep -q . && pass "cobertura coverage written" || bad "no cobertura report in $out/TestResults"
 fi
 

@@ -75,7 +75,7 @@ Valid placeholders:
   <!-- MSKIT_VER006: a release tag that is not SemVer 2.0. MSKIT_VER007: its version core differs
        from the VersionPrefix the repository declares. -->
   <Target Name="ValidateReleaseTag"
-          Condition="'$(MSKit_IsReleaseTag)'=='True' AND '$(MSKit_VersionStrategy)'!='Manual' AND '$(MSKit_VersionStrategy)'!='DevEnv'"
+          Condition="'$(MSKit_IsReleaseTag)'=='True' AND '$(MSKit_ExplicitVersion)'=='' AND '$(MSKit_VersionStrategy)'!='Manual' AND '$(MSKit_VersionStrategy)'!='DevEnv'"
           BeforeTargets="Restore;Build">
     <Error Code="MSKIT_VER006"
            Condition="'$(MSKit_IsReleaseTagValid)'!='true'"
