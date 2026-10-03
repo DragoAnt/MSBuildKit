@@ -24,7 +24,7 @@ usage() {
   --source DIR|ZIP  install from a local kit build instead of a GitHub release
   --sha256 HEX      expected SHA-256 of the release zip (or of a --source zip)
   --repo OWNER/NAME GitHub repository to download releases from (default: DragoAnt/MSBuildKit)
-  --root DIR        repository root (default: the folder that contains .toolkit/, else the current folder)
+  --root DIR        repository root (default: the current folder)
 EOF
 }
 
@@ -46,12 +46,7 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-if [ -z "$root" ]; then
-  case "$0" in
-    */.toolkit/update.sh) root=$(cd "$(dirname "$0")/.." && pwd) ;;
-    *) root=$(pwd) ;;
-  esac
-fi
+[ -n "$root" ] || root=$(pwd)
 [ -d "$root" ] || fail "root '$root' is not a directory"
 toolkit="$root/.toolkit"
 kit_json="$toolkit/kit.json"
@@ -127,6 +122,7 @@ fi
 new_toolkit="$kit_dir/.toolkit"
 [ -f "$new_toolkit/msbuild/init.props" ] || fail "the kit build has no .toolkit/msbuild/init.props"
 [ -f "$new_toolkit/kit.parts" ] || fail "the kit build has no .toolkit/kit.parts"
+if [ -d "$toolkit" ] && [ "$(cd "$new_toolkit" && pwd -P)" = "$(cd "$toolkit" && pwd -P)" ]; then fail "the target .toolkit is the kit source itself; run from the repository you want to update, or pass --root"; fi
 parts_file="$work/kit.parts"
 tr -d '\r' < "$new_toolkit/kit.parts" | grep -v '^[[:space:]]*#' | grep -v '^[[:space:]]*$' > "$parts_file"
 
