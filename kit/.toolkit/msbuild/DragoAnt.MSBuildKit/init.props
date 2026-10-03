@@ -6,7 +6,6 @@
     <LangVersion Condition="'$(LangVersion)'==''">latest</LangVersion>
     <EnforceCodeStyleInBuild Condition="'$(EnforceCodeStyleInBuild)'==''">True</EnforceCodeStyleInBuild>
     <GeneratePackageOnBuild Condition="'$(GeneratePackageOnBuild)'==''">False</GeneratePackageOnBuild>
-    <UseAppHost Condition="'$(OS)' != 'Windows_NT' And '$(MSKit_PreserveUseAppHost)' != 'True'">false</UseAppHost>
     <MSKit_IncludeCodeAnalysisGlobalUsings Condition="'$(MSKit_IncludeCodeAnalysisGlobalUsings)'==''">True</MSKit_IncludeCodeAnalysisGlobalUsings>
   </PropertyGroup>
 
