@@ -81,6 +81,7 @@ if [ -f "$nupkg" ]; then
     grep -qF "$needle" "$out/sample.nuspec" && pass "nuspec has $needle" || bad "nuspec lacks $needle"
   done
   for f in icon.png readme.md; do grep -qx "$f" "$out/sample.files" && pass "nupkg contains $f" || bad "nupkg lacks $f"; done
+  grep -q '^lib/[^/]*/DragoAnt\.Samples\.MinimalLibrary\.xml$' "$out/sample.files" && pass "nupkg contains the XML documentation" || bad "nupkg lacks the XML documentation"
   [ -f "$out/packages/DragoAnt.Samples.MinimalLibrary.0.1.0.snupkg" ] && pass "snupkg produced" || bad "no snupkg"
 else
   bad "no $nupkg"
