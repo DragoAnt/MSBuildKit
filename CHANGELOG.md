@@ -4,6 +4,14 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-04
+
+### Fixed
+
+- Packages ship their XML documentation file again: the `GenerateDocumentationFile` default moved to the props phase, where the SDK still honours it, so a `CS1591` gate in a consuming repository fires too.
+
+## [0.1.0] - 2026-10-03
+
 ### Added
 
 - Kit parts: Core, Trunk (version engine, product defaults, reference audits), Vcs.GitHub, TfmConstants, Packaging, Testing and Testing.XUnit.v3, Locals (Secrets, DirectorySecrets, Compile), PrivateAssets, and the optional PackageAsProj, Project.RoslynComponent/CodeAnalyzer/CodeFixer/SourceGenerator, ProjMetadata and EF parts.
