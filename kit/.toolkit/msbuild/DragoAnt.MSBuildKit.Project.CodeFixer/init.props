@@ -1,0 +1,10 @@
+<Project>
+
+  <!-- Opt-in: the authoring project imports $(CodeFixerCommonPropsPath) itself; importing it here would
+       turn every project into a Roslyn component. -->
+  <PropertyGroup>
+    <CodeFixerCommonPropsPath>$(MSBuildThisFileDirectory)code.fixer.props</CodeFixerCommonPropsPath>
+    <MSKit_CodeFixerSatelliteAttached>true</MSKit_CodeFixerSatelliteAttached>
+  </PropertyGroup>
+
+</Project>

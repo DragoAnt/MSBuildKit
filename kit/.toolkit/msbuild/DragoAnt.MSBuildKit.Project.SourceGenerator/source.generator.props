@@ -1,0 +1,20 @@
+<Project>
+
+  <!-- Source-generator authoring. Imports the shared RoslynComponent base for common bits
+       (Microsoft.CodeAnalysis.Common + .CSharp, IsRoslynComponent, netstandard2.0, packaging flags)
+       and adds SG-specific overlay when the consumer csproj declares IsSourceGenerator=true. -->
+  <Import Project="$(RoslynComponentCommonPropsPath)" />
+
+  <PropertyGroup Condition="'$(IsSourceGenerator)'=='true'">
+    <PackageTags>$(PackageTags);source-generator</PackageTags>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(IsSourceGenerator)'=='true'">
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Allowed="True">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>
