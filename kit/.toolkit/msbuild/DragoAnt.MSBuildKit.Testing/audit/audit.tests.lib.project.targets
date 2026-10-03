@@ -1,6 +1,6 @@
 <Project>
 
-  <!-- Test helper library checks, MSKIT_TEST020..023. -->
+  <!-- Test helper library checks, MSKIT_TEST020..022. A test helper library may also set IsTestsLibProject directly: everything it needs is wired in the targets phase. -->
 
   <!-- MSKIT_TEST020: MSKit_TestingFramework must be set BEFORE LibCommonProps Import -->
   <Target Name="ValidateTestingFrameworkSetBeforeLibCommonPropsImport"
@@ -32,28 +32,6 @@
     <Error Code="MSKIT_TEST022"
            File="$(MSBuildProjectFullPath)"
            Text="No LibCommonProps path resolved for MSKit_TestingFramework='$(MSKit_TestingFramework)'.%0AFix: use a framework the kit ships (xunit.v3) or set MSKit_TestingFramework_LibCommonPropsPath to a custom file." />
-  </Target>
-
-  <!-- MSKIT_TEST023: IsTestsLibProject set directly in csproj (legacy attribute), NOT via the
-       LibCommonProps Import endpoint. Checked ALWAYS — even when name-regex auto-detect would
-       also mark the project — by reading the csproj and looking for the author-written
-       <IsTestsLibProject> element directly (comments stripped). Without this, a redundant
-       legacy direct-set on a name-matching project is silently masked by auto-detect and
-       the legacy pattern leaks. -->
-  <Target Name="ValidateIsTestsLibProjectNotSetDirectly"
-          BeforeTargets="CoreCompile;Build"
-          Condition="'$(IsTestsLibProject)'=='True'
-                      AND '$(_MSKit_TestsLibProjectCommonPropsImported)'!='True'
-                      AND Exists('$(MSBuildProjectFullPath)')">
-    <PropertyGroup>
-      <_MSKit_CsprojText023>$([System.IO.File]::ReadAllText('$(MSBuildProjectFullPath)'))</_MSKit_CsprojText023>
-      <_MSKit_CsprojText023>$([System.Text.RegularExpressions.Regex]::Replace($(_MSKit_CsprojText023), '&lt;!--[\s\S]*?--&gt;', ''))</_MSKit_CsprojText023>
-      <_MSKit_HasDirectIsTestsLibProject>$([System.Text.RegularExpressions.Regex]::IsMatch($(_MSKit_CsprojText023), '&lt;IsTestsLibProject\s*&gt;'))</_MSKit_HasDirectIsTestsLibProject>
-    </PropertyGroup>
-    <Error Code="MSKIT_TEST023"
-           File="$(MSBuildProjectFullPath)"
-           Condition="'$(_MSKit_HasDirectIsTestsLibProject)'=='True'"
-           Text="csproj '$(MSBuildProjectName)' declares &lt;IsTestsLibProject&gt;true&lt;/IsTestsLibProject&gt; directly.%0AThis is the legacy pattern — the lib's framework-specific defaults (global usings, helper references, OutputType=Library) are not wired up.%0AReplace with the TestsLibProjectCommonPropsPath Import endpoint (handles all defaults including the framework satellite wiring):%0A%0A  &lt;PropertyGroup&gt;%0A    &lt;MSKit_TestingFramework&gt;xunit.v3&lt;/MSKit_TestingFramework&gt;%0A  &lt;/PropertyGroup&gt;%0A  &lt;Import Project=&quot;$(TestsLibProjectCommonPropsPath)&quot; /&gt;%0A%0AMSKit_TestingFramework values: xunit.v3." />
   </Target>
 
 </Project>
