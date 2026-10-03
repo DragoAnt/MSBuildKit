@@ -4,6 +4,7 @@
        library is never a runnable test project. -->
   <PropertyGroup>
     <IsTestsProject Condition="'$(IsTestsLibProject)'=='True'">False</IsTestsProject>
+    <OutputType Condition="'$(IsTestsLibProject)'=='True' AND '$(OutputType)'=='Exe'">Library</OutputType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(IsTestsProject)'=='True'">

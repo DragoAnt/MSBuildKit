@@ -29,6 +29,9 @@
   </ItemGroup>
 
   <PropertyGroup Condition="'$(IsTestsProject)'=='True' AND '$(IsTestsLibProject)'!='True'">
+    <!-- Restore decides on the app host packs from the props-phase OutputType; set later, the
+         app host for a target framework the SDK does not bundle is never downloaded. -->
+    <OutputType>Exe</OutputType>
     <EnableMicrosoftTestingPlatform Condition="'$(EnableMicrosoftTestingPlatform)'==''">True</EnableMicrosoftTestingPlatform>
     <!-- Exit code 8 means "zero tests ran"; a project whose tests are all skipped is not a failure. -->
     <TestingPlatformCommandLineArguments Condition="'$(TestingPlatformCommandLineArguments)'==''">--ignore-exit-code 8</TestingPlatformCommandLineArguments>
