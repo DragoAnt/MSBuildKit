@@ -186,12 +186,12 @@ for f in $(comm -23 "$work/old.lst" "$work/new.lst"); do say "  remove .toolkit/
 for f in $(comm -12 "$work/old.lst" "$work/new.lst"); do
   cmp -s "$toolkit/msbuild/$f" "$stage/msbuild/$f" || { say "  change .toolkit/msbuild/${f#./}"; changes=$((changes+1)); }
 done
-say "$changes file(s) under .toolkit/msbuild would change"
 
 dbp="$root/Directory.Build.props"
 dbt="$root/Directory.Build.targets"
 
 if [ "$dry_run" -eq 1 ]; then
+  say "$changes file(s) under .toolkit/msbuild would change"
   [ -f "$dbp" ] || say "  would create Directory.Build.props"
   [ -f "$dbt" ] || say "  would create Directory.Build.targets"
   say "dry run: nothing changed"
@@ -204,6 +204,7 @@ cp -R "$stage/msbuild" "$toolkit/msbuild"
 if [ -d "$new_toolkit/res" ]; then mkdir -p "$toolkit/res"; cp -R "$new_toolkit/res/." "$toolkit/res/"; fi
 for f in update.sh update.ps1 kit.parts; do [ -f "$new_toolkit/$f" ] && cp "$new_toolkit/$f" "$toolkit/$f"; done
 rm -f "$toolkit/kit.version"
+say "$changes file(s) under .toolkit/msbuild changed"
 
 parts_json=""
 for p in $recorded; do parts_json="$parts_json${parts_json:+, }\"$p\""; done
