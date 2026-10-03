@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Breaks the rules BadPackage cannot break at the same time; see tests/run.sh. -->
+  <PropertyGroup>
+    <Description>Too short.</Description>
+    <PackageTags>fixture</PackageTags>
+    <PackageLicenseExpression></PackageLicenseExpression>
+    <PackageLicenseUrl>https://example.com/license</PackageLicenseUrl>
+    <PackageIconPath>$(MSBuildThisFileDirectory)icon16.png</PackageIconPath>
+    <MSKit_VersionStrategy>Manual</MSKit_VersionStrategy>
+    <Version>1.2.3.4</Version>
+  </PropertyGroup>
+
+</Project>

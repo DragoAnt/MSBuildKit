@@ -16,11 +16,11 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(MSKit_ImplicitPackageVersions)'=='True' AND '$(ManagePackageVersionsCentrally)'!='true'">
-    <PackageReference Update="xunit.v3" Condition="'%(PackageReference.Version)'==''" Version="$(MSKit_PackageVersion_XunitV3)" />
-    <PackageReference Update="xunit.v3.mtp-v2" Condition="'%(PackageReference.Version)'==''" Version="$(MSKit_PackageVersion_XunitV3)" />
-    <PackageReference Update="xunit.v3.assert" Condition="'%(PackageReference.Version)'==''" Version="$(MSKit_PackageVersion_XunitV3Assert)" />
-    <PackageReference Update="xunit.v3.extensibility.core" Condition="'%(PackageReference.Version)'==''" Version="$(MSKit_PackageVersion_XunitV3ExtensibilityCore)" />
-    <PackageReference Update="xunit.runner.visualstudio" Condition="'%(PackageReference.Version)'==''" Version="$(MSKit_PackageVersion_XunitRunnerVisualStudio)" />
+    <PackageReference Update="xunit.v3"><Version Condition="'%(Version)'==''">$(MSKit_PackageVersion_XunitV3)</Version></PackageReference>
+    <PackageReference Update="xunit.v3.mtp-v2"><Version Condition="'%(Version)'==''">$(MSKit_PackageVersion_XunitV3)</Version></PackageReference>
+    <PackageReference Update="xunit.v3.assert"><Version Condition="'%(Version)'==''">$(MSKit_PackageVersion_XunitV3Assert)</Version></PackageReference>
+    <PackageReference Update="xunit.v3.extensibility.core"><Version Condition="'%(Version)'==''">$(MSKit_PackageVersion_XunitV3ExtensibilityCore)</Version></PackageReference>
+    <PackageReference Update="xunit.runner.visualstudio"><Version Condition="'%(Version)'==''">$(MSKit_PackageVersion_XunitRunnerVisualStudio)</Version></PackageReference>
   </ItemGroup>
 
 </Project>

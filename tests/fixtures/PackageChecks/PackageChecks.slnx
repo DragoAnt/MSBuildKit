@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="BadPackage/BadPackage.csproj" />
+  <Project Path="ShortPackage/ShortPackage.csproj" />
+</Solution>

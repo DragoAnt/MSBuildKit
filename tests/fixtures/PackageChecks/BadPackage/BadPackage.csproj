@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Breaks one package rule on purpose per check: tests/run.sh expects every listed MSKIT_PKG code. -->
+  <PropertyGroup>
+    <PackageIconPath>missing.png</PackageIconPath>
+    <PackageIconUrl>https://example.com/icon.png</PackageIconUrl>
+    <MSKit_DefaultReleaseNotes>False</MSKit_DefaultReleaseNotes>
+    <EnableSourceControlManagerQueries>false</EnableSourceControlManagerQueries>
+    <PublishRepositoryUrl>false</PublishRepositoryUrl>
+    <Copyright>Copyright (c) 2026 Example. All rights reserved.</Copyright>
+  </PropertyGroup>
+
+</Project>

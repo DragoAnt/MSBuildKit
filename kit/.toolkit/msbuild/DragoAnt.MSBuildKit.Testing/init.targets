@@ -2,10 +2,6 @@
 
   <Import Project="$(MSBuildThisFileDirectory)tests.project.targets" />
 
-  <!-- Versions stay in scope for every project, so a helper library that references a test
-       package by name still resolves it under Central Package Management. -->
-  <Import Project="$(MSBuildThisFileDirectory)implicit.package.targets" />
-
   <ImportGroup Condition="'$(IsTestsProject)'=='True' Or '$(IsTestsLibProject)'=='True'">
     <Import Project="$(MSBuildThisFileDirectory)tests.project.mtp.routine.targets" />
   </ImportGroup>
