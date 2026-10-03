@@ -1,0 +1,9 @@
+<Project>
+
+  <!--  Enrich all analyzers and source generators ProjectReference with Roslyn specific attribute. More details: https://github.com/dotnet/roslyn/discussions/48746-->
+  <ItemGroup>
+    <ProjectReference Update="@(ProjectReference -> WithMetadataValue('IsAnalyzer','True'))"
+                      OutputItemType="Analyzer" ReferenceOutputAssembly="false" BeforeTargets="CoreCompile" />
+  </ItemGroup>
+
+</Project>

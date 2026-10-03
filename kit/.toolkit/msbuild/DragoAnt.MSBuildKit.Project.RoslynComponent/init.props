@@ -1,0 +1,9 @@
+<Project>
+
+  <!-- Shared base imported by the CodeAnalyzer, CodeFixer and SourceGenerator parts; never
+       imported into every project. -->
+  <PropertyGroup>
+    <RoslynComponentCommonPropsPath>$(MSBuildThisFileDirectory)code.roslyn-component.props</RoslynComponentCommonPropsPath>
+  </PropertyGroup>
+
+</Project>

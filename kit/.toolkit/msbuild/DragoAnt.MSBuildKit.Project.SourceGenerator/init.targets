@@ -1,0 +1,4 @@
+<Project>
+  <Import Condition="'$(IsSourceGenerator)'=='true'"
+          Project="$(MSBuildThisFileDirectory)source.generator.targets" />
+</Project>

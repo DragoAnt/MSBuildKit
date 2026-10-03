@@ -1,0 +1,36 @@
+<Project>
+
+  <!-- Source generators don't ship analyzer-rule release notes; remove the base's
+       AnalyzerReleases.{Shipped,Unshipped}.md packing entries. -->
+  <ItemGroup Condition="'$(IsSourceGenerator)'=='true'">
+    <None Remove="AnalyzerReleases.Shipped.md" />
+    <None Remove="AnalyzerReleases.Unshipped.md" />
+  </ItemGroup>
+
+  <!-- Pack the source generator DLL + PDB into analyzers/dotnet/cs/ inside the nupkg.
+       Roslyn loads source generators from this path (same convention as analyzers). -->
+  <ItemGroup Condition="'$(IsSourceGenerator)'=='true'">
+    <None Update="lib/**/*" Pack="false" />
+    <None Include="$(OutputPath)$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(OutputPath)$(AssemblyName).pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
+
+  <!-- When IncludeGenerateResultToProject=true, emit compiler-generated files to a
+       project-local _generated/ folder. Useful for committing generated code to git AND
+       letting it co-exist with on-build regeneration (Compile Remove prevents duplicate
+       definition errors). See https://www.thinktecture.com/en/net/roslyn-source-generators-logging/ -->
+  <Choose>
+    <When Condition="'$(IsSourceGenerator)'=='true' AND '$(IncludeGenerateResultToProject)'=='true'">
+      <PropertyGroup>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+        <GenerateResultOutputPath Condition="'$(GenerateResultOutputPath)'==''">$(MSBuildProjectDirectory)/_generated</GenerateResultOutputPath>
+        <CompilerGeneratedFilesOutputPath>$(GenerateResultOutputPath)</CompilerGeneratedFilesOutputPath>
+      </PropertyGroup>
+      <ItemGroup>
+        <Compile Remove="$(CompilerGeneratedFilesOutputPath)/**/*.cs" />
+        <None Include="$(CompilerGeneratedFilesOutputPath)/**/*.cs" />
+      </ItemGroup>
+    </When>
+  </Choose>
+
+</Project>

@@ -1,0 +1,64 @@
+<Project>
+
+  <!-- Roslyn analyzer authoring, with an optional sibling CodeFixProvider project.
+
+       The analyzer assembly NEVER references Microsoft.CodeAnalysis.Workspaces.Common - that
+       lives in the companion Project.CodeFixer - so the analyzer dll is RS1038-clean by
+       construction.
+
+       There is deliberately NO ProjectReference from Analyzers to CodeFixes: NuGet's restore
+       walk rejects the resulting cycle even though no compile cycle exists. CodeFixes builds
+       independently, and _MSKit_AddCodeFixesToAnalyzerPackage only asks for GetTargetPath,
+       because invoking Build under NoBuild=true trips NETSDK1085. -->
+  <Import Project="$(RoslynComponentCommonPropsPath)" />
+
+  <PropertyGroup>
+    <IsCodeAnalyzer>True</IsCodeAnalyzer>
+    <Description Condition="'$(Description)'==''">Code analyzers description</Description>
+    <PackageTags>$(PackageTags);analyzer</PackageTags>
+
+    <!-- Opt-out toggle for sibling-codefixer auto-detection. Set to False to skip
+         the sibling lookup entirely (analyzer-only family). -->
+    <MSKit_HasCodeFixer Condition="'$(MSKit_HasCodeFixer)'==''">True</MSKit_HasCodeFixer>
+
+    <!-- Convention-based sibling path. Override <MSKit_CodeFixer> in the csproj to
+         point at an explicit path instead of using the .Analyzers→.CodeFixes convention.
+         Guard: only applies when the project name ends in .Analyzers (plural) — i.e. the
+         Replace actually changes the name.  Projects named *.Analyzer (singular) do not
+         follow the Analyzers→CodeFixes convention and must not self-reference. -->
+    <_MSKit_AutoCodeFixerName Condition="'$(MSKit_HasCodeFixer)'=='True' AND '$(MSKit_CodeFixer)'==''">$(MSBuildProjectName.Replace('.Analyzers', '.CodeFixes'))</_MSKit_AutoCodeFixerName>
+    <MSKit_CodeFixer Condition="'$(MSKit_HasCodeFixer)'=='True' AND '$(MSKit_CodeFixer)'=='' AND '$(_MSKit_AutoCodeFixerName)'!='$(MSBuildProjectName)'">$(MSBuildProjectDirectory)/../$(_MSKit_AutoCodeFixerName)/$(_MSKit_AutoCodeFixerName).csproj</MSKit_CodeFixer>
+
+    <_MSKit_HasCodeFixesProject Condition="'$(MSKit_HasCodeFixer)'=='True' AND '$(MSKit_CodeFixer)'!='' AND Exists('$(MSKit_CodeFixer)')">True</_MSKit_HasCodeFixesProject>
+  </PropertyGroup>
+
+  <!-- Pack the sibling CodeFixes dll into analyzers/dotnet/cs/ via the SDK-blessed
+       TargetsForTfmSpecificContentInPackage hook. Both dlls end up in ONE nupkg.
+       Roslyn loads both at IDE-time; compiler only loads the analyzer (no Workspaces ref → no RS1038).
+       No <ProjectReference> is emitted here — build order is handled by the upstream
+       `dotnet build <sln/slnx>` (which builds all projects in the solution), or by `dotnet pack`'s
+       implicit Build dependency when NoBuild is not set. Our target only resolves GetTargetPath. -->
+  <PropertyGroup Condition="'$(_MSKit_HasCodeFixesProject)'=='True'">
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_MSKit_AddCodeFixesToAnalyzerPackage</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <Target Name="_MSKit_AddCodeFixesToAnalyzerPackage" DependsOnTargets="BuildOnlySettings">
+    <!-- Resolve the sibling CodeFixes output path. NoBuild-safe: invokes only GetTargetPath
+         (NOT Build). With NoBuild=true (CI's `dotnet pack no-build`), invoking Build here
+         would trigger NETSDK1085. The CodeFixes project is built independently — either by
+         the slnx-level `dotnet build` upstream of `pack`, or by NoBuild=false local pack
+         (in which case `dotnet pack` auto-triggers Build before our pack target runs).
+         Properties="Configuration=$(Configuration)" ensures we resolve the correct output. -->
+    <MSBuild Projects="$(MSKit_CodeFixer)"
+             Targets="GetTargetPath"
+             Properties="Configuration=$(Configuration)">
+      <Output TaskParameter="TargetOutputs" ItemName="_MSKit_CodeFixesTargetPath" />
+    </MSBuild>
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="@(_MSKit_CodeFixesTargetPath)">
+        <PackagePath>analyzers/dotnet/cs/</PackagePath>
+      </TfmSpecificPackageFile>
+    </ItemGroup>
+  </Target>
+
+</Project>
