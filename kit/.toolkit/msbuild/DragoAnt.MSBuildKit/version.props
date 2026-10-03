@@ -114,7 +114,7 @@
     <_MSKit_Ph_commitShaShort Condition="$(MSKit_CommitSha.Length) &gt;= 8">$(MSKit_CommitSha.Substring(0, 8))</_MSKit_Ph_commitShaShort>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(MSKit_VersionStrategy)'!='Manual'">
+  <PropertyGroup Condition="'$(MSKit_VersionStrategy)'!='Manual' AND '$(MSKit_ExplicitVersion)'==''">
     <_MSKit_EffectiveTemplate Condition="'$(MSKit_IsStableBranch)'=='true'">$(MSKit_StableVersionTemplate)</_MSKit_EffectiveTemplate>
     <_MSKit_EffectiveTemplate Condition="'$(MSKit_IsStableBranch)'!='true'">$(MSKit_VersionTemplate)</_MSKit_EffectiveTemplate>
     <_MSKit_EffectiveTemplate Condition="'$(MSKit_PullRequestNumber)'!='' AND '$(MSKit_PullRequestVersionTemplate)'!=''">$(MSKit_PullRequestVersionTemplate)</_MSKit_EffectiveTemplate>

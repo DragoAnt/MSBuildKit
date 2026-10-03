@@ -4,7 +4,7 @@
        csproj body. This target renders again once a csproj-level VersionPrefix or template is
        final, and sets PackageVersion for pack. -->
   <Target Name="RenderVersionFromTemplate"
-          Condition="'$(MSKit_VersionStrategy)'!='Manual'"
+          Condition="'$(MSKit_VersionStrategy)'!='Manual' AND '$(MSKit_ExplicitVersion)'==''"
           BeforeTargets="GenerateNuspec;CoreCompile;GetAssemblyVersion">
 
     <PropertyGroup>
