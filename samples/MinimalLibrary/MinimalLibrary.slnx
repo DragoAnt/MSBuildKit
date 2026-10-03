@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DragoAnt.Samples.MinimalLibrary/DragoAnt.Samples.MinimalLibrary.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DragoAnt.Samples.MinimalLibrary.Tests/DragoAnt.Samples.MinimalLibrary.Tests.csproj" />
+  </Folder>
+</Solution>

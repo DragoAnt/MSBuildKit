@@ -1,0 +1,5 @@
+<Project>
+
+  <Import Condition="'$(IsRoslynComponent)'=='True'" Project="$(MSBuildThisFileDirectory)implicit.package.targets" />
+
+</Project>

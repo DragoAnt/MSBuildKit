@@ -1,0 +1,28 @@
+<Project>
+
+  <!-- Roslyn CodeFixProvider authoring base. Companion to code.analyzer.props.
+       Imports the shared Roslyn-component base (netstandard2.0, IsRoslynComponent,
+       common refs, package metadata); adds CodeFix-specific:
+         - IsCodeFixer=True (gates code-fix-specific packaging/wiring if any added later)
+         - IsPackable=false (ships INSIDE the sibling Analyzer's nupkg under
+           analyzers/dotnet/cs/ via the TargetsForTfmSpecificContentInPackage hook
+           in code.analyzer.props; never standalone)
+         - Microsoft.CodeAnalysis.Workspaces.Common (required by CodeFixProvider).
+       RS1038 does NOT fire on a CodeFix-only assembly — there are no
+       [DiagnosticAnalyzer]-attributed types here. Workspaces ref is allowed. -->
+  <Import Project="$(RoslynComponentCommonPropsPath)" />
+
+  <PropertyGroup>
+    <IsCodeFixer>True</IsCodeFixer>
+    <IsPackable>false</IsPackable>
+    <Description Condition="'$(Description)'==''">Code fix providers</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Allowed="True">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>all</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

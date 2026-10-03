@@ -1,0 +1,24 @@
+<Project>
+
+  <!-- Roslyn 4.14 loads in the .NET 9.0.300 and .NET 10 SDK compilers and Visual Studio 17.14+.
+       A newer Roslyn reference makes the analyzer fail to load in older compilers. -->
+  <PropertyGroup>
+    <MSKit_PackageVersion_MicrosoftCodeAnalysis Condition="'$(MSKit_PackageVersion_MicrosoftCodeAnalysis)'==''">4.14.0</MSKit_PackageVersion_MicrosoftCodeAnalysis>
+    <MSKit_PackageVersion_MicrosoftCodeAnalysisAnalyzers Condition="'$(MSKit_PackageVersion_MicrosoftCodeAnalysisAnalyzers)'==''">3.11.0</MSKit_PackageVersion_MicrosoftCodeAnalysisAnalyzers>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(MSKit_ImplicitPackageVersions)'=='True' AND '$(ManagePackageVersionsCentrally)'=='true'">
+    <PackageVersion Include="Microsoft.CodeAnalysis.Common" Version="$(MSKit_PackageVersion_MicrosoftCodeAnalysis)" ControlledBy="DragoAnt.MSBuildKit.Project.RoslynComponent" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="$(MSKit_PackageVersion_MicrosoftCodeAnalysis)" ControlledBy="DragoAnt.MSBuildKit.Project.RoslynComponent" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="$(MSKit_PackageVersion_MicrosoftCodeAnalysis)" ControlledBy="DragoAnt.MSBuildKit.Project.RoslynComponent" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="$(MSKit_PackageVersion_MicrosoftCodeAnalysisAnalyzers)" ControlledBy="DragoAnt.MSBuildKit.Project.RoslynComponent" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(MSKit_ImplicitPackageVersions)'=='True' AND '$(ManagePackageVersionsCentrally)'!='true'">
+    <PackageReference Update="Microsoft.CodeAnalysis.Common"><Version Condition="'%(Version)'==''">$(MSKit_PackageVersion_MicrosoftCodeAnalysis)</Version></PackageReference>
+    <PackageReference Update="Microsoft.CodeAnalysis.CSharp"><Version Condition="'%(Version)'==''">$(MSKit_PackageVersion_MicrosoftCodeAnalysis)</Version></PackageReference>
+    <PackageReference Update="Microsoft.CodeAnalysis.Workspaces.Common"><Version Condition="'%(Version)'==''">$(MSKit_PackageVersion_MicrosoftCodeAnalysis)</Version></PackageReference>
+    <PackageReference Update="Microsoft.CodeAnalysis.Analyzers"><Version Condition="'%(Version)'==''">$(MSKit_PackageVersion_MicrosoftCodeAnalysisAnalyzers)</Version></PackageReference>
+  </ItemGroup>
+
+</Project>

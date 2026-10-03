@@ -1,0 +1,37 @@
+<Project>
+
+  <!-- Shared base for Roslyn-component authoring (analyzers + source generators).
+       Imported by code.analyzer.props (in DragoAnt.MSBuildKit.Project.CodeAnalyzer)
+       and source.generator.props (in DragoAnt.MSBuildKit.Project.SourceGenerator). -->
+
+  <PropertyGroup>
+    <DisableSharedGlobalUsings>True</DisableSharedGlobalUsings>
+
+    <MSKit_SkipAudit_TargetFrameworkOverride>True</MSKit_SkipAudit_TargetFrameworkOverride>
+    <TargetFrameworks />
+    <TargetFramework>netstandard2.0</TargetFramework>
+
+    <IsPackable>True</IsPackable>
+    <EnforceExtendedAnalyzerRules>True</EnforceExtendedAnalyzerRules>
+    <NoWarn>RS1036;$(NoWarn)</NoWarn>
+    <PackageTags>roslyn;code-analysis</PackageTags>
+    <!-- Roslyn-component-specific packaging -->
+    <IncludeBuildOutput>False</IncludeBuildOutput>
+    <IncludeSymbols>False</IncludeSymbols>
+    <DevelopmentDependency>True</DevelopmentDependency>
+    <IsRoslynComponent>True</IsRoslynComponent>
+    <NoPackageAnalysis>True</NoPackageAnalysis>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Allowed="True">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>all</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Allowed="True">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>all</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

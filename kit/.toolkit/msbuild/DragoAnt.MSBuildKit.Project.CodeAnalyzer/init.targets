@@ -1,0 +1,4 @@
+<Project>
+  <Import Condition="'$(IsCodeAnalyzer)'=='True'"
+          Project="$(MSBuildThisFileDirectory)code.analyzer.targets" />
+</Project>

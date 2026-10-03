@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  self-test:
+    name: Self-test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Self-test the kit
+        shell: bash
+        run: sh tests/run.sh
+
+      - name: Shell syntax
+        if: runner.os == 'Linux'
+        run: |
+          sh -n kit/.toolkit/update.sh
+          sh -n tools/pack-kit.sh
+          sh -n tests/run.sh
+
+      - name: Pack the kit
+        shell: bash
+        run: sh tools/pack-kit.sh 0.0.0-ci.${{ github.run_number }} dist/kit
+
+      - name: Test results
+        if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        uses: dorny/test-reporter@v2
+        with:
+          name: Sample tests (${{ matrix.os }})
+          path: dist/selftest/TestResults/*.trx
+          reporter: dotnet-trx
+
+      - name: Coverage summary
+        if: always() && runner.os == 'Linux'
+        uses: danielpalme/ReportGenerator-GitHub-Action@5
+        with:
+          reports: dist/selftest/TestResults/**/*.cobertura.xml
+          targetdir: dist/coverage
+          reporttypes: MarkdownSummaryGithub;Cobertura
+
+      - name: Publish coverage summary
+        if: always() && runner.os == 'Linux'
+        shell: bash
+        run: if [ -f dist/coverage/SummaryGithub.md ]; then cat dist/coverage/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"; fi
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: self-test-${{ matrix.os }}
+          path: |
+            dist/selftest
+            dist/kit
