@@ -62,6 +62,7 @@
       <_MSKit_ReadmeStampLine Include="raw=$(MSKit_RepoRawUrlTemplate)" />
       <_MSKit_ReadmeStampLine Include="releases=$(MSKit_ReleasesUrl)" />
       <_MSKit_ReadmeStampLine Include="issues=$(MSKit_IssuesUrl)" />
+      <_MSKit_ReadmeStampLine Include="title=$(MSKit_PackageReadmeTitle)" />
       <_MSKit_ReadmeStampLine Include="visibility=$(_MSKit_RepositoryVisibility)" />
       <_MSKit_ReadmeStampLine Include="hosts=$(_MSKit_AllowedImageHosts)" />
       <_MSKit_ReadmeStampLine Include="@(SourceLinkGitHubHost->'github=%(Identity)')" />
@@ -91,6 +92,7 @@
                                  RawTemplate="$(MSKit_RepoRawUrlTemplate)"
                                  ReleasesUrl="$(MSKit_ReleasesUrl)"
                                  IssuesUrl="$(MSKit_IssuesUrl)"
+                                 ReadmeTitle="$(MSKit_PackageReadmeTitle)"
                                  Visibility="$(_MSKit_RepositoryVisibility)"
                                  AllowedImageHosts="$(_MSKit_AllowedImageHosts)"
                                  GitHubHosts="@(SourceLinkGitHubHost)"

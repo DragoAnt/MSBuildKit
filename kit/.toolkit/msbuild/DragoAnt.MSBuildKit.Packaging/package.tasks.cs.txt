@@ -128,6 +128,7 @@ public sealed class MSKit_PackageAssets : Task
     public string RawTemplate { get; set; }
     public string ReleasesUrl { get; set; }
     public string IssuesUrl { get; set; }
+    public string ReadmeTitle { get; set; }
     public string Visibility { get; set; }
     public string GitHubHosts { get; set; }
     public string GitLabHosts { get; set; }
@@ -369,6 +370,34 @@ public sealed class MSKit_PackageAssets : Task
         if (inOnly) report("MSKIT_PKG020", display + " line " + onlyLine + ": nuget:only is never closed.");
         if (!canRewrite && unresolved > 0)
             report("MSKIT_PKG020", display + ": " + unresolved + " relative link(s) and image(s) stay relative because " + why + ".");
+
+        var title = norm(ReadmeTitle) == "auto" ? norm(PackageId) : norm(ReadmeTitle);
+        if (title.Length > 0)
+        {
+            var anyAtx = new Regex(@"^ {0,3}#{1,6}(?:[ \t]|$)");
+            var h1Atx = new Regex(@"^ {0,3}#(?:[ \t]|$)");
+            var setextH1 = new Regex(@"^ {0,3}=+[ \t]*$");
+            int from = -1, to = -1;
+            for (var i = 0; i < outLines.Count && from < 0; i++)
+            {
+                if (outFence[i]) continue;
+                if (h1Atx.IsMatch(outLines[i])) { from = to = i; continue; }
+                if (i + 1 < outLines.Count && !outFence[i + 1] && outLines[i].Trim().Length > 0 && !anyAtx.IsMatch(outLines[i]) && setextH1.IsMatch(outLines[i + 1]))
+                {
+                    from = i; to = i + 1;
+                    while (from > 0 && !outFence[from - 1] && outLines[from - 1].Trim().Length > 0 && !anyAtx.IsMatch(outLines[from - 1])) from--;
+                }
+            }
+            if (from >= 0)
+            {
+                outLines.RemoveRange(from, to - from + 1); outFence.RemoveRange(from, to - from + 1);
+                outLines.Insert(from, "# " + title); outFence.Insert(from, false);
+            }
+            else
+            {
+                outLines.InsertRange(0, new[] { "# " + title, "" }); outFence.InsertRange(0, new[] { false, false });
+            }
+        }
 
         var releasesUrl = norm(ReleasesUrl) == "auto" ? (hasRepo && releases.Length > 0 ? expand(releases, "") : "") : expand(norm(ReleasesUrl), "");
         var issuesUrl = norm(IssuesUrl) == "auto" ? (hasRepo && issues.Length > 0 ? expand(issues, "") : "") : expand(norm(IssuesUrl), "");

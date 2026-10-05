@@ -16,8 +16,9 @@ The path is relative to the git root (or absolute). It wins over a `package.read
 1. **Relative links and images become absolute URLs pinned to the commit** (`RepositoryCommit`, which Source Link fills in for every pack; a release tag may not exist yet). A link goes to the file view, a link to a folder to the folder view, an image to the raw file. Anchors (`#install`), absolute URLs, and anything inside inline code or a fenced block are left alone. A root-relative path (`/docs/x.md`) is taken from the repository root, as GitHub does.
 2. **`<!-- nuget:skip -->` … `<!-- /nuget:skip -->`** blocks are cut: CI badges, contributing notes, build setup.
 3. **`<!-- nuget:only <PackageId> -->` … `<!-- /nuget:only -->`** blocks stay only in the readme of the packages they name (several ids: separate with spaces or commas). Unmarked content goes to every package, so a multi-package repository keeps one README.
-4. **Release notes and Issues links** are added to the overview when it does not already link those pages: the `## Overview` section when there is one, else the text above the first `##` heading.
-5. The `MSKIT_PKG` checks then run on the generated file, so a link the generator could not rewrite is still caught by `MSKIT_PKG017` / `MSKIT_PKG009`.
+4. **The title is the package id.** The first level-1 heading (`# …`, or a `===`-underlined one) becomes `# <PackageId>`, so each package of a multi-package repository is named on its own page; a README with no level-1 heading gets the title as its first line. Only the content this package keeps counts: a heading inside a `nuget:skip` block, another package's `nuget:only` block or a code fence is never the one replaced. Set `MSKit_PackageReadmeTitle` to another title, or empty to keep the README's own heading.
+5. **Release notes and Issues links** are added to the overview when it does not already link those pages: the `## Overview` section when there is one, else the text above the first `##` heading.
+6. The `MSKIT_PKG` checks then run on the generated file, so a link the generator could not rewrite is still caught by `MSKIT_PKG017` / `MSKIT_PKG009`.
 
 The markers are matched on lines of their own, outside code fences. A README that documents the markers in a fenced block is safe.
 
@@ -53,11 +54,12 @@ A self-hosted GitLab is recognised through the same item Source Link uses:
 | `MSKit_RepoRawUrlTemplate` | the provider's | Images |
 | `MSKit_ReleasesUrl` | `auto` | The release-notes page, also the default `PackageReleaseNotes` off GitHub; empty leaves the link out |
 | `MSKit_IssuesUrl` | `auto` | The issues page; empty leaves the link out |
+| `MSKit_PackageReadmeTitle` | `auto` (the `PackageId`) | The text of the first level-1 heading; empty keeps the README's own heading |
 | `MSKit_RepositoryVisibility` | `$(CI_PROJECT_VISIBILITY)` | `private` or `internal` raises `MSKIT_PKG022` |
 | `MSKit_GeneratedPackageReadmePath` | `obj/<Configuration>/package.readme.md` | Where the generated file goes |
 | `MSKit_PackageReadmeAllowedImageHosts` | the kit's list | `;`-separated hosts that replace the list below |
 
-Templates take `{repoUrl}`, `{host}`, `{repoPath}` (`owner/repo`, nested groups included), `{owner}`, `{repo}`, `{commit}` and `{path}`. To leave a link out, set the property empty in the csproj or with `-p:MSKit_IssuesUrl=`: an empty value in `Directory.Build.props` above the kit import is replaced by `auto`.
+Templates take `{repoUrl}`, `{host}`, `{repoPath}` (`owner/repo`, nested groups included), `{owner}`, `{repo}`, `{commit}` and `{path}`. To leave a link out, or keep the README's heading, set the property empty in the csproj, below the kit import, or with `-p:MSKit_IssuesUrl=`: an empty value in `Directory.Build.props` above the kit import is replaced by `auto`.
 
 GitHub Actions does not expose the repository's visibility as a variable; pass it if you want the private-repository warning there:
 
