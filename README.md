@@ -69,7 +69,7 @@ Default parts are always installed; add optional ones with `--add`.
 | `Core` | yes | Developer-vs-CI switch, solution and git roots, branch, `TargetFramework(s)` switching, Roslyn project-type detection |
 | `Trunk` (`DragoAnt.MSBuildKit`) | yes | Language defaults, product and copyright, the version engine, global usings, reference audits |
 | `Vcs.GitHub` | yes | Maps `GITHUB_*` variables: CI detection, run number, release tag, pull-request number, repository URL |
-| `TfmConstants` | yes | `IsNET8` … `IsNET14`, `IsNET8_OR_GREATER` …, `IsNETSTANDARD` for conditions |
+| `TfmConstants` | yes | `IsNET8` … `IsNET14`, `IsNET8_OR_GREATER` …, `IsNETSTANDARD` for conditions; final in item and target conditions and `Directory.Build.targets`, in the props phase only once the framework is known (an inner build of a multi-targeted project) |
 | `Packaging` | yes | nuget.org metadata defaults and the `MSKIT_PKG` checks |
 | `Testing`, `Testing.XUnit.v3` | yes | Test-project detection, Microsoft.Testing.Platform, coverage, TRX, xUnit v3 |
 | `Locals.Secrets`, `Locals.DirectorySecrets`, `Locals.Compile` | yes | Local-only secrets and source files kept outside the repository |

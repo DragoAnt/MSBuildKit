@@ -19,6 +19,18 @@ tfm_validate() {
   fi
 }
 
+tfm_dir="$here/kit/.toolkit/msbuild/DragoAnt.MSBuildKit.TfmConstants"
+grep 'Condition=' "$tfm_dir/tfm.constants.props" > "$out/tfm-props.defs"
+grep 'Condition=' "$tfm_dir/tfm.constants.targets" > "$out/tfm-targets.defs"
+cmp -s "$out/tfm-props.defs" "$out/tfm-targets.defs" && [ -s "$out/tfm-props.defs" ] \
+  && pass "tfm tfm.constants.targets defines the same constants as tfm.constants.props" \
+  || bad "tfm tfm.constants.targets and tfm.constants.props differ (diff $out/tfm-props.defs $out/tfm-targets.defs)"
+sed -n 's/.*<\([A-Za-z0-9_]*\) Condition=.*/\1/p' "$out/tfm-props.defs" | sort -u > "$out/tfm-defined.names"
+sed -n 's/^ *<\([A-Za-z0-9_]*\)><\/\1>$/\1/p' "$tfm_dir/tfm.constants.targets" | sort -u > "$out/tfm-cleared.names"
+cmp -s "$out/tfm-defined.names" "$out/tfm-cleared.names" \
+  && pass "tfm tfm.constants.targets clears every constant before redefining it" \
+  || bad "tfm cleared and defined constants differ (diff $out/tfm-defined.names $out/tfm-cleared.names)"
+
 for v in 8 9 10; do
   tfm_expect "Net$v.Tests" IsNET8_OR_GREATER True
   tfm_expect "Net$v.Tests" IsNET$v True

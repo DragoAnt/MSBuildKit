@@ -13,6 +13,10 @@ All notable changes to this project are documented here. The format follows [Kee
 
 - nuget.org's allowed image hosts moved from a property default to `nuget.allowed-image-hosts.txt` in the Packaging part, read only on pack; `MSKit_PackageReadmeAllowedImageHosts` still replaces it.
 
+### Fixed
+
+- A test project with a single `<TargetFramework>` (net8.0, net9.0, net10.0) no longer fails with a false `MSKIT_TEST005`, and on net8.0/net9.0 gets `TestingPlatformDotnetTestSupport`: the TfmConstants part now evaluates `IsNETxx` again in the targets phase, after the csproj body has set the framework. The props-phase values stay for multi-targeted inner builds.
+
 ## [0.1.1] - 2026-10-04
 
 ### Fixed
