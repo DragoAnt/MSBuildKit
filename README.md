@@ -9,6 +9,7 @@ Shared MSBuild settings for .NET repositories that publish NuGet packages: nuget
 ## Features
 
 - **Packages that pass nuget.org's rules by default.** Licence, icon, README, Source Link, symbols (`.snupkg`), repository and release-notes links, package validation and NuGet audit are set for every packable project. Nineteen checks (`MSKIT_PKG001`-`019`) run on `dotnet pack`: warnings on your machine, errors on CI.
+- **One README for the repository and its packages.** `MSKit_PackageReadmeFrom=README.md` generates each package's readme on `dotnet pack`: relative links pinned to the commit on GitHub, GitLab and other hosts, per-package sections, release and issue links. See [docs/package-readme.md](./docs/package-readme.md).
 - **Versions from release tags.** Publish a GitHub release `v1.4.0` and the packages are `1.4.0`. Branch builds are `1.4.0-ci.<run>`, pull requests `1.4.0-pr.<n>.<run>`, local builds `9999.0.0`. A tag that is not SemVer stops the build with `MSKIT_VER006`.
 - **Tests on Microsoft.Testing.Platform v2.** Projects named `*.Tests` become xUnit v3 test projects with code coverage (Cobertura), TRX and JUnit reports, assertions and NSubstitute wired in, and `InternalsVisibleTo` from the code they test.
 - **Plain files, one update script.** The kit lives in your repository's `.toolkit/` folder, so every change shows up in a pull request. `update.ps1` / `update.sh` installs a release after checking its SHA-256.
@@ -100,7 +101,7 @@ Defaults apply to projects with `IsPackable=True` and yield to any value you set
 | `PackageLicenseExpression` | `MIT` (owner layer) | [licensing](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#licensing) |
 | `Authors`, `Copyright` | owner name; `Copyright (c) <year> <owner>` | [copyright](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#copyright) |
 | `PackageIcon` | `.toolkit/res/package.icon.png` (128×128), packed as `icon.png` | [icon](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#icon) |
-| `PackageReadmeFile` | `package.readme.md` (else `README.md`) next to the csproj, packed as `readme.md` | [README](https://learn.microsoft.com/nuget/reference/msbuild-targets#packagereadmefile) |
+| `PackageReadmeFile` | generated from `MSKit_PackageReadmeFrom` ([package readme](./docs/package-readme.md)), else `package.readme.md` (else `README.md`) next to the csproj, packed as `readme.md` | [README](https://learn.microsoft.com/nuget/reference/msbuild-targets#packagereadmefile) |
 | `RepositoryUrl`, `PackageProjectUrl` | from `GITHUB_REPOSITORY`, else the git remote via Source Link | [repository](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#repository-type-and-url) |
 | `PackageReleaseNotes` | the GitHub release page of the tag, else the releases page | [release notes](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#release-notes) |
 | `PublishRepositoryUrl`, `EmbedUntrackedSources`, `Deterministic`, `ContinuousIntegrationBuild` (CI) | `true` | [Source Link](https://learn.microsoft.com/dotnet/standard/library-guidance/sourcelink) |
@@ -134,6 +135,14 @@ Defaults apply to projects with `IsPackable=True` and yield to any value you set
 | `MSKIT_PKG017` | the package README has relative links | [package README](https://learn.microsoft.com/nuget/nuget-org/package-readme-on-nuget-org) |
 | `MSKIT_PKG018` | an open-source licence with an "All rights reserved" copyright | [copyright](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#copyright) |
 | `MSKIT_PKG019` | the package README contains a Mermaid diagram | [supported Markdown](https://learn.microsoft.com/nuget/nuget-org/package-readme-on-nuget-org#supported-markdown-features) |
+
+With `MSKit_PackageReadmeFrom` the checks read the generated readme, and three more warnings come from the generator; they stay warnings on CI ([package readme](./docs/package-readme.md#warnings)):
+
+| Code | Fires when | Source |
+| --- | --- | --- |
+| `MSKIT_PKG020` | the README is missing, a `nuget:` marker is unbalanced, or links cannot be rewritten (no repository URL, unknown host, no commit) | [package readme](./docs/package-readme.md) |
+| `MSKIT_PKG021` | an image comes from a host nuget.org does not render images from; names the image and its README line | [allowed images](https://learn.microsoft.com/nuget/nuget-org/package-readme-on-nuget-org#allowed-domains-for-images-and-badges) |
+| `MSKIT_PKG022` | the repository is private or internal (`MSKit_RepositoryVisibility`), so the readme links will not open | [package readme](./docs/package-readme.md) |
 
 ## Tests and coverage
 
