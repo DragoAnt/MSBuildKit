@@ -9,6 +9,7 @@
     <MSKit_PackageReadmeAllowedImageHostsFile Condition="'$(MSKit_PackageReadmeAllowedImageHostsFile)'==''">$(MSBuildThisFileDirectory)nuget.allowed-image-hosts.txt</MSKit_PackageReadmeAllowedImageHostsFile>
     <_MSKit_ReadmeStampPath>$(MSKit_GeneratedPackageReadmePath).inputs</_MSKit_ReadmeStampPath>
     <_MSKit_ReadmeFindingsBase>$(MSKit_GeneratedPackageReadmePath).findings</_MSKit_ReadmeFindingsBase>
+    <_MSKit_ReadmeReleasesUrlPath>$(MSKit_GeneratedPackageReadmePath).releases</_MSKit_ReadmeReleasesUrlPath>
   </PropertyGroup>
 
   <Target Name="_MSKit_ResolveAllowedImageHosts">
@@ -28,7 +29,7 @@
   <Target Name="MSKit_GeneratePackageReadme"
           BeforeTargets="GenerateNuspec"
           Condition="'$(_MSKit_GeneratesReadme)'=='True'"
-          DependsOnTargets="_MSKit_PackageReadmeInputs;_MSKit_WritePackageReadme;_MSKit_ReportPackageReadmeFindings" />
+          DependsOnTargets="_MSKit_PackageReadmeInputs;_MSKit_WritePackageReadme;_MSKit_ReportPackageReadmeFindings;_MSKit_DefaultReleaseNotesFromReadme" />
 
   <Target Name="_MSKit_PackageReadmeFromMissing"
           BeforeTargets="GenerateNuspec"
@@ -80,6 +81,7 @@
                          ReadmePath="$(_MSKit_ReadmeFromPath)"
                                  OutputPath="$(MSKit_GeneratedPackageReadmePath)"
                                  FindingsBase="$(_MSKit_ReadmeFindingsBase)"
+                                 ReleasesUrlPath="$(_MSKit_ReadmeReleasesUrlPath)"
                                  RepoRoot="$(_MSKit_ReadmeRepoRoot)"
                                  PackageId="$(PackageId)"
                                  RepositoryUrl="$(_MSKit_RepoUrl)"
@@ -96,6 +98,18 @@
                                  AzureReposHosts="@(SourceLinkAzureReposHost)"
                                  BitbucketHosts="@(SourceLinkBitbucketGitHost)"
                                  GiteaHosts="@(SourceLinkGiteaHost)" />
+  </Target>
+
+  <!-- Off GitHub, MSKit_ResolvePackageUrls has no release-notes default: use the releases page the
+       generator resolved, kept beside the generated file like the findings. -->
+  <Target Name="_MSKit_DefaultReleaseNotesFromReadme"
+          Condition="'$(PackageReleaseNotes)'=='' AND '$(MSKit_DefaultReleaseNotes)'!='False' AND Exists('$(_MSKit_ReadmeReleasesUrlPath)')">
+    <ReadLinesFromFile File="$(_MSKit_ReadmeReleasesUrlPath)">
+      <Output TaskParameter="Lines" PropertyName="_MSKit_ReadmeReleasesUrl" />
+    </ReadLinesFromFile>
+    <PropertyGroup>
+      <PackageReleaseNotes Condition="'$(_MSKit_ReadmeReleasesUrl)'!=''">$(_MSKit_ReadmeReleasesUrl)</PackageReleaseNotes>
+    </PropertyGroup>
   </Target>
 
   <!-- The findings are kept beside the generated file, so an incremental pack still reports them. -->

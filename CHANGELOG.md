@@ -16,6 +16,7 @@ All notable changes to this project are documented here. The format follows [Kee
 ### Fixed
 
 - A test project with a single `<TargetFramework>` (net8.0, net9.0, net10.0) no longer fails with a false `MSKIT_TEST005`, and on net8.0/net9.0 gets `TestingPlatformDotnetTestSupport`: the TfmConstants part now evaluates `IsNETxx` again in the targets phase, after the csproj body has set the framework. The props-phase values stay for multi-targeted inner builds.
+- `MSKIT_PKG016` no longer fires on GitLab and the other hosts the generated readme knows: with `MSKit_PackageReadmeFrom` set, an empty `PackageReleaseNotes` defaults to the releases page the readme links (`MSKit_ReleasesUrl`). GitHub keeps its tag release page; `MSKit_DefaultReleaseNotes=False` still turns the default off.
 
 ## [0.1.1] - 2026-10-04
 
