@@ -15,6 +15,11 @@
     <NuGetAudit Condition="'$(NuGetAudit)'==''">true</NuGetAudit>
     <NuGetAuditMode Condition="'$(NuGetAuditMode)'==''">all</NuGetAuditMode>
     <NuGetAuditLevel Condition="'$(NuGetAuditLevel)'==''">low</NuGetAuditLevel>
+
+    <!-- The generated package readme links these pages. `auto` derives them from the repository
+         host; set one empty in the csproj (or -p:MSKit_ReleasesUrl=) to leave the link out. -->
+    <MSKit_ReleasesUrl Condition="'$(MSKit_ReleasesUrl)'==''">auto</MSKit_ReleasesUrl>
+    <MSKit_IssuesUrl Condition="'$(MSKit_IssuesUrl)'==''">auto</MSKit_IssuesUrl>
   </PropertyGroup>
 
 </Project>
