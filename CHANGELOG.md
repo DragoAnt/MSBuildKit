@@ -10,7 +10,7 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ### Fixed
 
-- `update.sh` no longer stops halfway (`unexpected EOF`, `kit.json` left at the old version) when the update replaces it with a copy of another length, as a CRLF checkout does: the script is parsed in full before it runs, and it copies the new `update.sh` / `update.ps1` as its last step. The fix applies to updates started from this version on; an update started from 0.2.0 or earlier still runs the old script, so if it stops, run the same command once more.
+- `update.sh` no longer stops halfway (`unexpected EOF`, `kit.json` left at the old version) when the update replaces it with a copy of another length, as a CRLF checkout does: the script is parsed in full before it runs, and it copies the new `update.sh` / `update.ps1` as its last step. The fix applies to updates started from this version on. An update from 0.2.0 or earlier still runs the old script: it installs the files, then stops with a `syntax error` before writing `kit.json`; run the same command once more.
 
 ## [0.2.0] - 2026-10-05
 
