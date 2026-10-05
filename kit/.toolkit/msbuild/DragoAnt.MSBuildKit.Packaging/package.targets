@@ -23,6 +23,21 @@
     <PackageValidationBaselineVersion Condition="'$(PackageValidationBaselineVersion)'=='' AND '$(MSKit_PackageValidationBaselineVersion)'!=''">$(MSKit_PackageValidationBaselineVersion)</PackageValidationBaselineVersion>
   </PropertyGroup>
 
+  <!-- MSKit_PackageReadmeFrom: the readme is generated at pack time from that file (relative to the
+       git root, or absolute); see package.readme.targets. It wins over package.readme.md. -->
+  <PropertyGroup Condition="'$(MSKit_PackageReadmeFrom)'!=''">
+    <_MSKit_ReadmeFromPath Condition="$([System.IO.Path]::IsPathRooted('$(MSKit_PackageReadmeFrom)'))">$([MSBuild]::NormalizePath('$(MSKit_PackageReadmeFrom)'))</_MSKit_ReadmeFromPath>
+    <_MSKit_ReadmeFromPath Condition="'$(_MSKit_ReadmeFromPath)'=='' AND '$(MSKit_GitRoot)'!=''">$([MSBuild]::NormalizePath('$(MSKit_GitRoot)', '$(MSKit_PackageReadmeFrom)'))</_MSKit_ReadmeFromPath>
+    <_MSKit_ReadmeFromPath Condition="'$(_MSKit_ReadmeFromPath)'==''">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(MSKit_PackageReadmeFrom)'))</_MSKit_ReadmeFromPath>
+    <MSKit_GeneratedPackageReadmePath Condition="'$(MSKit_GeneratedPackageReadmePath)'==''">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(BaseIntermediateOutputPath)', '$(Configuration)', 'package.readme.md'))</MSKit_GeneratedPackageReadmePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(_MSKit_ReadmeFromPath)'!='' AND Exists('$(_MSKit_ReadmeFromPath)')">
+    <_MSKit_GeneratesReadme>True</_MSKit_GeneratesReadme>
+    <PackageReadmeFile Condition="'$(PackageReadmeFile)'==''">readme.md</PackageReadmeFile>
+    <MSKit_PackageReadmeSourcePath>$(MSKit_GeneratedPackageReadmePath)</MSKit_PackageReadmeSourcePath>
+    <_MSKit_PacksReadme>True</_MSKit_PacksReadme>
+  </PropertyGroup>
+
   <!-- README: package.readme.md next to the csproj, else README.md next to it, packed as readme.md.
        Set MSKit_PackageReadmeSourcePath to use another file. -->
   <PropertyGroup Condition="'$(PackageReadmeFile)'==''">
@@ -76,5 +91,6 @@
   </Target>
 
   <Import Project="$(MSBuildThisFileDirectory)package.inspect.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)package.readme.targets" />
 
 </Project>
