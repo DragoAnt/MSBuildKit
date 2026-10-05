@@ -4,9 +4,11 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-05
+
 ### Added
 
-- `MSKit_PackageReadmeFrom=README.md` generates each package's readme from the repository README on `dotnet pack`: relative links and images become absolute URLs pinned to the commit (GitHub, GitLab including self-hosted hosts named by `SourceLinkGitLabHost`; first drafts for Azure DevOps, Bitbucket and Gitea), `<!-- nuget:skip -->` and `<!-- nuget:only <PackageId> -->` blocks pick each package's content, and release-notes and issues links are added to the overview. Overrides: `MSKit_RepoProvider`, `MSKit_RepoBlobUrlTemplate`, `MSKit_RepoRawUrlTemplate`, `MSKit_ReleasesUrl`, `MSKit_IssuesUrl` (empty leaves the link out). See [docs/package-readme.md](./docs/package-readme.md).
+- `MSKit_PackageReadmeFrom=README.md` generates each package's readme from the repository README on `dotnet pack`: relative links and images become absolute URLs pinned to the commit (GitHub, GitLab including self-hosted hosts named by `SourceLinkGitLabHost`; first drafts for Azure DevOps, Bitbucket and Gitea), `<!-- nuget:skip -->` and `<!-- nuget:only <PackageId> -->` blocks pick each package's content, and release-notes and issues links are added to the overview. Overrides: `MSKit_RepoProvider`, `MSKit_RepoBlobUrlTemplate`, `MSKit_RepoRawUrlTemplate`, `MSKit_ReleasesUrl`, `MSKit_IssuesUrl` (empty leaves the link out). See [docs/package-readme.md](./docs/package-readme.md) ([#5](https://github.com/DragoAnt/MSBuildKit/pull/5)).
 - Warnings `MSKIT_PKG020` (the readme cannot be generated as asked), `MSKIT_PKG021` (an image host nuget.org does not render, with its README line) and `MSKIT_PKG022` (a private or internal repository, from `MSKit_RepositoryVisibility` or GitLab's `CI_PROJECT_VISIBILITY`).
 
 ### Changed
@@ -15,8 +17,8 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ### Fixed
 
-- A test project with a single `<TargetFramework>` (net8.0, net9.0, net10.0) no longer fails with a false `MSKIT_TEST005`, and on net8.0/net9.0 gets `TestingPlatformDotnetTestSupport`: the TfmConstants part now evaluates `IsNETxx` again in the targets phase, after the csproj body has set the framework. The props-phase values stay for multi-targeted inner builds.
-- `MSKIT_PKG016` no longer fires on GitLab and the other hosts the generated readme knows: with `MSKit_PackageReadmeFrom` set, an empty `PackageReleaseNotes` defaults to the releases page the readme links (`MSKit_ReleasesUrl`). GitHub keeps its tag release page; `MSKit_DefaultReleaseNotes=False` still turns the default off.
+- A test project with a single `<TargetFramework>` (net8.0, net9.0, net10.0) no longer fails with a false `MSKIT_TEST005`, and on net8.0/net9.0 gets `TestingPlatformDotnetTestSupport`: the TfmConstants part now evaluates `IsNETxx` again in the targets phase, after the csproj body has set the framework. The props-phase values stay for multi-targeted inner builds ([#6](https://github.com/DragoAnt/MSBuildKit/pull/6)).
+- `MSKIT_PKG016` no longer fires on GitLab and the other hosts the generated readme knows: with `MSKit_PackageReadmeFrom` set, an empty `PackageReleaseNotes` defaults to the releases page the readme links (`MSKit_ReleasesUrl`). GitHub keeps its tag release page; `MSKit_DefaultReleaseNotes=False` still turns the default off ([#6](https://github.com/DragoAnt/MSBuildKit/pull/6)).
 
 ## [0.1.1] - 2026-10-04
 
