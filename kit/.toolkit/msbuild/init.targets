@@ -3,6 +3,7 @@
   <!-- DragoAnt.MSBuildKit targets entry point; Directory.Build.targets imports it. Every
        installed part's audit/*.targets is imported last. -->
   <Import Project="$(MSKit_BeforeInitTargets)" Condition="'$(MSKit_BeforeInitTargets)' != '' and Exists('$(MSKit_BeforeInitTargets)')" />
+  <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.TfmConstants/init.targets" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.TfmConstants/init.targets')" />
   <Import Project="$(MSBuildThisFileDirectory)init.company.targets" Condition="Exists('$(MSBuildThisFileDirectory)init.company.targets')" />
   <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Core/init.targets" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Core/init.targets')" />
   <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Locals.Compile/init.targets" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Locals.Compile/init.targets')" />

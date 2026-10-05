@@ -9,6 +9,7 @@ kit="$here/kit"
 sample="$here/samples/MinimalLibrary"
 fixtures="$here/tests/fixtures/PackageChecks"
 readme_fixture="$here/tests/fixtures/PackageReadme"
+tfm_fixture="$here/tests/fixtures/TfmConstants"
 out="$here/dist/selftest"
 run_tests=1
 [ "${1:-}" = "--skip-tests" ] && run_tests=0
@@ -18,7 +19,7 @@ failures=0
 pass() { echo "PASS  $*"; }
 bad() { echo "FAIL  $*"; failures=$((failures+1)); }
 
-for root in "$sample" "$fixtures" "$readme_fixture"; do
+for root in "$sample" "$fixtures" "$readme_fixture" "$tfm_fixture"; do
   sh "$kit/.toolkit/update.sh" --source "$kit" --root "$root" > "$out/install.log" || { cat "$out/install.log"; exit 1; }
 done
 pass "update.sh installed the kit into the sample and the fixtures"
@@ -106,6 +107,7 @@ $clean_env dotnet pack "$fixtures/BadPackage/BadPackage.csproj" -c Release -nolo
 grep -q "MSKIT_PKG" "$out/checks-skip.log" && bad "MSKit_SkipPackageChecks=All did not silence the checks" || pass "MSKit_SkipPackageChecks=All silences the checks"
 
 . "$here/tests/package-readme.sh"
+. "$here/tests/tfm-constants.sh"
 
 echo
 if [ "$failures" -eq 0 ]; then echo "self-test: all checks passed"; else echo "self-test: $failures failure(s)"; exit 1; fi

@@ -25,6 +25,11 @@ rf_count() {
   n=$(grep -cF -- "$2" "$out/readme-$1.md" || true)
   [ "$n" = "$3" ] && pass "readme $1 has $2 $3 time(s)" || bad "readme $1 has $2 $n time(s), expected $3"
 }
+rf_notes() {
+  nupkg=$(ls "$out/readme-$1"/*.nupkg 2>/dev/null | grep -v '\.snupkg$' | head -n 1)
+  actual=$([ -n "$nupkg" ] && unzip -p "$nupkg" '*.nuspec' | tr -d '\r' | sed -n 's:.*<releaseNotes>\(.*\)</releaseNotes>.*:\1:p')
+  [ "$actual" = "$2" ] && pass "readme $1 release notes '$actual'" || bad "readme $1 release notes: expected '$2', got '$actual'"
+}
 generated="$readme_fixture/Observer/obj/Release/package.readme.md"
 
 # Pack only: a build never writes the generated readme.
@@ -55,7 +60,8 @@ rf_has github "[fenced](./fenced.md)"
 rf_has github "<!-- nuget:skip -->"
 awk '/^## /{exit} /\[Release notes\]/{found=1} END{exit !found}' "$out/readme-github.md" \
   && pass "readme github: the release-notes link is in the overview" || bad "readme github: the release-notes link is not in the overview"
-for code in MSKIT_PKG009 MSKIT_PKG012 MSKIT_PKG017 MSKIT_PKG020 MSKIT_PKG021 MSKIT_PKG022; do rf_quiet github $code; done
+for code in MSKIT_PKG009 MSKIT_PKG012 MSKIT_PKG016 MSKIT_PKG017 MSKIT_PKG020 MSKIT_PKG021 MSKIT_PKG022; do rf_quiet github $code; done
+rf_notes github "https://github.com/DragoAnt/Fixture/releases"
 
 # Incremental: the same inputs leave the generated file alone; a new commit regenerates it.
 stamp1=$(stat -c %Y "$generated" 2>/dev/null || echo none)
@@ -93,12 +99,25 @@ rf_has gitlab "[Release notes](https://gitlab.com/dragoant/sub/fixture/-/release
 rf_has gitlab "[Issues](https://gitlab.com/dragoant/sub/fixture/-/issues)"
 rf_quiet gitlab MSKIT_PKG021
 rf_quiet gitlab MSKIT_PKG017
+rf_quiet gitlab MSKIT_PKG016
+rf_notes gitlab "https://gitlab.com/dragoant/sub/fixture/-/releases"
+rf_pack gitlab-again Observer $gl
+rf_quiet gitlab-again MSKIT_PKG016
+rf_notes gitlab-again "https://gitlab.com/dragoant/sub/fixture/-/releases"
+rf_pack gitlab-no-releases Observer $gl -p:MSKit_ReleasesUrl=
+rf_warns gitlab-no-releases MSKIT_PKG016
+rf_pack gitlab-no-default Observer $gl -p:MSKit_DefaultReleaseNotes=False
+rf_warns gitlab-no-default MSKIT_PKG016
+rf_pack gitlab-notes Observer $gl "-p:PackageReleaseNotes=See the changelog."
+rf_notes gitlab-notes "See the changelog."
 
 # Self-hosted GitLab recognised through SourceLinkGitLabHost: its raw images are not on nuget.org's list.
 rf_pack gitlab-self Observer -p:RepositoryUrl=https://git.example.org/team/fixture -p:RepositoryCommit=$sha -p:FixtureGitLabHost=git.example.org
 rf_has gitlab-self "[the guide](https://git.example.org/team/fixture/-/blob/$sha/$rel/docs/guide.md)"
 rf_has gitlab-self "![diagram](https://git.example.org/team/fixture/-/raw/$sha/$rel/docs/diagram.png)"
 rf_has gitlab-self "[Issues](https://git.example.org/team/fixture/-/issues)"
+rf_quiet gitlab-self MSKIT_PKG016
+rf_notes gitlab-self "https://git.example.org/team/fixture/-/releases"
 rf_warns gitlab-self MSKIT_PKG021
 grep "warning MSKIT_PKG021" "$out/readme-gitlab-self.log" | grep -q "line 11" \
   && pass "readme gitlab-self: MSKIT_PKG021 names the README line" || bad "readme gitlab-self: MSKIT_PKG021 does not name line 11"
@@ -109,7 +128,12 @@ grep "warning MSKIT_PKG021" "$out/readme-gitlab-self.log" | grep -q "img.shields
 rf_pack unknown Observer -p:RepositoryUrl=https://code.example.net/team/fixture -p:RepositoryCommit=$sha
 rf_warns unknown MSKIT_PKG020
 rf_warns unknown MSKIT_PKG017
+rf_warns unknown MSKIT_PKG016
 rf_has unknown "[the guide](./docs/guide.md)"
+rf_pack unknown-releases Observer -p:RepositoryUrl=https://code.example.net/team/fixture -p:RepositoryCommit=$sha \
+  "-p:MSKit_ReleasesUrl=https://code.example.net/team/fixture/changes"
+rf_quiet unknown-releases MSKIT_PKG016
+rf_notes unknown-releases "https://code.example.net/team/fixture/changes"
 
 # Overrides: provider, templates, an empty releases URL (link omitted), a custom issues URL.
 rf_pack provider Observer -p:RepositoryUrl=https://code.example.net/team/fixture -p:RepositoryCommit=$sha -p:MSKit_RepoProvider=GitLab

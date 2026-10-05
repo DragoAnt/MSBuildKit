@@ -93,7 +93,7 @@
                          Text="Package '$(PackageId)' icon is not a $(MSKit_PackageIconSize)x$(MSKit_PackageIconSize) PNG (PNG: $(_MSKit_IconIsPng), size: $(_MSKit_IconWidth)x$(_MSKit_IconHeight))."
                          Rule="$(_MSKit_PkgRules)#icon" />
       <_MSKit_PkgFinding Include="MSKIT_PKG016" Condition="'$(PackageReleaseNotes)'==''"
-                         Text="Package '$(PackageId)' has no PackageReleaseNotes. Set them, or a link to the changelog (on GitHub the kit links the releases page by default)."
+                         Text="Package '$(PackageId)' has no PackageReleaseNotes. Set them, or a link to the changelog (the kit links the releases page by default on GitHub, and on any host the generated readme knows with MSKit_PackageReadmeFrom)."
                          Rule="$(_MSKit_PkgRules)#release-notes" />
       <_MSKit_PkgFinding Include="MSKIT_PKG017" Condition="'$(_MSKit_RelativeLinks)'!=''"
                          Text="The package README of '$(PackageId)' has relative links, which break on nuget.org: $(_MSKit_RelativeLinks). Use absolute URLs."

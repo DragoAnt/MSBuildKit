@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <FixturePropsPhaseIsNet8 Condition="'$(IsNET8)'=='True'">True</FixturePropsPhaseIsNet8>
+  </PropertyGroup>
+
+</Project>

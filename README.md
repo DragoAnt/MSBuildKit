@@ -69,7 +69,7 @@ Default parts are always installed; add optional ones with `--add`.
 | `Core` | yes | Developer-vs-CI switch, solution and git roots, branch, `TargetFramework(s)` switching, Roslyn project-type detection |
 | `Trunk` (`DragoAnt.MSBuildKit`) | yes | Language defaults, product and copyright, the version engine, global usings, reference audits |
 | `Vcs.GitHub` | yes | Maps `GITHUB_*` variables: CI detection, run number, release tag, pull-request number, repository URL |
-| `TfmConstants` | yes | `IsNET8` … `IsNET14`, `IsNET8_OR_GREATER` …, `IsNETSTANDARD` for conditions |
+| `TfmConstants` | yes | `IsNET8` … `IsNET14`, `IsNET8_OR_GREATER` …, `IsNETSTANDARD` for conditions; final in item and target conditions and `Directory.Build.targets`, in the props phase only once the framework is known (an inner build of a multi-targeted project) |
 | `Packaging` | yes | nuget.org metadata defaults and the `MSKIT_PKG` checks |
 | `Testing`, `Testing.XUnit.v3` | yes | Test-project detection, Microsoft.Testing.Platform, coverage, TRX, xUnit v3 |
 | `Locals.Secrets`, `Locals.DirectorySecrets`, `Locals.Compile` | yes | Local-only secrets and source files kept outside the repository |
@@ -103,7 +103,7 @@ Defaults apply to projects with `IsPackable=True` and yield to any value you set
 | `PackageIcon` | `.toolkit/res/package.icon.png` (128×128), packed as `icon.png` | [icon](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#icon) |
 | `PackageReadmeFile` | generated from `MSKit_PackageReadmeFrom` ([package readme](./docs/package-readme.md)), else `package.readme.md` (else `README.md`) next to the csproj, packed as `readme.md` | [README](https://learn.microsoft.com/nuget/reference/msbuild-targets#packagereadmefile) |
 | `RepositoryUrl`, `PackageProjectUrl` | from `GITHUB_REPOSITORY`, else the git remote via Source Link | [repository](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#repository-type-and-url) |
-| `PackageReleaseNotes` | the GitHub release page of the tag, else the releases page | [release notes](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#release-notes) |
+| `PackageReleaseNotes` | the GitHub release page of the tag, else the releases page; on other hosts, the releases page the generated readme links (`MSKit_PackageReadmeFrom`) | [release notes](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#release-notes) |
 | `PublishRepositoryUrl`, `EmbedUntrackedSources`, `Deterministic`, `ContinuousIntegrationBuild` (CI) | `true` | [Source Link](https://learn.microsoft.com/dotnet/standard/library-guidance/sourcelink) |
 | `IncludeSymbols`, `SymbolPackageFormat` | `true`, `snupkg` | [symbols](https://learn.microsoft.com/nuget/create-packages/symbol-packages-snupkg) |
 | `EnablePackageValidation` | `true`; baseline from `MSKit_PackageValidationBaselineVersion` | [package validation](https://learn.microsoft.com/dotnet/fundamentals/apicompat/package-validation/overview) |
