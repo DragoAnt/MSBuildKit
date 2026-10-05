@@ -2,6 +2,9 @@
 # Installs or updates DragoAnt.MSBuildKit in a repository's .toolkit/ folder.
 # Usage: sh .toolkit/update.sh [--version X.Y.Z] [--add PART] [--remove PART] [--dry-run]
 #        [--source DIR|ZIP] [--sha256 HEX] [--repo OWNER/NAME] [--root DIR]
+
+# One brace group, parsed in full before it runs: the update may replace this file while it runs.
+{
 set -eu
 
 repo="DragoAnt/MSBuildKit"
@@ -198,7 +201,7 @@ mkdir -p "$toolkit"
 rm -rf "$toolkit/msbuild"
 cp -R "$stage/msbuild" "$toolkit/msbuild"
 if [ -d "$new_toolkit/res" ]; then mkdir -p "$toolkit/res"; cp -R "$new_toolkit/res/." "$toolkit/res/"; fi
-for f in update.sh update.ps1 kit.parts; do [ -f "$new_toolkit/$f" ] && cp "$new_toolkit/$f" "$toolkit/$f"; done
+cp "$new_toolkit/kit.parts" "$toolkit/kit.parts"
 rm -f "$toolkit/kit.version"
 say "$changes file(s) under .toolkit/msbuild changed"
 
@@ -219,4 +222,7 @@ if [ ! -f "$dbt" ]; then
 elif ! grep -q '\.toolkit[/\\]msbuild[/\\]init\.targets' "$dbt"; then
   say "add to Directory.Build.targets: <Import Project=\"\$(MSBuildThisFileDirectory).toolkit/msbuild/init.targets\" />"
 fi
+for f in update.ps1 update.sh; do if [ -f "$new_toolkit/$f" ]; then cp "$new_toolkit/$f" "$toolkit/$f"; fi; done
 say "done: DragoAnt.MSBuildKit $version installed in $toolkit"
+exit 0
+}

@@ -4,6 +4,14 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Added
+
+- `MSKit_PackageReadmeTitle`: the readme generated from `MSKit_PackageReadmeFrom` replaces the README's first level-1 heading with `# <PackageId>`, so each package of a multi-package repository is titled on its own page; a README without one gets the title as its first line. Set another title, or empty to keep the README's heading. See [docs/package-readme.md](./docs/package-readme.md).
+
+### Fixed
+
+- `update.sh` no longer stops halfway (`unexpected EOF`, `kit.json` left at the old version) when the update replaces it with a copy of another length, as a CRLF checkout does: the script is parsed in full before it runs, and it copies the new `update.sh` / `update.ps1` as its last step. The fix applies to updates started from this version on; an update started from 0.2.0 or earlier still runs the old script, so if it stops, run the same command once more.
+
 ## [0.2.0] - 2026-10-05
 
 ### Added
