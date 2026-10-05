@@ -10,21 +10,18 @@
     <MSKit_PackageDescriptionMinLength Condition="'$(MSKit_PackageDescriptionMinLength)'==''">30</MSKit_PackageDescriptionMinLength>
     <MSKit_SemVerRegex Condition="'$(MSKit_SemVerRegex)'==''">^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$</MSKit_SemVerRegex>
     <MSKit_PackageIconSize Condition="'$(MSKit_PackageIconSize)'==''">128</MSKit_PackageIconSize>
-    <!-- https://learn.microsoft.com/nuget/nuget-org/package-readme-on-nuget-org#allowed-domains-for-images-and-badges
-         github.com is allowed only for Actions workflow badges, which the check handles itself. -->
-    <MSKit_PackageReadmeAllowedImageHosts Condition="'$(MSKit_PackageReadmeAllowedImageHosts)'==''">api.codacy.com;api.codeclimate.com;api.dependabot.com;api.reuse.software;api.travis-ci.com;app.codacy.com;app.deepsource.com;avatars.githubusercontent.com;badgen.net;badges.gitter.im;camo.githubusercontent.com;caniuse.bitsofco.de;cdn.jsdelivr.net;cdn.syncfusion.com;ci.appveyor.com;circleci.com;cloudback.it;codecov.io;codefactor.io;coveralls.io;dev.azure.com;devpod.sh;flat.badgen.net;gitlab.com;i.imgur.com;img.shields.io;infragistics.com;isitmaintained.com;media.githubusercontent.com;opencollective.com;raw.github.com;raw.githubusercontent.com;snyk.io;sonarcloud.io;travis-ci.com;travis-ci.org;user-images.githubusercontent.com</MSKit_PackageReadmeAllowedImageHosts>
     <_MSKit_PkgRules>https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices</_MSKit_PkgRules>
     <_MSKit_PkgReadmeRules>https://learn.microsoft.com/nuget/nuget-org/package-readme-on-nuget-org</_MSKit_PkgReadmeRules>
   </PropertyGroup>
 
   <Target Name="MSKit_PackageChecks"
           BeforeTargets="GenerateNuspec"
-          DependsOnTargets="MSKit_ResolvePackageUrls"
+          DependsOnTargets="MSKit_ResolvePackageUrls;MSKit_GeneratePackageReadme;_MSKit_ResolveAllowedImageHosts"
           Condition="'$(IsPackable)'=='True' AND '$(MSKit_SkipPackageChecks)'!='All' AND '$(MSKit_SkipPackageChecks)'!='True'">
 
     <MSKit_InspectPackageAssets ReadmePath="$(MSKit_PackageReadmeSourcePath)"
                                 IconPath="$(MSKit_PackageIconSourcePath)"
-                                AllowedImageHosts="$(MSKit_PackageReadmeAllowedImageHosts)">
+                                AllowedImageHosts="$(_MSKit_AllowedImageHosts)">
       <Output TaskParameter="RelativeImages" PropertyName="_MSKit_RelativeImages" />
       <Output TaskParameter="DisallowedImages" PropertyName="_MSKit_DisallowedImages" />
       <Output TaskParameter="RelativeLinks" PropertyName="_MSKit_RelativeLinks" />
