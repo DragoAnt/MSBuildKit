@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>DragoAnt.Fixture.Observer</PackageId>
+  </PropertyGroup>
+
+</Project>

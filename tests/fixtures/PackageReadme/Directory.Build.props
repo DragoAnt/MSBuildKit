@@ -1,0 +1,16 @@
+<Project>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Description>A fixture package that generates its readme from the repository README.</Description>
+    <PackageTags>fixture readme</PackageTags>
+    <MSKit_PackageReadmeFrom>$(MSBuildThisFileDirectory)README.md</MSKit_PackageReadmeFrom>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SourceLinkGitLabHost Include="$(FixtureGitLabHost)" Condition="'$(FixtureGitLabHost)'!=''" />
+  </ItemGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory).toolkit/msbuild/init.props" />
+
+</Project>
