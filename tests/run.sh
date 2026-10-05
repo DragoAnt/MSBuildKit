@@ -23,6 +23,7 @@ for root in "$sample" "$fixtures" "$readme_fixture" "$tfm_fixture"; do
   sh "$kit/.toolkit/update.sh" --source "$kit" --root "$root" > "$out/install.log" || { cat "$out/install.log"; exit 1; }
 done
 pass "update.sh installed the kit into the sample and the fixtures"
+. "$here/tests/update-self.sh"
 
 lib="$sample/src/DragoAnt.Samples.MinimalLibrary/DragoAnt.Samples.MinimalLibrary.csproj"
 clean_env="env -u GITHUB_ACTIONS -u GITHUB_RUN_ID -u GITHUB_RUN_NUMBER -u GITHUB_REF -u GITHUB_REF_NAME -u GITHUB_REF_TYPE -u GITHUB_EVENT_NAME -u GITHUB_HEAD_REF -u GITHUB_SHA -u GITHUB_REPOSITORY"
