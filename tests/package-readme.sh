@@ -151,3 +151,50 @@ rf_has override "[Issues](https://tracker.example.net/fixture)"
 # A private repository: the links will not open for package readers.
 rf_pack private Observer $gh -p:MSKit_RepositoryVisibility=private
 rf_warns private MSKIT_PKG022
+
+# Title (MSKit_PackageReadmeTitle): the first level-1 heading becomes the package id, per package.
+rf_first() {
+  actual=$(head -n 1 "$out/readme-$1.md")
+  [ "$actual" = "$2" ] && pass "readme $1 opens with $2" || bad "readme $1 opens with '$actual', expected '$2'"
+}
+rf_lines() {
+  n=$(grep -cxF -- "$2" "$out/readme-$1.md" || true)
+  [ "$n" = "$3" ] && pass "readme $1 has the line '$2' $3 time(s)" || bad "readme $1 has the line '$2' $n time(s), expected $3"
+}
+rf_first github "# DragoAnt.Fixture.Observer"
+rf_first http "# DragoAnt.Fixture.Observer.Http"
+rf_lines http "# DragoAnt.Fixture.Observer" 0
+rf_first single "# DragoAnt.Fixture.Single"
+rf_pack title-keep Observer.Http $gh -p:MSKit_PackageReadmeTitle=
+rf_first title-keep "# DragoAnt.Fixture.Observer"
+rf_pack title-custom Observer.Http $gh "-p:MSKit_PackageReadmeTitle=Observer for HTTP"
+rf_first title-custom "# Observer for HTTP"
+rf_lines title-custom "# DragoAnt.Fixture.Observer" 0
+
+rf_pack title-no-h1 Observer $gh -p:MSKit_PackageReadmeFrom=$rel/titles/no-h1.md
+rf_first title-no-h1 "# DragoAnt.Fixture.Observer"
+rf_has title-no-h1 "A README without a level-1 heading."
+rf_has title-no-h1 "NO-H1-BODY"
+
+rf_pack title-fenced Observer $gh -p:MSKit_PackageReadmeFrom=$rel/titles/fenced.md
+rf_first title-fenced "An intro paragraph before any heading."
+rf_lines title-fenced "# Fenced Heading" 1
+rf_lines title-fenced "# Real Heading" 0
+rf_lines title-fenced "# DragoAnt.Fixture.Observer" 1
+
+rf_pack title-setext Observer $gh -p:MSKit_PackageReadmeFrom=$rel/titles/setext.md
+rf_first title-setext "# DragoAnt.Fixture.Observer"
+rf_hasnt title-setext "Setext Heading"
+rf_hasnt title-setext "====="
+rf_has title-setext "SETEXT-BODY"
+
+rf_pack title-scoped Observer $gh -p:MSKit_PackageReadmeFrom=$rel/titles/scoped.md
+rf_first title-scoped "# DragoAnt.Fixture.Observer"
+rf_lines title-scoped "# Shared Heading" 0
+rf_hasnt title-scoped "GitHub Heading"
+rf_hasnt title-scoped "Http Heading"
+rf_pack title-scoped-http Observer.Http $gh -p:MSKit_PackageReadmeFrom=$rel/titles/scoped.md
+rf_first title-scoped-http "# DragoAnt.Fixture.Observer.Http"
+rf_lines title-scoped-http "# Shared Heading" 1
+
+git -C "$here" diff --quiet -- "$rel" && pass "packing leaves the READMEs unchanged" || bad "packing changed a README under $rel"
