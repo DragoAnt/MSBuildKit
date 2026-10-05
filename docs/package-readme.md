@@ -51,7 +51,7 @@ A self-hosted GitLab is recognised through the same item Source Link uses:
 | `MSKit_RepoProvider` | detected | `GitHub`, `GitLab`, `AzureDevOps`, `Bitbucket` or `Gitea` |
 | `MSKit_RepoBlobUrlTemplate` | the provider's | File links; a `/blob/` in it becomes `/tree/` for folders |
 | `MSKit_RepoRawUrlTemplate` | the provider's | Images |
-| `MSKit_ReleasesUrl` | `auto` | The release-notes page; empty leaves the link out |
+| `MSKit_ReleasesUrl` | `auto` | The release-notes page, also the default `PackageReleaseNotes` off GitHub; empty leaves the link out |
 | `MSKit_IssuesUrl` | `auto` | The issues page; empty leaves the link out |
 | `MSKit_RepositoryVisibility` | `$(CI_PROJECT_VISIBILITY)` | `private` or `internal` raises `MSKIT_PKG022` |
 | `MSKit_GeneratedPackageReadmePath` | `obj/<Configuration>/package.readme.md` | Where the generated file goes |

@@ -118,6 +118,7 @@ public sealed class MSKit_PackageAssets : Task
 
     public string OutputPath { get; set; }
     public string FindingsBase { get; set; }
+    public string ReleasesUrlPath { get; set; }
     public string RepoRoot { get; set; }
     public string PackageId { get; set; }
     public string RepositoryUrl { get; set; }
@@ -410,5 +411,7 @@ public sealed class MSKit_PackageAssets : Task
         File.WriteAllText(OutputPath, string.Join("\n", result) + "\n", utf8);
         foreach (var code in codes)
             File.WriteAllText(FindingsBase + "." + code + ".txt", string.Join("\n", findings[code]) + (findings[code].Count > 0 ? "\n" : ""), utf8);
+        if (!string.IsNullOrWhiteSpace(ReleasesUrlPath))
+            File.WriteAllText(ReleasesUrlPath, releasesUrl.Length > 0 ? releasesUrl + "\n" : "", utf8);
     }
 }
