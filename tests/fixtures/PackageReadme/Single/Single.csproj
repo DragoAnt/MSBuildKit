@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- A single-package repository: its own README already links the releases and issues pages. -->
+  <PropertyGroup>
+    <PackageId>DragoAnt.Fixture.Single</PackageId>
+    <MSKit_PackageReadmeFrom>$(MSBuildProjectDirectory)/README.md</MSKit_PackageReadmeFrom>
+  </PropertyGroup>
+
+</Project>
