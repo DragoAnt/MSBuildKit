@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Observer/Observer.csproj" />
+  <Project Path="Observer.Http/Observer.Http.csproj" />
+  <Project Path="Single/Single.csproj" />
+</Solution>
