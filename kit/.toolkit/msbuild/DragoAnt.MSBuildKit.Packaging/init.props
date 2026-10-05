@@ -20,6 +20,8 @@
          host; set one empty in the csproj (or -p:MSKit_ReleasesUrl=) to leave the link out. -->
     <MSKit_ReleasesUrl Condition="'$(MSKit_ReleasesUrl)'==''">auto</MSKit_ReleasesUrl>
     <MSKit_IssuesUrl Condition="'$(MSKit_IssuesUrl)'==''">auto</MSKit_IssuesUrl>
+    <!-- The generated readme's first level-1 heading; `auto` is the PackageId, empty keeps the README's. -->
+    <MSKit_PackageReadmeTitle Condition="'$(MSKit_PackageReadmeTitle)'==''">auto</MSKit_PackageReadmeTitle>
   </PropertyGroup>
 
 </Project>
