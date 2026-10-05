@@ -4,6 +4,15 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Added
+
+- `MSKit_PackageReadmeFrom=README.md` generates each package's readme from the repository README on `dotnet pack`: relative links and images become absolute URLs pinned to the commit (GitHub, GitLab including self-hosted hosts named by `SourceLinkGitLabHost`; first drafts for Azure DevOps, Bitbucket and Gitea), `<!-- nuget:skip -->` and `<!-- nuget:only <PackageId> -->` blocks pick each package's content, and release-notes and issues links are added to the overview. Overrides: `MSKit_RepoProvider`, `MSKit_RepoBlobUrlTemplate`, `MSKit_RepoRawUrlTemplate`, `MSKit_ReleasesUrl`, `MSKit_IssuesUrl` (empty leaves the link out). See [docs/package-readme.md](./docs/package-readme.md).
+- Warnings `MSKIT_PKG020` (the readme cannot be generated as asked), `MSKIT_PKG021` (an image host nuget.org does not render, with its README line) and `MSKIT_PKG022` (a private or internal repository, from `MSKit_RepositoryVisibility` or GitLab's `CI_PROJECT_VISIBILITY`).
+
+### Changed
+
+- nuget.org's allowed image hosts moved from a property default to `nuget.allowed-image-hosts.txt` in the Packaging part, read only on pack; `MSKit_PackageReadmeAllowedImageHosts` still replaces it.
+
 ## [0.1.1] - 2026-10-04
 
 ### Fixed
