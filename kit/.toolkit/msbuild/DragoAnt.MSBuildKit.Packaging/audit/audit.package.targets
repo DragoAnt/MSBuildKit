@@ -19,7 +19,8 @@
           DependsOnTargets="MSKit_ResolvePackageUrls;MSKit_GeneratePackageReadme;_MSKit_ResolveAllowedImageHosts"
           Condition="'$(IsPackable)'=='True' AND '$(MSKit_SkipPackageChecks)'!='All' AND '$(MSKit_SkipPackageChecks)'!='True'">
 
-    <MSKit_InspectPackageAssets ReadmePath="$(MSKit_PackageReadmeSourcePath)"
+    <MSKit_PackageAssets Mode="Inspect"
+                         ReadmePath="$(MSKit_PackageReadmeSourcePath)"
                                 IconPath="$(MSKit_PackageIconSourcePath)"
                                 AllowedImageHosts="$(_MSKit_AllowedImageHosts)">
       <Output TaskParameter="RelativeImages" PropertyName="_MSKit_RelativeImages" />
@@ -31,7 +32,7 @@
       <Output TaskParameter="IconIsPng" PropertyName="_MSKit_IconIsPng" />
       <Output TaskParameter="IconWidth" PropertyName="_MSKit_IconWidth" />
       <Output TaskParameter="IconHeight" PropertyName="_MSKit_IconHeight" />
-    </MSKit_InspectPackageAssets>
+    </MSKit_PackageAssets>
 
     <PropertyGroup>
       <_MSKit_Description>$(PackageDescription)</_MSKit_Description>
