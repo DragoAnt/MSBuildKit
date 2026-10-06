@@ -9,4 +9,6 @@
   <Import Condition="('$(IsTestsProject)'=='True' Or '$(IsTestsLibProject)'=='True') AND '$(MSKit_TestingFramework)'=='xunit.v3'"
           Project="$(MSBuildThisFileDirectory)tests.project.xunit.v3.routine.props" />
 
+  <Import Project="$(MSBuildThisFileDirectory)diagnostic.descriptors.props" />
+
 </Project>

@@ -41,7 +41,7 @@ Both scripts restore into a global-packages folder of their own, `dist/selftest-
 ## Changing the kit
 
 - A new property defaults with `Condition="'$(Name)'==''"`, so a consumer's value always wins, and gets a row in [docs/reference/properties.md](./docs/reference/properties.md) plus a mention on its topic page.
-- A new check gets an `MSKIT<AREA><nnn>` code with no separator (a shipped code is never renumbered or reused), a `HelpLink="$(MSKit_CodesHelpBaseUrl)#<code, lower case>"`, a message that says how to fix it, a section in [docs/reference/codes.md](./docs/reference/codes.md) headed by the code, a fixture that triggers it and a line in `tests/run.sh`.
+- A new check gets an `MSKIT<AREA><nnn>` code with no separator (a shipped code is never renumbered or reused), a `HelpLink="$(MSKit_CodesHelpBaseUrl)#<code, lower case>"`, a message that says how to fix it, a section in [docs/reference/codes.md](./docs/reference/codes.md) headed by the code, a `BuildDiagnosticDescriptor` item in its part's `diagnostic.descriptors.props` ([diagnostic catalog](./docs/reference/diagnostic-catalog.md)), a fixture that triggers it and a line in `tests/run.sh`.
 - `sh tools/docs-check.sh` fails on a property, item or code without its reference entry, on a name the docs mention that the kit lacks, and on a broken relative link; `--list properties|items|codes` prints the kit's inventory with the file and line of each.
 - The README stays short: key features, install, links. Detail goes to the topic page in `docs/`.
 - A new part needs a line in `kit/.toolkit/kit.parts` and its `init.props` / `init.targets` imports in the entry points.

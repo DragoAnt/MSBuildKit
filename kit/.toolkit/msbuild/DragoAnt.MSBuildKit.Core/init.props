@@ -7,4 +7,6 @@
   <Import Project="$(MSBuildThisFileDirectory)core.locals.props" />
   <Import Project="$(MSBuildThisFileDirectory)project-types.autodetect.props" />
 
+  <Import Project="$(MSBuildThisFileDirectory)diagnostic.descriptors.props" />
+
 </Project>
