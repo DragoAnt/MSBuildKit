@@ -72,6 +72,38 @@ public sealed class ManifestTests
     }
 
     [Fact]
+    public void Source_Local_RoundTrips_AndIsWrittenAfterTheSchema()
+    {
+        // language=json
+        const string local = """
+            {
+              "schema": 1,
+              "source": "local",
+              "packages": [],
+              "files": []
+            }
+
+            """;
+        var text = local.ReplaceLineEndings("\n");
+
+        var manifest = Manifest.Parse(text);
+
+        manifest.Source.Should().Be(KitSourceKind.Local);
+        manifest.ToJson().Should().Be(text);
+    }
+
+    [Fact]
+    public void Source_Feed_IsTheDefault_AndIsNotWritten()
+    {
+        var manifest = Manifest.Parse("""{ "schema": 1, "source": "feed", "packages": [], "files": [] }""");
+
+        manifest.Source.Should().Be(KitSourceKind.Feed);
+        Manifest.Parse(Canonical).Source.Should().Be(KitSourceKind.Feed);
+        manifest.ToJson().Should().NotContain("source");
+        new Manifest([], []).Source.Should().Be(KitSourceKind.Feed);
+    }
+
+    [Fact]
     public void Parse_ReadsFilesAndPackages()
     {
         var manifest = Manifest.Parse(Canonical);
@@ -90,6 +122,7 @@ public sealed class ManifestTests
     [InlineData("""{ "schema": 1, "packages": [], "files": [ { "path": "a/X", "package": null, "sha256": "0000000000000000000000000000000000000000000000000000000000000000" }, { "path": "a/x", "package": null, "sha256": "0000000000000000000000000000000000000000000000000000000000000000" } ] }""", "a/x")]
     [InlineData("""{ "schema": 1, "packages": [ { "id": "A", "version": "1.0.0" }, { "id": "a", "version": "2.0.0" } ], "files": [] }""", "'a'")]
     [InlineData("""{ "schema": 2, "packages": [], "files": [] }""", "schema")]
+    [InlineData("""{ "schema": 1, "source": "cloud", "packages": [], "files": [] }""", "cloud")]
     public void Parse_InvalidDocument_Throws(string json, string mentioned)
     {
         var act = () => Manifest.Parse(json);

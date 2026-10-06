@@ -13,14 +13,14 @@ public sealed class KitLayoutTests
 
         layout.KitDirName.Should().Be(".mskit");
         layout.KitPath.Should().Be(Path.Combine(Root, ".mskit"));
-        layout.KitJsonPath.Should().Be(Path.Combine(Root, ".mskit", "kit.json"));
+        layout.LegacyKitJsonPath.Should().Be(Path.Combine(Root, ".mskit", "kit.json"));
         layout.MsbuildPath.Should().Be(Path.Combine(Root, ".mskit", "msbuild"));
         layout.InitPropsPath.Should().Be(Path.Combine(Root, ".mskit", "msbuild", "init.props"));
         layout.InitTargetsPath.Should().Be(Path.Combine(Root, ".mskit", "msbuild", "init.targets"));
         layout.LocalPath.Should().Be(Path.Combine(Root, ".mskit", ".local"));
         layout.ManagerPath.Should().Be(Path.Combine(Root, ".mskit", ".manager"));
-        layout.PackagesProjectPath.Should().Be(Path.Combine(Root, ".mskit", ".manager", "packages.csproj"));
-        layout.LockFilePath.Should().Be(Path.Combine(Root, ".mskit", ".manager", "packages.lock.json"));
+        layout.PackagesProjectPath.Should().Be(Path.Combine(Root, ".mskit", "packages.csproj"));
+        layout.LockFilePath.Should().Be(Path.Combine(Root, ".mskit", "packages.lock.json"));
         layout.ManifestPath.Should().Be(Path.Combine(Root, ".mskit", ".manager", "manifest.json"));
         layout.PackageContentPath("DragoAnt.MSBuildKit.Testing")
             .Should().Be(Path.Combine(Root, ".mskit", "msbuild", "DragoAnt.MSBuildKit.Testing"));
@@ -34,7 +34,10 @@ public sealed class KitLayoutTests
         var layout = new KitLayout(Root, kitDir);
 
         layout.KitDirName.Should().Be(kitDir);
+        layout.PackagesProjectPath.Should().Be(Path.Combine(Root, kitDir, "packages.csproj"));
+        layout.LockFilePath.Should().Be(Path.Combine(Root, kitDir, "packages.lock.json"));
         layout.ManifestPath.Should().Be(Path.Combine(Root, kitDir, ".manager", "manifest.json"));
+        layout.LegacyKitJsonPath.Should().Be(Path.Combine(Root, kitDir, KitLayout.LegacyKitJsonFileName));
     }
 
     [Theory]
