@@ -68,8 +68,8 @@
       <_MSKit_PkgFinding Include="MSKITPKG007" Condition="'$(PackageLicenseUrl)'!=''"
                          Text="Package '$(PackageId)' uses the deprecated PackageLicenseUrl. Replace it with PackageLicenseExpression (an SPDX id) or PackageLicenseFile."
                          Rule="$(_MSKit_PkgRules)#licensing" />
-      <_MSKit_PkgFinding Include="MSKITPKG008" Condition="'$(PackageIconUrl)'!=''"
-                         Text="Package '$(PackageId)' uses the deprecated PackageIconUrl. Pack the image and point PackageIcon (or the kit's PackageIconPath) at it."
+      <_MSKit_PkgFinding Include="MSKITPKG008" Condition="'$(PackageIconUrl)'!='' AND '$(_MSKit_SetsIconUrl)'!='True'"
+                         Text="Package '$(PackageId)' uses the deprecated PackageIconUrl. Pack the image and point PackageIcon (or the kit's PackageIconPath) at it; for older clients, set MSKit_DefaultPackageIconUrl to write the URL next to the kit's icon."
                          Rule="$(_MSKit_PkgRules)#icon" />
       <_MSKit_PkgFinding Include="MSKITPKG009" Condition="'$(_MSKit_RelativeImages)'!=''"
                          Text="The package README of '$(PackageId)' has relative images, which nuget.org does not render: $(_MSKit_RelativeImages). Use absolute https URLs from an allowed host."

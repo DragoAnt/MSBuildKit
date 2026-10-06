@@ -48,7 +48,7 @@ Earlier releases put an underscore between the prefix and the family; each secti
 
 ### MSKITPKG008
 
-`MSKITPKG008` (formerly `MSKIT_PKG008`) — the deprecated `PackageIconUrl` is set. Pack the image and use `PackageIcon` or `PackageIconPath`.
+`MSKITPKG008` (formerly `MSKIT_PKG008`) — the project sets the deprecated `PackageIconUrl`. Pack the image and use `PackageIcon` or `PackageIconPath`. To keep a URL for older clients, set `MSKit_DefaultPackageIconUrl` instead: the kit writes it only next to its own embedded icon, and that one is not reported.
 
 ### MSKITPKG009
 

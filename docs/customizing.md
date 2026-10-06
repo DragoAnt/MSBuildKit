@@ -22,6 +22,7 @@ Almost every default is written as `<X Condition="'$(X)'==''">`, so the first va
 | `ManufacturerName`, `FullManufacturerName` | `DragoAnt` | **unconditional**: set them below the kit import to change them; they feed `Authors`, `Company`, `Copyright` |
 | `PackageLicenseExpression` | `MIT`, unless `PackageLicenseFile` is set | |
 | `PackageIconPath` | `.toolkit/res/package.icon.png` | |
+| `MSKit_DefaultPackageIconUrl` | not set | another owner sets it here to a hosted copy of its icon, so older clients show it too ([Packaging](./packaging.md#package-metadata)) |
 | `MSKit_PrereleasePackagePrefix` | `DragoAnt.` | [prerelease check](./build.md#reference-checks) |
 | `MSKit_IsStableBranchRegex` | `^(main\|release/.+)$` | |
 | `MSKit_VersionStrategy` | `ReleaseTag` | [Versioning](./versioning.md) |
