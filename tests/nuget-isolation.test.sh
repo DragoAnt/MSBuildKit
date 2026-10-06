@@ -111,21 +111,24 @@ kill "$live" 2> /dev/null || true
 repo="$t/repo"; machine="$t/machine"; mkdir -p "$repo/dist" "$machine/somepkg/1.0.0"
 printf 'machine\n' > "$machine/somepkg/1.0.0/file"
 machine_before=$(listing "$machine")
-lifecycle() {
-  # lifecycle <how>: a runner that begins isolation, downloads one package, then ends <how>.
-  (
-    here="$repo"
-    ni_machine_folder() { printf '%s\n' "$machine"; }
-    ni_begin lifecycle fallback > /dev/null
-    env | grep '^NUGET_' | LC_ALL=C sort > "$t/env.$1"
-    mkpkg "$(ni_packages_dir)" newtonsoft.json 13.0.3 "$nuget_org"
-    case "$1" in
-      exit) exit 0 ;;
-      term) kill -TERM $$; sleep 30 ;;
-      kill) kill -KILL $$ ;;
-    esac
-  ) > /dev/null 2>&1 || true
-}
+cat > "$t/runner.sh" <<'EOF'
+# runner.sh <repo> <machine> <exit|term|kill> <env-out> <kit-checkout>: begins isolation, downloads one
+# package, then ends as asked.
+set -eu
+here=$1; machine=$2
+. "$5/tests/nuget-isolation.sh"
+ni_machine_folder() { printf '%s\n' "$machine"; }
+ni_begin lifecycle fallback
+env | grep '^NUGET_' | LC_ALL=C sort > "$4"
+d="$(ni_packages_dir)/newtonsoft.json/13.0.3"; mkdir -p "$d"
+printf '{"version": 2, "source": "https://api.nuget.org/v3/index.json"}\n' > "$d/.nupkg.metadata"
+case "$3" in
+  exit) exit 0 ;;
+  term) kill -TERM $$; sleep 30 ;;
+  kill) kill -KILL $$ ;;
+esac
+EOF
+lifecycle() { sh "$t/runner.sh" "$repo" "$machine" "$1" "$t/env.$1" "$here" > /dev/null 2>&1 || true; }
 lifecycle exit
 grep -q "^NUGET_PACKAGES=.*/dist/nuget-runs/lifecycle\.[0-9]*\.[0-9]*/packages$" "$t/env.exit" \
   && grep -q "^NUGET_HTTP_CACHE_PATH=.*/dist/nuget-runs/lifecycle\.[0-9]*\.[0-9]*/http-cache$" "$t/env.exit" \
