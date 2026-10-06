@@ -1,7 +1,7 @@
 <Project>
 
   <!-- Explicit endpoint for a test helper library. Set MSKit_TestingFramework before the import
-       (MSKIT_TEST020 checks it). -->
+       (MSKITTEST020 checks it). -->
   <PropertyGroup>
     <_MSKit_TestingFrameworkAtLibCommonPropsImport>$(MSKit_TestingFramework)</_MSKit_TestingFrameworkAtLibCommonPropsImport>
     <_MSKit_TestsLibProjectCommonPropsImported>True</_MSKit_TestsLibProjectCommonPropsImported>
