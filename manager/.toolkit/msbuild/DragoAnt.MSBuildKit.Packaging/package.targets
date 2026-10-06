@@ -51,9 +51,9 @@
   </PropertyGroup>
 
   <!-- Icon: PackageIconPath (the kit's company layer points it at .toolkit/res/package.icon.png),
-       packed as icon.png. -->
+       packed as icon.<extension, lowercased> (icon.png, icon.jpg) unless the project sets PackageIcon. -->
   <PropertyGroup Condition="'$(PackageIcon)'=='' AND '$(PackageIconPath)'!='' AND Exists('$(PackageIconPath)')">
-    <PackageIcon>icon.png</PackageIcon>
+    <PackageIcon>icon$([System.IO.Path]::GetExtension('$(PackageIconPath)').ToLowerInvariant())</PackageIcon>
     <_MSKit_PacksIcon>True</_MSKit_PacksIcon>
   </PropertyGroup>
   <PropertyGroup>
@@ -63,7 +63,7 @@
 
   <ItemGroup>
     <None Condition="'$(_MSKit_PacksReadme)'=='True'" Include="$(MSKit_PackageReadmeSourcePath)" Pack="true" PackagePath="\$(PackageReadmeFile)" Visible="false" />
-    <None Condition="'$(_MSKit_PacksIcon)'=='True'" Include="$(PackageIconPath)" Pack="true" PackagePath="\icon.png" Visible="false" />
+    <None Condition="'$(_MSKit_PacksIcon)'=='True'" Include="$(PackageIconPath)" Pack="true" PackagePath="\$(PackageIcon)" Visible="false" />
 
     <None Include="build/**" PackagePath="build/" Pack="true" />
     <None Include="buildMultiTargeting/**" PackagePath="buildMultiTargeting/" Pack="true" />

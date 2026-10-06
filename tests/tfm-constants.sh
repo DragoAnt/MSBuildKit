@@ -11,11 +11,11 @@ tfm_expect() {
 tfm_validate() {
   name="$1"; expect="$2"; shift 2
   if $clean_env dotnet msbuild "$tfm_fixture/$name/$name.csproj" -nologo -t:ValidateXUnitV3TFM "$@" > "$out/tfm-$name.log" 2>&1; then
-    [ "$expect" = ok ] && pass "tfm $name passes MSKIT_TEST005" || bad "tfm $name: expected MSKIT_TEST005, the check passed"
-  elif grep -q "MSKIT_TEST005" "$out/tfm-$name.log"; then
-    [ "$expect" = fail ] && pass "tfm $name fails with MSKIT_TEST005" || bad "tfm $name: false MSKIT_TEST005 (see $out/tfm-$name.log)"
+    [ "$expect" = ok ] && pass "tfm $name passes MSKITTEST005" || bad "tfm $name: expected MSKITTEST005, the check passed"
+  elif grep -q "MSKITTEST005" "$out/tfm-$name.log"; then
+    [ "$expect" = fail ] && pass "tfm $name fails with MSKITTEST005" || bad "tfm $name: false MSKITTEST005 (see $out/tfm-$name.log)"
   else
-    bad "tfm $name: the check failed without MSKIT_TEST005 (see $out/tfm-$name.log)"
+    bad "tfm $name: the check failed without MSKITTEST005 (see $out/tfm-$name.log)"
   fi
 }
 

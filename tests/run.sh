@@ -49,11 +49,11 @@ explicit=$($clean_env $ci_env GITHUB_EVENT_NAME=release GITHUB_REF_TYPE=tag GITH
 
 if $clean_env $ci_env GITHUB_EVENT_NAME=release GITHUB_REF_TYPE=tag GITHUB_REF_NAME=release-x GITHUB_REF=refs/tags/release-x \
     dotnet restore "$lib" -nologo > "$out/invalid-tag.log" 2>&1; then
-  bad "tag release-x: restore succeeded, expected MSKIT_VER006"
-elif grep -q "MSKIT_VER006" "$out/invalid-tag.log"; then
-  pass "tag release-x -> restore fails with MSKIT_VER006"
+  bad "tag release-x: restore succeeded, expected MSKITVER006"
+elif grep -q "MSKITVER006" "$out/invalid-tag.log"; then
+  pass "tag release-x -> restore fails with MSKITVER006"
 else
-  bad "tag release-x: restore failed without MSKIT_VER006 (see $out/invalid-tag.log)"
+  bad "tag release-x: restore failed without MSKITVER006 (see $out/invalid-tag.log)"
 fi
 
 $clean_env dotnet build "$sample/MinimalLibrary.slnx" -c Release -nologo > "$out/build.log" 2>&1 && pass "sample builds" || { bad "sample build (see $out/build.log)"; tail -n 30 "$out/build.log"; }
@@ -93,7 +93,7 @@ fi
 
 $clean_env dotnet pack "$fixtures/PackageChecks.slnx" -c Release -nologo -o "$out/fixtures" -p:MSKit_PackageChecksAsErrors=False > "$out/checks.log" 2>&1 || true
 for code in 001 002 003 004 005 006 007 008 009 010 011 012 013 014 015 016 017 018 019; do
-  grep -q "warning MSKIT_PKG$code" "$out/checks.log" && pass "check MSKIT_PKG$code fires" || bad "check MSKIT_PKG$code did not fire (see $out/checks.log)"
+  grep -q "warning MSKITPKG$code" "$out/checks.log" && pass "check MSKITPKG$code fires" || bad "check MSKITPKG$code did not fire (see $out/checks.log)"
 done
 grep -q "<div>" "$out/checks.log" && bad "HTML inside a code fence was reported" || pass "HTML inside a code fence is ignored"
 
@@ -101,16 +101,17 @@ if $clean_env $ci_env GITHUB_EVENT_NAME=push GITHUB_REF_TYPE=branch GITHUB_REF_N
     dotnet pack "$fixtures/BadPackage/BadPackage.csproj" -c Release -nologo -o "$out/fixtures-ci" > "$out/checks-ci.log" 2>&1; then
   bad "the checks did not fail the CI pack"
 else
-  grep -q "error MSKIT_PKG001" "$out/checks-ci.log" && pass "checks are errors on CI" || bad "CI pack failed without MSKIT_PKG errors (see $out/checks-ci.log)"
+  grep -q "error MSKITPKG001" "$out/checks-ci.log" && pass "checks are errors on CI" || bad "CI pack failed without MSKITPKG errors (see $out/checks-ci.log)"
 fi
 
 $clean_env dotnet pack "$fixtures/BadPackage/BadPackage.csproj" -c Release -nologo -o "$out/fixtures-skip" \
   "-p:MSKit_SkipPackageChecks=All" > "$out/checks-skip.log" 2>&1 || true
-grep -q "MSKIT_PKG" "$out/checks-skip.log" && bad "MSKit_SkipPackageChecks=All did not silence the checks" || pass "MSKit_SkipPackageChecks=All silences the checks"
+grep -q "MSKITPKG" "$out/checks-skip.log" && bad "MSKit_SkipPackageChecks=All did not silence the checks" || pass "MSKit_SkipPackageChecks=All silences the checks"
 
 . "$here/tests/package-readme.sh"
 . "$here/tests/tfm-constants.sh"
 . "$here/tests/package-icon.sh"
+. "$here/tests/codes.sh"
 . "$here/tests/docs.sh"
 
 echo

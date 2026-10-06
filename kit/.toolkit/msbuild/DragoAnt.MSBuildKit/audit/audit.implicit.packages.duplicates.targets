@@ -1,6 +1,6 @@
 <Project>
 
-  <!-- MSKIT_DUP001: Directory.Packages.props declares a <PackageVersion> the kit already declares
+  <!-- MSKITDUP001: Directory.Packages.props declares a <PackageVersion> the kit already declares
        (the kit's items carry ControlledBy metadata). NuGet would otherwise report NU1506 and pick
        one silently. MSKit_SkipAudit_ImplicitPackageDuplicates=True bypasses the check. -->
 
@@ -25,7 +25,7 @@
                                          AND $(_MSKit_ConsumerIdsStr.Contains(';%(PackageVersion.Identity);'))" />
     </ItemGroup>
 
-    <Error Code="MSKIT_DUP001"
+    <Error Code="MSKITDUP001" HelpLink="$(MSKit_CodesHelpBaseUrl)#mskitdup001"
            Condition=" '@(_MSKit_DuplicateReport)' != '' "
            Text="Directory.Packages.props declares &lt;PackageVersion&gt; entries the kit already provides:%0A%0A@(_MSKit_DuplicateReport->'  %(Identity)  &#x2190; provided by %(ControlledBy)','%0A')%0A%0AFix: remove those &lt;PackageVersion Include=&quot;...&quot; /&gt; lines. To pin another version, set the kit's version property instead (for example &lt;MSKit_PackageVersion_XunitV3&gt;), or turn the kit's versions off with &lt;MSKit_ImplicitPackageVersions&gt;False&lt;/MSKit_ImplicitPackageVersions&gt;.%0ATo bypass this check: &lt;MSKit_SkipAudit_ImplicitPackageDuplicates&gt;True&lt;/MSKit_SkipAudit_ImplicitPackageDuplicates&gt;"
            File="$(MSBuildProjectFullPath)" />

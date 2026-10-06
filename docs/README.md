@@ -11,7 +11,7 @@ Read in this order; each page stands on its own, so jump to the one you need.
 | 5 | [Versioning](./versioning.md) | control how package versions are computed |
 | 6 | [Local files and secrets](./local-files.md) | keep secrets and machine-only source files out of the repository |
 | 7 | [Optional parts](./optional-parts.md) | debug a dependency from source, list a project's packages, run Entity Framework migrations |
-| 8 | [Packaging](./packaging.md) | understand the nuget.org defaults and the `MSKIT_PKG` checks |
+| 8 | [Packaging](./packaging.md) | understand the nuget.org defaults and the `MSKITPKG` checks |
 | 9 | [Package readme](./package-readme.md) | generate every package's readme from the repository README |
 | 10 | [Testing](./testing.md) | set up test projects, assertions, mocking and coverage |
 | 11 | [Roslyn components](./roslyn.md) | build analyzers, code fixes and source generators |

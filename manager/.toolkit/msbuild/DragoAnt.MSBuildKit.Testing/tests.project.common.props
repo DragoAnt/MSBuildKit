@@ -1,7 +1,7 @@
 <Project>
 
   <!-- Explicit endpoint for a runnable test project whose name the auto-detect regex does not
-       match. Set MSKit_TestingFramework before the import (MSKIT_TEST010 checks it). -->
+       match. Set MSKit_TestingFramework before the import (MSKITTEST010 checks it). -->
   <PropertyGroup>
     <_MSKit_TestingFrameworkAtCommonPropsImport>$(MSKit_TestingFramework)</_MSKit_TestingFrameworkAtCommonPropsImport>
     <_MSKit_TestsProjectCommonPropsImported>True</_MSKit_TestsProjectCommonPropsImported>

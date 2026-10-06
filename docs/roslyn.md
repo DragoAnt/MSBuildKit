@@ -28,9 +28,9 @@ A project needs **both** of these:
 | code fix (`Acme.CodeFixes`) | `$(CodeFixerCommonPropsPath)` |
 | source generator (`Acme.SourceGenerator`) | `$(SourceGeneratorCommonPropsPath)` |
 
-The analyzer and code-fix props set their role themselves, so a project with another name only needs the import; a source generator with another name also sets `<IsSourceGenerator>true</IsSourceGenerator>` above it. Set your own `Description`: the analyzer's default, "Code analyzers description", fails [`MSKIT_PKG002`](./reference/codes.md#mskitpkg002).
+The analyzer and code-fix props set their role themselves, so a project with another name only needs the import; a source generator with another name also sets `<IsSourceGenerator>true</IsSourceGenerator>` above it. Set your own `Description`: the analyzer's default, "Code analyzers description", fails [`MSKITPKG002`](./reference/codes.md#mskitpkg002).
 
-A project whose name matches a role but whose part is not installed fails with [`MSKIT_ROSLYN001`](./reference/codes.md#mskitroslyn001)-[`003`](./reference/codes.md#mskitroslyn003); a name that matches two roles fails with [`MSKIT_CORE001`](./reference/codes.md#mskitcore001). Detection runs in the props phase, so to stop it set `MSKit_Disable<Role>AutoDetect=true` (`MSKit_DisableCodeAnalyzerAutoDetect`, …) or narrow the regex, in `Directory.Build.props` above the kit import; set in the csproj, as the error text suggests, it comes too late.
+A project whose name matches a role but whose part is not installed fails with [`MSKITROSLYN001`](./reference/codes.md#mskitroslyn001)-[`003`](./reference/codes.md#mskitroslyn003); a name that matches two roles fails with [`MSKITCORE001`](./reference/codes.md#mskitcore001). Detection runs in the props phase, so to stop it set `MSKit_Disable<Role>AutoDetect=true` (`MSKit_DisableCodeAnalyzerAutoDetect`, …) or narrow the regex, in `Directory.Build.props` above the kit import; set in the csproj, as the error text suggests, it comes too late.
 
 ## What the props set
 
@@ -38,7 +38,7 @@ Every role (`$(RoslynComponentCommonPropsPath)`, imported by the three above):
 
 | Setting | Value |
 | --- | --- |
-| `TargetFramework` | `netstandard2.0` (a shared `TargetFrameworks` is cleared, and the `MSKIT_SHARED008` override warning is skipped) |
+| `TargetFramework` | `netstandard2.0` (a shared `TargetFrameworks` is cleared, and the `MSKITSHARED008` override warning is skipped) |
 | `IsRoslynComponent`, `EnforceExtendedAnalyzerRules`, `DevelopmentDependency` | `True` |
 | `IsPackable` | `True` |
 | `IncludeBuildOutput`, `IncludeSymbols` | `False`: the dll goes to `analyzers/dotnet/cs/`, not `lib/` |

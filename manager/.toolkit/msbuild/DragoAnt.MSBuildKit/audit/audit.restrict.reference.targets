@@ -1,6 +1,6 @@
 <Project InitialTargets="RestrictProjectReferenceAudit;RestrictAllowedPackageReferenceAudit">
 
-  <!-- MSKIT_RES003 / MSKIT_RES004: allow-list mode. With MSKit_RestrictProjectReferences=True
+  <!-- MSKITRES003 / MSKITRES004: allow-list mode. With MSKit_RestrictProjectReferences=True
        (or MSKit_RestrictPackageReferences=True, or MSKit_RestrictReferences=True for both), every
        reference must carry Allowed="True". -->
 
@@ -15,7 +15,7 @@
       <MSKit_ProjectReferenceNotAllowed Include="@(ProjectReference)"
                                         Condition=" '%(ProjectReference.Allowed)'!='True' AND '@(ProjectReference)'!='' AND '%(Identity)'!=''" />
     </ItemGroup>
-    <Error Code="MSKIT_RES003"
+    <Error Code="MSKITRES003" HelpLink="$(MSKit_CodesHelpBaseUrl)#mskitres003"
            Condition="'%(MSKit_ProjectReferenceNotAllowed.Identity)'!=''"
            Text="ProjectReference '%(MSKit_ProjectReferenceNotAllowed.Identity)' is not allowed in this project.%0AFix: remove it, or mark it allowed: &lt;ProjectReference Include=&quot;%(MSKit_ProjectReferenceNotAllowed.Identity)&quot; Allowed=&quot;True&quot; /&gt;"
            File="$(MSBuildProjectFullPath)" />
@@ -26,7 +26,7 @@
       <_MSKit_PackageReferenceNotAllowListed Include="@(PackageReference)"
                                              Condition=" '%(PackageReference.Allowed)'!='True' AND '@(PackageReference)'!='' AND '%(Identity)'!=''" />
     </ItemGroup>
-    <Error Code="MSKIT_RES004"
+    <Error Code="MSKITRES004" HelpLink="$(MSKit_CodesHelpBaseUrl)#mskitres004"
            Condition="'%(_MSKit_PackageReferenceNotAllowListed.Identity)'!=''"
            Text="PackageReference '%(_MSKit_PackageReferenceNotAllowListed.Identity)' is not allowed in this project.%0AFix: remove it, or mark it allowed: &lt;PackageReference Include=&quot;%(_MSKit_PackageReferenceNotAllowListed.Identity)&quot; Allowed=&quot;True&quot; /&gt;"
            File="$(MSBuildProjectFullPath)" />

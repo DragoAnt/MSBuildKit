@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <!-- Breaks one package rule on purpose per check: tests/run.sh expects every listed MSKIT_PKG code. -->
+  <!-- Breaks one package rule on purpose per check: tests/run.sh expects every listed MSKITPKG code. -->
   <PropertyGroup>
     <PackageIconPath>missing.png</PackageIconPath>
     <PackageIconUrl>https://example.com/icon.png</PackageIconUrl>

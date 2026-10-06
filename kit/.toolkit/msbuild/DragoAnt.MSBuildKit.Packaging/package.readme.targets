@@ -3,7 +3,7 @@
   <!-- MSKit_PackageReadmeFrom: the package readme is generated from the repository README on pack,
        never on build. Relative links and images become absolute URLs pinned to the commit,
        nuget:skip / nuget:only blocks are applied, release and issue links are added to the overview.
-       The MSKIT_PKG checks then read the generated file. Full description: docs/package-readme.md. -->
+       The MSKITPKG checks then read the generated file. Full description: docs/package-readme.md. -->
 
   <PropertyGroup>
     <MSKit_PackageReadmeAllowedImageHostsFile Condition="'$(MSKit_PackageReadmeAllowedImageHostsFile)'==''">$(MSBuildThisFileDirectory)nuget.allowed-image-hosts.txt</MSKit_PackageReadmeAllowedImageHostsFile>
@@ -34,7 +34,7 @@
   <Target Name="_MSKit_PackageReadmeFromMissing"
           BeforeTargets="GenerateNuspec"
           Condition="'$(MSKit_PackageReadmeFrom)'!='' AND '$(_MSKit_GeneratesReadme)'!='True' AND '$(MSKit_SkipPackageChecks)'!='All'">
-    <Warning Code="MSKIT_PKG020" File="$(MSBuildProjectFullPath)"
+    <Warning Code="MSKITPKG020" HelpLink="$(MSKit_CodesHelpBaseUrl)#mskitpkg020" File="$(MSBuildProjectFullPath)"
              Text="MSKit_PackageReadmeFrom names '$(MSKit_PackageReadmeFrom)', but $(_MSKit_ReadmeFromPath) does not exist, so no readme is generated for '$(PackageId)'. The path is relative to the git root ($(MSKit_GitRoot))." />
   </Target>
 
@@ -117,25 +117,25 @@
   <!-- The findings are kept beside the generated file, so an incremental pack still reports them. -->
   <Target Name="_MSKit_ReportPackageReadmeFindings" Condition="'$(MSKit_SkipPackageChecks)'!='All' AND '$(MSKit_SkipPackageChecks)'!='True'">
     <ItemGroup>
-      <_MSKit_ReadmeCode Include="MSKIT_PKG020;MSKIT_PKG021;MSKIT_PKG022" />
+      <_MSKit_ReadmeCode Include="MSKITPKG020;MSKITPKG021;MSKITPKG022" />
       <_MSKit_ReadmeSkip Include="$(MSKit_SkipPackageChecks);$(NoWarn)" />
       <_MSKit_ReadmeCode Remove="@(_MSKit_ReadmeSkip)" />
     </ItemGroup>
     <PropertyGroup>
       <_MSKit_ReadmeCodes>;@(_MSKit_ReadmeCode);</_MSKit_ReadmeCodes>
     </PropertyGroup>
-    <ReadLinesFromFile Condition="Exists('$(_MSKit_ReadmeFindingsBase).MSKIT_PKG020.txt') AND $(_MSKit_ReadmeCodes.Contains(';MSKIT_PKG020;'))" File="$(_MSKit_ReadmeFindingsBase).MSKIT_PKG020.txt">
+    <ReadLinesFromFile Condition="Exists('$(_MSKit_ReadmeFindingsBase).MSKITPKG020.txt') AND $(_MSKit_ReadmeCodes.Contains(';MSKITPKG020;'))" File="$(_MSKit_ReadmeFindingsBase).MSKITPKG020.txt">
       <Output TaskParameter="Lines" ItemName="_MSKit_ReadmeFinding020" />
     </ReadLinesFromFile>
-    <ReadLinesFromFile Condition="Exists('$(_MSKit_ReadmeFindingsBase).MSKIT_PKG021.txt') AND $(_MSKit_ReadmeCodes.Contains(';MSKIT_PKG021;'))" File="$(_MSKit_ReadmeFindingsBase).MSKIT_PKG021.txt">
+    <ReadLinesFromFile Condition="Exists('$(_MSKit_ReadmeFindingsBase).MSKITPKG021.txt') AND $(_MSKit_ReadmeCodes.Contains(';MSKITPKG021;'))" File="$(_MSKit_ReadmeFindingsBase).MSKITPKG021.txt">
       <Output TaskParameter="Lines" ItemName="_MSKit_ReadmeFinding021" />
     </ReadLinesFromFile>
-    <ReadLinesFromFile Condition="Exists('$(_MSKit_ReadmeFindingsBase).MSKIT_PKG022.txt') AND $(_MSKit_ReadmeCodes.Contains(';MSKIT_PKG022;'))" File="$(_MSKit_ReadmeFindingsBase).MSKIT_PKG022.txt">
+    <ReadLinesFromFile Condition="Exists('$(_MSKit_ReadmeFindingsBase).MSKITPKG022.txt') AND $(_MSKit_ReadmeCodes.Contains(';MSKITPKG022;'))" File="$(_MSKit_ReadmeFindingsBase).MSKITPKG022.txt">
       <Output TaskParameter="Lines" ItemName="_MSKit_ReadmeFinding022" />
     </ReadLinesFromFile>
-    <Warning Condition="'@(_MSKit_ReadmeFinding020)'!=''" Code="MSKIT_PKG020" File="$(_MSKit_ReadmeFromPath)" Text="%(_MSKit_ReadmeFinding020.Identity) (to skip: MSKit_SkipPackageChecks=MSKIT_PKG020)" />
-    <Warning Condition="'@(_MSKit_ReadmeFinding021)'!=''" Code="MSKIT_PKG021" File="$(_MSKit_ReadmeFromPath)" Text="%(_MSKit_ReadmeFinding021.Identity) (to skip: MSKit_SkipPackageChecks=MSKIT_PKG021)" />
-    <Warning Condition="'@(_MSKit_ReadmeFinding022)'!=''" Code="MSKIT_PKG022" File="$(_MSKit_ReadmeFromPath)" Text="%(_MSKit_ReadmeFinding022.Identity) (to skip: MSKit_SkipPackageChecks=MSKIT_PKG022)" />
+    <Warning Condition="'@(_MSKit_ReadmeFinding020)'!=''" Code="MSKITPKG020" HelpLink="$(MSKit_CodesHelpBaseUrl)#mskitpkg020" File="$(_MSKit_ReadmeFromPath)" Text="%(_MSKit_ReadmeFinding020.Identity) (to skip: MSKit_SkipPackageChecks=MSKITPKG020)" />
+    <Warning Condition="'@(_MSKit_ReadmeFinding021)'!=''" Code="MSKITPKG021" HelpLink="$(MSKit_CodesHelpBaseUrl)#mskitpkg021" File="$(_MSKit_ReadmeFromPath)" Text="%(_MSKit_ReadmeFinding021.Identity) (to skip: MSKit_SkipPackageChecks=MSKITPKG021)" />
+    <Warning Condition="'@(_MSKit_ReadmeFinding022)'!=''" Code="MSKITPKG022" HelpLink="$(MSKit_CodesHelpBaseUrl)#mskitpkg022" File="$(_MSKit_ReadmeFromPath)" Text="%(_MSKit_ReadmeFinding022.Identity) (to skip: MSKit_SkipPackageChecks=MSKITPKG022)" />
   </Target>
 
 </Project>
