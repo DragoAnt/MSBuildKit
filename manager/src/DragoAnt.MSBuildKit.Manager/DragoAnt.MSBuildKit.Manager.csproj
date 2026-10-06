@@ -5,6 +5,7 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>mskit-manager</ToolCommandName>
     <RollForward>Major</RollForward>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <Description>A .NET tool that installs, updates and migrates DragoAnt.MSBuildKit in a repository.</Description>
     <PackageTags>msbuild;dotnet-tool;build;nuget;props;targets</PackageTags>
   </PropertyGroup>
