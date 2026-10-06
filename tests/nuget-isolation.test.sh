@@ -230,7 +230,7 @@ case "$(uname -s)" in MINGW*|MSYS*|CYGWIN*)
   fi ;;
 esac
 [ "$refused" = 3 ] && pass "a link to the machine's folder, in any path segment, is refused" || bad "refused $refused of 3 links to the machine's folder"
-rm "$link" "$linked_parent" 2> /dev/null || rmdir "$link" "$linked_parent"
+for l in "$link" "$linked_parent"; do rm "$l" 2> /dev/null || rmdir "$l"; done
 
 # --- one kit-package predicate, exact on id boundaries --------------------------------------------
 kit=$(printf '%s\n' dragoant.msbuildkit DragoAnt.MSBuildKit.Manager dragoant.msbuildkitfoo dragoant.fixture.cacheprobe dragoant.fixtures newtonsoft.json | ni_filter_ids kit | tr '\n' ' ')

@@ -13,14 +13,17 @@ ni_default_prefixes='DragoAnt.MSBuildKit;DragoAnt.Fixture.;DragoAnt.Samples.'
 
 ni_native() { if command -v cygpath > /dev/null 2>&1; then cygpath -m "$1"; else printf '%s\n' "$1"; fi; }
 
-# ni_norm <path>: absolute, forward slashes, no trailing slash, lower case where the file system ignores case.
+ni_long() { if command -v cygpath > /dev/null 2>&1; then cygpath -m -l "$1"; else printf '%s\n' "$1"; fi; }
+
+# ni_norm <path>: absolute with every link and short name resolved, forward slashes, no trailing slash,
+# lower case where the file system ignores case.
 ni_norm() {
   ni_p=$(printf '%s' "$1" | tr '\\' '/')
   if command -v cygpath > /dev/null 2>&1; then ni_p=$(cygpath -u "$ni_p"); fi
   case "$ni_p" in /*) ;; *) ni_p="$PWD/$ni_p" ;; esac
   ni_rest=""
   while [ ! -d "$ni_p" ]; do ni_rest="/${ni_p##*/}$ni_rest"; ni_p=${ni_p%/*}; [ -n "$ni_p" ] || ni_p=/; done
-  ni_p=$(cd "$ni_p" && pwd -P); ni_p=$(ni_native "${ni_p%/}$ni_rest" | sed 's:/\.\{0,1\}$::; s:/\./:/:g; s:/*$::')
+  ni_p=$(cd "$ni_p" && pwd -P); ni_p=$(ni_long "${ni_p%/}$ni_rest" | sed 's:/\.\{0,1\}$::; s:/\./:/:g; s:/*$::')
   case "$(uname -s)" in
     MINGW*|MSYS*|CYGWIN*|Darwin) printf '%s\n' "$ni_p" | tr '[:upper:]' '[:lower:]' ;;
     *) printf '%s\n' "${ni_p:-/}" ;;
@@ -42,11 +45,22 @@ ni_check_shared() {
   return 1
 }
 
-# Reads package folder names (ids) on stdin; prints those that start (kit) or do not start (other) with a kit prefix.
+# ni_check_shared_content <shared>: fails when the folder holds a kit package, which a restore would
+# take in place of the one the run packs.
+ni_check_shared_content() {
+  [ -d "$1" ] || return 0
+  ni_stale=$(ls -1 "$1" | ni_filter_ids kit | tr '\n' ' ')
+  [ -n "$ni_stale" ] || return 0
+  echo "nuget isolation: the shared folder $1 holds kit packages: ${ni_stale}- remove them, or the folder" >&2
+  return 1
+}
+
+# The one kit-package test. Reads package ids on stdin; prints the kit packages (kit) or the rest (other).
+# An id is a kit package when it equals a prefix or continues it after a dot, in any case.
 ni_filter_ids() {
   awk -v want="$1" -v list="$(printf '%s' "${MSBUILDKIT_TESTS_KIT_PACKAGE_PREFIXES-$ni_default_prefixes}" | tr ';,' '  ')" '
-    BEGIN { n = split(tolower(list), p, " ") }
-    { kit = 0; id = tolower($0); for (i = 1; i <= n; i++) if (index(id, p[i]) == 1) kit = 1
+    BEGIN { n = split(tolower(list), p, " "); for (i = 1; i <= n; i++) sub(/[.]$/, "", p[i]) }
+    { kit = 0; id = tolower($0); for (i = 1; i <= n; i++) if (id == p[i] || index(id, p[i] ".") == 1) kit = 1
       if ((want == "kit") == kit) print }'
 }
 
@@ -61,8 +75,28 @@ ni_sweep() {
   for ni_d in "$1"/*/ "$1"/.[!.]*/; do
     [ -f "$ni_d$ni_marker" ] || continue
     ni_pid=$(sed -n 's/^pid=//p' "$ni_d$ni_marker")
+    case "$ni_pid" in ""|*[!0-9]*) continue ;; esac
     if [ "$ni_pid" != "$$" ] && ! kill -0 "$ni_pid" 2> /dev/null; then rm -rf "$ni_d"; fi
   done
+}
+
+# ni_mark <dir>: creates <dir> as this run's own; it gets its name only once the marker is inside.
+ni_mark() {
+  mkdir -p "${1%/*}"; ni_new=$(mktemp -d "$1.new.XXXXXX")
+  printf 'pid=%s\n' "$$" > "$ni_new/$ni_marker"
+  mv "$ni_new" "$1"
+}
+
+ni_rm() { rm -rf "$1"; }
+ni_retry_pause() { sleep 1; }
+
+# ni_remove <dir>: three tries; a folder that stays keeps its marker, so the next run's sweep takes it.
+ni_remove() {
+  for ni_try in 1 2 3; do
+    if ni_rm "$1" 2> /dev/null && [ ! -e "$1" ]; then return 0; fi
+    ni_retry_pause
+  done
+  echo "NOTE  could not remove $1; the next run removes it" >&2
 }
 
 ni_take_tree() { mv "$1" "$2"; }
@@ -72,8 +106,8 @@ ni_take_tree() { mv "$1" "$2"; }
 # staged first and published with one rename, so a reader or a parallel run sees it whole or not at all.
 ni_harvest() {
   ni_count=0
-  mkdir -p "$2/.staging"; ni_stage=$(mktemp -d "$2/.staging/$$.XXXXXX")
-  printf 'pid=%s\n' "$$" > "$ni_stage/$ni_marker"
+  mkdir -p "$2/.staging"; ni_stage=$(mktemp -u "$2/.staging/$$.XXXXXX")
+  ni_mark "$ni_stage"
   ni_others=" $(ls -1 "$1" 2> /dev/null | ni_filter_ids other | tr '\n' ' ') "
   for ni_meta in "$1"/*/*/.nupkg.metadata; do [ ! -f "$ni_meta" ] || printf '%s\n' "$ni_meta"; done > "$ni_stage/metadata"
   awk '{ file = $0; source = ""
@@ -91,9 +125,11 @@ ni_harvest() {
     mkdir -p "$ni_stage/$ni_id" "$2/$ni_id"
     if ni_take_tree "$ni_vdir" "$ni_stage/$ni_id/$ni_ver" && mv "$ni_stage/$ni_id/$ni_ver" "$2/$ni_id/" 2> /dev/null; then
       ni_count=$((ni_count+1))
+    elif [ ! -e "$2/$ni_id/$ni_ver" ]; then
+      echo "NOTE  could not save $ni_id $ni_ver into the shared folder; a later run downloads it again" >&2
     fi
   done < "$ni_stage/sources"
-  rm -rf "$ni_stage"
+  ni_remove "$ni_stage"
   echo "$ni_count"
 }
 
@@ -105,11 +141,12 @@ ni_begin() {
   if [ "$2" = fallback ] && [ -z "${NUGET_FALLBACK_PACKAGES:-}" ]; then
     ni_shared=$(ni_shared_dir)
     ni_check_shared "$ni_shared" "$ni_machine" || exit 1
+    ni_check_shared_content "$ni_shared" || exit 1
   fi
   ni_runs="$here/dist/nuget-runs"
   ni_sweep "$ni_runs"
   ni_run="$ni_runs/$1.$$.$(date +%s)"; ni_own=""
-  mkdir -p "$ni_run"; printf 'pid=%s\n' "$$" > "$ni_run/$ni_marker"
+  ni_mark "$ni_run"
   trap ni_end EXIT
   trap 'exit 129' HUP; trap 'exit 130' INT; trap 'exit 143' TERM
   ni_snapshot "$ni_machine" > "$ni_run/machine-before"
@@ -134,7 +171,7 @@ ni_end() {
     ni_moved=$(ni_harvest "$ni_own" "$ni_shared") || ni_moved="?"
     echo "NOTE  $ni_moved downloaded package(s) moved into the shared folder $ni_shared"
   fi
-  [ -z "${ni_run:-}" ] || rm -rf "$ni_run" || echo "NOTE  could not remove $ni_run"
+  [ -z "${ni_run:-}" ] || ni_remove "$ni_run"
   ni_own=""; ni_shared=""; ni_run=""
 }
 

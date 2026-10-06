@@ -31,7 +31,7 @@ It builds and tests the tool from `manager/`, so its `global.json` selects Micro
 
 ### NuGet packages during a run
 
-Both scripts restore into folders of their own and share third-party packages between runs, so a package built by a test never reaches the machine's global-packages folder (`dotnet nuget locals global-packages --list`), where any other build on the machine would resolve it instead of the published one.
+Both scripts restore into folders of their own and share third-party packages between runs. A run never restores from or writes to the machine's global-packages folder (`dotnet nuget locals global-packages --list`), so a package built by a test cannot reach it, where any other build on the machine would resolve it instead of the published one.
 
 | Folder | What | Lifetime |
 | --- | --- | --- |
@@ -40,10 +40,11 @@ Both scripts restore into folders of their own and share third-party packages be
 | `dist/nuget-shared` | the shared fallback folder (`NUGET_FALLBACK_PACKAGES`): third-party packages earlier runs downloaded | kept; delete it to start cold |
 
 - **Harvest.** When a run ends, each package it downloaded from an `https` feed moves into the shared folder, staged first and published with one rename, so parallel runs and a killed run cannot leave a half-written package. A package from a local folder, a loopback feed or plain `http` never moves there, and neither does a **kit package**: an id that starts with one of `DragoAnt.MSBuildKit`, `DragoAnt.Fixture.`, `DragoAnt.Samples.`. So a restore never gets a shared copy in place of a fresh local build.
-- **Variables.** `MSBUILDKIT_TESTS_NUGET_SHARED_DIR` names another shared folder, for example one that several checkouts use; the scripts refuse the machine's global-packages folder there. `MSBUILDKIT_TESTS_KIT_PACKAGE_PREFIXES` replaces the kit prefixes (`;`-separated).
+- **Variables.** `MSBUILDKIT_TESTS_NUGET_SHARED_DIR` names another shared folder, for example one that several checkouts use; the scripts refuse the machine's global-packages folder there, also behind a link or another spelling, and refuse a folder that already holds a kit package. `MSBUILDKIT_TESTS_KIT_PACKAGE_PREFIXES` replaces the kit prefixes (`;`-separated); a prefix matches the id itself and every id that continues it after a dot, in any case.
 - **Clearing.** `rm -rf dist/nuget-shared` (or your own folder); the next run downloads again. A run killed outright leaves its `dist/nuget-runs` folder behind, and the next run removes it: only folders that carry the run marker file and whose process is gone.
 - `--no-nuget-fallback` neither reads nor fills the shared folder. A caller's `NUGET_PACKAGES`, `NUGET_HTTP_CACHE_PATH` or `NUGET_FALLBACK_PACKAGES` is used as it is; with your own `NUGET_PACKAGES` nothing is harvested.
-- **Guard.** Each run records the kit packages in the machine's folder with their hashes when it starts, and fails at its end if that list changed or the folder holds a package the run built. `tests/nuget-isolation.test.sh` checks the rules on hand-made folders, with a stand-in for the machine's folder.
+- **Guard.** The check only reads the machine's folder: each run lists the kit packages there with their hashes when it starts, and fails at its end if that list changed (added, changed or removed) or the folder holds a package the run built. It cannot see a third-party package that was changed or deleted there, nor a package packed outside the run's output directory whose id has no kit prefix.
+- A package that cannot be moved into the shared folder, and a run folder that cannot be removed, are reported in a `NOTE` line and do not fail the run; the next run removes the folder. The scripts stop no process and clear no machine-wide cache. `tests/nuget-isolation.test.sh` checks the rules on hand-made folders, with a stand-in for the machine's folder.
 - A test reads restored packages through `ni_packages_dir`; a test file that names a packages folder itself fails the run. A scenario that needs a folder of its own sets `NUGET_PACKAGES` for that command: the variable outranks `globalPackagesFolder` in a `nuget.config`.
 - Do not wrap the scripts in `timeout`: it ends a child `dotnet` process in the middle of a restore.
 
