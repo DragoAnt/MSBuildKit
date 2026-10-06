@@ -55,7 +55,7 @@ find kit/.toolkit/msbuild -type f \( -name '*.props' -o -name '*.targets' -o -na
       else if (tag == "ItemGroup") ig++
       else if (tag == "/ItemGroup") ig--
       else if (substr(tag, 1, 1) != "/" && pg > 0) print "P", tag, FILENAME ":" FNR
-      else if (substr(tag, 1, 1) != "/" && ig > 0 && tag ~ /^MSKit_/) print "I", tag, FILENAME ":" FNR
+      else if (substr(tag, 1, 1) != "/" && ig > 0 && (tag ~ /^MSKit_/ || tag == "BuildDiagnosticDescriptor")) print "I", tag, FILENAME ":" FNR
     }
     rest = out
     while (match(rest, /\$\(MSKit_[A-Za-z0-9_]+/)) { print "R", substr(rest, RSTART + 2, RLENGTH - 2), FILENAME ":" FNR; rest = substr(rest, RSTART + RLENGTH) }

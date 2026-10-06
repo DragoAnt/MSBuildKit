@@ -19,6 +19,7 @@ Read in this order; each page stands on its own, so jump to the one you need.
 | 13 | [Troubleshooting](./troubleshooting.md) | fix a failing build or update |
 | 14 | [Code reference](./reference/codes.md) | look up any warning or error the kit reports |
 | 15 | [Property reference](./reference/properties.md) | look up any property the kit sets or reads |
-| 16 | [Migrating from MSBuild.Routine](./migrating-from-msbuild-routine.md) | move a repository off the older submodule |
+| 16 | [Diagnostic catalog](./reference/diagnostic-catalog.md) | read the kit's codes from a tool, or add your own to the catalog |
+| 17 | [Migrating from MSBuild.Routine](./migrating-from-msbuild-routine.md) | move a repository off the older submodule |
 
 Contributing to the kit itself: [CONTRIBUTING.md](../CONTRIBUTING.md).
