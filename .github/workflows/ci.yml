@@ -46,6 +46,7 @@ jobs:
           sh -n tests/run.sh
           sh -n tests/manager.sh
           sh -n tests/nuget-isolation.sh
+          sh -n tests/nuget-isolation.test.sh
 
       - name: Pack the kit
         shell: bash
