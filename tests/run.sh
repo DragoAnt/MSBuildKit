@@ -1,7 +1,8 @@
 #!/bin/sh
 # Kit self-test: installs the working-tree kit into the sample and the fixtures with update.sh,
 # then checks the version scheme, the sample's build/test/pack output and every package check.
-# Usage: sh tests/run.sh [--skip-tests]
+# Restores into a global-packages folder of its own (tests/nuget-isolation.sh) unless NUGET_PACKAGES is set.
+# Usage: sh tests/run.sh [--skip-tests] [--no-nuget-fallback]
 set -eu
 
 here=$(cd "$(dirname "$0")/.." && pwd)
@@ -13,12 +14,23 @@ tfm_fixture="$here/tests/fixtures/TfmConstants"
 icon_fixture="$here/tests/fixtures/PackageIcon"
 out="$here/dist/selftest"
 run_tests=1
-[ "${1:-}" = "--skip-tests" ] && run_tests=0
+nuget_fallback=fallback
+for arg in "$@"; do
+  case "$arg" in
+    --skip-tests) run_tests=0 ;;
+    --no-nuget-fallback) nuget_fallback=no-fallback ;;
+    *) echo "usage: sh tests/run.sh [--skip-tests] [--no-nuget-fallback]" >&2; exit 1 ;;
+  esac
+done
 rm -rf "$out"; mkdir -p "$out"
 
 failures=0
 pass() { echo "PASS  $*"; }
 bad() { echo "FAIL  $*"; failures=$((failures+1)); }
+
+. "$here/tests/nuget-isolation.sh"
+ni_begin "$out-nuget-packages" "$nuget_fallback"
+trap ni_end EXIT
 
 for root in "$sample" "$fixtures" "$readme_fixture" "$tfm_fixture" "$icon_fixture"; do
   sh "$kit/.toolkit/update.sh" --source "$kit" --root "$root" > "$out/install.log" || { cat "$out/install.log"; exit 1; }
@@ -113,6 +125,7 @@ grep -q "MSKITPKG" "$out/checks-skip.log" && bad "MSKit_SkipPackageChecks=All di
 . "$here/tests/package-icon.sh"
 . "$here/tests/codes.sh"
 . "$here/tests/docs.sh"
+ni_verify "$out" "$out"
 
 echo
 if [ "$failures" -eq 0 ]; then echo "self-test: all checks passed"; else echo "self-test: $failures failure(s)"; exit 1; fi
