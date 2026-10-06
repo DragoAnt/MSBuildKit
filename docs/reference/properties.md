@@ -29,6 +29,7 @@ Every property and item the kit sets or reads, grouped by topic. **Set** = a val
 | `MSKit_ProjectObjDir` | out | | The project's `obj` folder, absolute |
 | `MSKit_Templates` | set | `.toolkit/.local/` | Templates for local files ([Local files](../local-files.md)) |
 | `MSKit_Diagnostic` | set | `false` | Reserved; nothing reads it in this version |
+| `BuildDiagnosticDescriptor` | item | one per code of each installed part | A code the kit reports, with its `Title`, `MessageFormat`, `Description`, `Category`, `DefaultSeverity` and `HelpLink`, for tools that read a build's diagnostics ([diagnostic catalog](./diagnostic-catalog.md)) |
 | `MSKit_CodesHelpBaseUrl` | set | `https://github.com/DragoAnt/MSBuildKit/blob/main/docs/reference/codes.md` | The page every warning and error links to (`HelpLink`); the link adds `#` and the code in lower case ([code reference](./codes.md)). Point it at your own copy of the page |
 
 ## Versioning

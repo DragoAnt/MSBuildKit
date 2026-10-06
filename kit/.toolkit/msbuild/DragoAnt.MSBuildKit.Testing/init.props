@@ -12,4 +12,6 @@
 
   <Import Project="$(MSBuildThisFileDirectory)tests.project.props" />
 
+  <Import Project="$(MSBuildThisFileDirectory)diagnostic.descriptors.props" />
+
 </Project>

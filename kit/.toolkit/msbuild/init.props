@@ -20,6 +20,7 @@
   <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Testing/init.props" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Testing/init.props')" />
   <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Testing.XUnit.v3/init.props" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.Testing.XUnit.v3/init.props')" />
   <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.EF/init.props" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.EF/init.props')" />
+  <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.PackageAsProj/init.props" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit.PackageAsProj/init.props')" />
   <Import Project="$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit/init.last.props" Condition="Exists('$(MSBuildThisFileDirectory)DragoAnt.MSBuildKit/init.last.props')" />
   <Import Project="$(MSKit_AfterInitProps)" Condition="'$(MSKit_AfterInitProps)' != '' and Exists('$(MSKit_AfterInitProps)')" />
 
