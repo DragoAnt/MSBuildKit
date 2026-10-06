@@ -16,6 +16,7 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ### Changed
 
+- For contributors: `tests/run.sh` and the new `tests/manager.sh` restore into a global-packages folder of their own under `dist/`, removed when the run ends, with the machine's folder as a read-only fallback, so a package built by a test cannot reach the machine's folder. `--no-nuget-fallback` and a caller's `NUGET_PACKAGES` change that; see [CONTRIBUTING.md](./CONTRIBUTING.md#nuget-packages-during-a-run). The kit itself is unchanged.
 - The documentation moved from the README into [docs/](./docs/README.md), one page per topic in reading order, with a [property reference](./docs/reference/properties.md) and a [code reference](./docs/reference/codes.md) that cover everything the kit sets, reads and reports. Corrected along the way: most packaging defaults apply to every project, not only packable ones; a Roslyn project imports its role's props itself; an update rewrites more than `.toolkit/msbuild/`; any tag build is a release build.
 
 ### Fixed
