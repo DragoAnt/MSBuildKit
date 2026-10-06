@@ -109,6 +109,7 @@ grep -q "MSKIT_PKG" "$out/checks-skip.log" && bad "MSKit_SkipPackageChecks=All d
 
 . "$here/tests/package-readme.sh"
 . "$here/tests/tfm-constants.sh"
+. "$here/tests/docs.sh"
 
 echo
 if [ "$failures" -eq 0 ]; then echo "self-test: all checks passed"; else echo "self-test: $failures failure(s)"; exit 1; fi
