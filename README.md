@@ -100,7 +100,7 @@ Defaults apply to projects with `IsPackable=True` and yield to any value you set
 | --- | --- | --- |
 | `PackageLicenseExpression` | `MIT` (owner layer) | [licensing](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#licensing) |
 | `Authors`, `Copyright` | owner name; `Copyright (c) <year> <owner>` | [copyright](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#copyright) |
-| `PackageIcon` | `.toolkit/res/package.icon.png` (128×128), packed as `icon.png` | [icon](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#icon) |
+| `PackageIcon` | `PackageIconPath`, by default `.toolkit/res/package.icon.png` (128×128), packed as `icon.<extension>` (`icon.png`, `icon.jpg`); a `PackageIcon` the project sets is kept | [icon](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#icon) |
 | `PackageReadmeFile` | generated from `MSKit_PackageReadmeFrom` ([package readme](./docs/package-readme.md)), else `package.readme.md` (else `README.md`) next to the csproj, packed as `readme.md` | [README](https://learn.microsoft.com/nuget/reference/msbuild-targets#packagereadmefile) |
 | `RepositoryUrl`, `PackageProjectUrl` | from `GITHUB_REPOSITORY`, else the git remote via Source Link | [repository](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#repository-type-and-url) |
 | `PackageReleaseNotes` | the GitHub release page of the tag, else the releases page; on other hosts, the releases page the generated readme links (`MSKit_PackageReadmeFrom`) | [release notes](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#release-notes) |
@@ -130,7 +130,7 @@ Defaults apply to projects with `IsPackable=True` and yield to any value you set
 | `MSKIT_PKG012` | the package README loads images from hosts nuget.org blocks | [allowed images](https://learn.microsoft.com/nuget/nuget-org/package-readme-on-nuget-org#allowed-domains-for-images-and-badges) |
 | `MSKIT_PKG013` | the package version is not SemVer 2.0 | [package version](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#package-version) |
 | `MSKIT_PKG014` | no repository or project URL | [repository](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#repository-type-and-url) |
-| `MSKIT_PKG015` | the icon is not a 128×128 PNG (`MSKit_PackageIconSize`) | [icon](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#icon) |
+| `MSKIT_PKG015` | the icon is not a 128×128 PNG or JPEG (`MSKit_PackageIconSize`) | [icon](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#icon) |
 | `MSKIT_PKG016` | no `PackageReleaseNotes` | [release notes](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#release-notes) |
 | `MSKIT_PKG017` | the package README has relative links | [package README](https://learn.microsoft.com/nuget/nuget-org/package-readme-on-nuget-org) |
 | `MSKIT_PKG018` | an open-source licence with an "All rights reserved" copyright | [copyright](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#copyright) |
