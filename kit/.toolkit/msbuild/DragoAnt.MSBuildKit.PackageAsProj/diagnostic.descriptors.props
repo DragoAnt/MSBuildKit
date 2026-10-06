@@ -1,0 +1,21 @@
+<Project>
+
+  <!-- The codes this part reports, one item each, for tools that read a build's diagnostics. -->
+  <ItemGroup>
+    <BuildDiagnosticDescriptor Include="MSKITPAP001"
+                               Title="Package switched to a project is still resolved from the package"
+                               MessageFormat="A package switched to a ProjectReference is still resolved from the package. Fix: run 'dotnet restore --force'."
+                               Description="A package switched to a ProjectReference is still resolved from the package."
+                               Category="PackageAsProj"
+                               DefaultSeverity="Error"
+                               HelpLink="$(MSKit_CodesHelpBaseUrl)#mskitpap001" />
+    <BuildDiagnosticDescriptor Include="MSKITPAP002"
+                               Title="Package switched back from a project is not restored"
+                               MessageFormat="A package switched back from a ProjectReference is not restored yet. Fix: run 'dotnet restore --force', or set PackageAsProj_SkipChecks=True to skip this check."
+                               Description="A package switched back from a project is not restored yet."
+                               Category="PackageAsProj"
+                               DefaultSeverity="Error"
+                               HelpLink="$(MSKit_CodesHelpBaseUrl)#mskitpap002" />
+  </ItemGroup>
+
+</Project>
