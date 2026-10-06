@@ -30,7 +30,7 @@ ic_quiet() { grep -q "$2" "$out/icon-$1.log" && bad "icon $1 reports $2 (see $ou
 ic_pack default Icons
 ic_icon default icon.png
 ic_entry default icon.png
-ic_quiet default MSKIT_PKG015
+ic_quiet default MSKITPKG015
 
 # A JPEG PackageIconPath keeps its extension.
 ic_pack jpg Icons -p:FixtureIcon=icon.jpg
@@ -38,12 +38,12 @@ ic_icon jpg icon.jpg
 ic_entry jpg icon.jpg
 ic_no_entry jpg icon.png
 ic_quiet jpg NU5046
-ic_quiet jpg MSKIT_PKG015
+ic_quiet jpg MSKITPKG015
 
 # A JPEG of the wrong size is still reported.
 ic_pack jpg-small Icons -p:FixtureIcon=small.jpg
 ic_icon jpg-small icon.jpg
-ic_warns jpg-small MSKIT_PKG015
+ic_warns jpg-small MSKITPKG015
 
 # An upper-case extension is lowercased.
 ic_pack upper Icons -p:FixtureIcon=ICON.PNG
@@ -57,4 +57,4 @@ ic_pack own Own
 ic_icon own logo.png
 ic_entry own logo.png
 ic_no_entry own icon.png
-ic_quiet own MSKIT_PKG015
+ic_quiet own MSKITPKG015
