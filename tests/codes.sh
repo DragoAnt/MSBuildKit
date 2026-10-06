@@ -28,7 +28,7 @@ catalog_items() {
   proj="$1"; name="$2"; shift 2
   $clean_env dotnet msbuild "$proj" -nologo -getItem:BuildDiagnosticDescriptor "$@" 2> "$out/$name.err" | tr -d '\r' > "$out/$name.json" || true
   awk '
-    function val(l) { sub(/^[^:]*:[[:space:]]*"/, "", l); sub(/",?[[:space:]]*$/, "", l); gsub(/\\/, "/", l); return l }
+    function val(l) { sub(/^[^:]*:[[:space:]]*"/, "", l); sub(/",?[[:space:]]*$/, "", l); gsub(/\\+/, "/", l); return l }
     /^[[:space:]]*"Identity":/ { id = val($0) }
     /^[[:space:]]*"Title":/ { title = val($0) }
     /^[[:space:]]*"DefaultSeverity":/ { severity = val($0) }
