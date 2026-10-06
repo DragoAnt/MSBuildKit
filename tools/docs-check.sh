@@ -1,6 +1,7 @@
 #!/bin/sh
-# Keeps the documentation honest against the kit: every property, item and MSKIT_ code the kit
-# defines has a row in docs/reference/, every MSKit_ name and MSKIT_ code the docs mention exists in
+# Keeps the documentation honest against the kit: every property and item the kit defines has a row
+# in docs/reference/properties.md, every code it reports a section headed by the code id without the
+# underscore in docs/reference/codes.md, every MSKit_ name and MSKIT code the docs mention exists in
 # the kit, and every relative link resolves (anchors included).
 # Usage: sh tools/docs-check.sh [--root DIR] [--list properties|items|codes]
 set -eu
@@ -11,7 +12,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --root) [ $# -ge 2 ] || { echo "docs-check: --root needs a value" >&2; exit 2; }; root=$(cd "$2" && pwd); shift 2 ;;
     --list) [ $# -ge 2 ] || { echo "docs-check: --list needs a value" >&2; exit 2; }; list="$2"; shift 2 ;;
-    -h|--help) sed -n '2,5p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,6p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "docs-check: unknown argument '$1'" >&2; exit 2 ;;
   esac
 done
@@ -24,12 +25,13 @@ cd "$root"
 
 # Kit inventory with XML comments removed, one process for every file:
 # "P <name> <where>" property set, "I" item, "R" property read, "C" diagnostic code.
+# A code is keyed by its id without the underscore (MSKIT_VER006 and MSKITVER006 are one code).
 find kit/.toolkit/msbuild -type f \( -name '*.props' -o -name '*.targets' -o -name '*.cs.txt' \) -exec awk '
   FNR == 1 { incomment = 0; pg = 0; ig = 0 }
   { sub(/\r$/, "") }
   FILENAME ~ /\.cs\.txt$/ {
     rest = $0
-    while (match(rest, /"MSKIT_[A-Z]+[0-9][0-9][0-9]"/)) { print "C", substr(rest, RSTART + 1, RLENGTH - 2), FILENAME ":" FNR; rest = substr(rest, RSTART + RLENGTH) }
+    while (match(rest, /"MSKIT_?[A-Z]+[0-9][0-9][0-9]"/)) { print "C", id(substr(rest, RSTART + 1, RLENGTH - 2)), FILENAME ":" FNR; rest = substr(rest, RSTART + RLENGTH) }
     next
   }
   {
@@ -51,8 +53,9 @@ find kit/.toolkit/msbuild -type f \( -name '*.props' -o -name '*.targets' -o -na
     rest = out
     while (match(rest, /\$\(MSKit_[A-Za-z0-9_]+/)) { print "R", substr(rest, RSTART + 2, RLENGTH - 2), FILENAME ":" FNR; rest = substr(rest, RSTART + RLENGTH) }
     rest = out
-    while (match(rest, /MSKIT_[A-Z]+[0-9][0-9][0-9]/)) { print "C", substr(rest, RSTART, RLENGTH), FILENAME ":" FNR; rest = substr(rest, RSTART + RLENGTH) }
-  }' {} + > "$work/raw"
+    while (match(rest, /MSKIT_?[A-Z]+[0-9][0-9][0-9]/)) { print "C", id(substr(rest, RSTART, RLENGTH)), FILENAME ":" FNR; rest = substr(rest, RSTART + RLENGTH) }
+  }
+  function id(c) { sub(/^MSKIT_/, "MSKIT", c); return c }' {} + > "$work/raw"
 
 # Public names: MSKit_* (set or read) and Is* (set); never the kit's own _-prefixed state.
 # Each is listed with the first place that sets it, else the first place that reads it.
@@ -91,9 +94,13 @@ awk -v dir="$work" '
   { mention() }
   fence { next }
   /^#+[[:space:]]/ { h = $0; sub(/^#+[[:space:]]+/, "", h); sub(/[[:space:]]+#+[[:space:]]*$/, "", h); h = tolower(h); gsub(/[^a-z0-9 _-]/, "", h); gsub(/ /, "-", h); print "S\t" f "\t" h }
-  (f == "docs/reference/properties.md" || f == "docs/reference/codes.md") && /^\|/ {
+  f == "docs/reference/properties.md" && /^\|/ {
     split($0, cell, "|"); c = cell[2]
     while (match(c, /`[^`]+`/)) { print "D\t" f "\t" substr(c, RSTART + 1, RLENGTH - 2); c = substr(c, RSTART + RLENGTH) }
+  }
+  f == "docs/reference/codes.md" && /^#+[[:space:]]+`?MSKIT_?[A-Z]+[0-9][0-9][0-9]/ {
+    match($0, /MSKIT_?[A-Z]+[0-9][0-9][0-9]/); c = substr($0, RSTART, RLENGTH)
+    print (c ~ /^MSKIT_/ ? "U\t" f ":" FNR "\t" c : "D\t" f "\t" c)
   }
   { line = $0; gsub(/`[^`]*`/, "", line)
     while (match(line, /\]\([^) ]+\)/)) { print "L\t" f "\t" FNR "\t" d "\t" substr(line, RSTART + 2, RLENGTH - 3); line = substr(line, RSTART + RLENGTH) } }
@@ -102,7 +109,7 @@ awk -v dir="$work" '
     rest = $0
     while (match(rest, /MSKit_[A-Za-z0-9_]+[*<]?/)) { t = substr(rest, RSTART, RLENGTH); rest = substr(rest, RSTART + RLENGTH); if (t !~ /[*<]$/) print "N\t" f ":" FNR "\t" t }
     rest = $0
-    while (match(rest, /MSKIT_[A-Z]+[0-9][0-9][0-9]/)) { print "M\t" f ":" FNR "\t" substr(rest, RSTART, RLENGTH); rest = substr(rest, RSTART + RLENGTH) }
+    while (match(rest, /MSKIT_?[A-Z]+[0-9][0-9][0-9]/)) { t = substr(rest, RSTART, RLENGTH); rest = substr(rest, RSTART + RLENGTH); sub(/^MSKIT_/, "MSKIT", t); print "M\t" f ":" FNR "\t" t }
   }' $(cat "$work/docs.lst") > "$work/docs.tsv"
 
 awk -v dir="$work" -F'\t' '
@@ -123,10 +130,12 @@ awk -v dir="$work" -F'\t' '
   $1 == "D" { if ($2 == "docs/reference/properties.md") documented[$3] = 1; else documentedCode[$3] = 1; next }
   $1 == "N" { if (!($3 in known)) problem($2 " mentions " $3 ", which the kit does not define or read"); next }
   $1 == "M" { if (!($3 in code)) problem($2 " mentions " $3 ", which the kit never reports"); next }
+  $1 == "U" { problem($2 ": write the heading as " gensub_id($3) " so its anchor is the code id without the underscore"); next }
+  function gensub_id(c) { sub(/^MSKIT_/, "MSKIT", c); return c }
   $1 == "L" { links[++nl] = $0; next }
   END {
     for (i = 1; i <= n; i++) if (!(order[i] in documented)) problem(what[order[i]] " " order[i] " (" known[order[i]] ") has no row in docs/reference/properties.md")
-    for (i = 1; i <= nc; i++) if (!(corder[i] in documentedCode)) problem("code " corder[i] " (" code[corder[i]] ") has no row in docs/reference/codes.md")
+    for (i = 1; i <= nc; i++) if (!(corder[i] in documentedCode)) problem("code " corder[i] " (" code[corder[i]] ") has no section in docs/reference/codes.md")
     relative = 0
     for (i = 1; i <= nl; i++) {
       split(links[i], l, "\t"); src = l[2]; ln = l[3]; base = l[4]; target = l[5]
