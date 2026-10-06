@@ -44,6 +44,8 @@ jobs:
           sh -n kit/.toolkit/update.sh
           sh -n tools/pack-kit.sh
           sh -n tests/run.sh
+          sh -n tests/manager.sh
+          sh -n tests/nuget-isolation.sh
 
       - name: Pack the kit
         shell: bash
@@ -108,15 +110,8 @@ jobs:
             8.0.x
             10.0.x
 
-      - name: Build
-        run: dotnet build DragoAnt.MSBuildKit.Manager.slnx -c Release -nologo
-
-      - name: Test
-        run: |
-          mkdir -p "$OUT"
-          dotnet test --solution DragoAnt.MSBuildKit.Manager.slnx -c Release --no-build \
-            --coverage --coverage-output-format cobertura --report-trx --report-xunit-junit \
-            --results-directory "$OUT/TestResults" 2>&1 | tee "$OUT/test.log"
+      - name: Build, test, pack, install and run the tool
+        run: sh ../tests/manager.sh --version "$TOOL_VERSION" --out "$OUT"
 
       - name: Prove the tests ran on Microsoft.Testing.Platform
         run: |
@@ -131,17 +126,6 @@ jobs:
             rate=$(tr -d '\r' < "$f" | sed -n 's/.*<coverage line-rate="\([0-9.]*\)".*/\1/p' | head -n 1)
             awk -v r="$rate" -v f="$f" 'BEGIN { printf "line coverage %.1f %% in %s\n", r * 100, f; exit !(r >= 0.70) }'
           done
-
-      - name: Pack the tool
-        run: dotnet pack src/DragoAnt.MSBuildKit.Manager/DragoAnt.MSBuildKit.Manager.csproj -c Release -nologo -o "$OUT/feed" -p:Version="$TOOL_VERSION"
-
-      - name: Install and run the packed tool
-        run: |
-          dotnet tool install --tool-path "$OUT/tools" --add-source "$OUT/feed" DragoAnt.MSBuildKit.Manager --version "$TOOL_VERSION"
-          "$OUT/tools/mskit-manager" --help
-          "$OUT/tools/mskit-manager" status --json > "$OUT/status.json"
-          cat "$OUT/status.json"
-          tr -d '\r' < "$OUT/status.json" | grep -q "\"version\": \"$TOOL_VERSION\"" || { echo "status --json did not report $TOOL_VERSION"; exit 1; }
 
       - name: Test results
         if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)

@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <PackageId>DragoAnt.Fixture.CacheProbe</PackageId>
+    <Description>A fixture package that shows which global-packages folder a restore writes to.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+</Project>
