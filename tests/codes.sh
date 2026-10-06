@@ -3,7 +3,7 @@
 # an OSC 8 hyperlink on the code, which is how the link is read back here.
 # Sourced by tests/run.sh: uses its pass, bad, $out, $here, $lib, $fixtures, $clean_env and $ci_env.
 
-if grep -rn 'MSKIT_' "$here/kit" > "$out/codes-old-spelling.log"; then
+if grep -rn 'MSKIT[_]' "$here/kit" > "$out/codes-old-spelling.log"; then
   bad "codes: the kit spells a code with an underscore (see $out/codes-old-spelling.log)"; head -n 5 "$out/codes-old-spelling.log"
 else
   pass "codes: no code in the kit is spelled with an underscore"
