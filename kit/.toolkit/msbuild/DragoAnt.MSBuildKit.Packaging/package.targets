@@ -56,6 +56,12 @@
     <PackageIcon>icon$([System.IO.Path]::GetExtension('$(PackageIconPath)').ToLowerInvariant())</PackageIcon>
     <_MSKit_PacksIcon>True</_MSKit_PacksIcon>
   </PropertyGroup>
+  <!-- MSKit_DefaultPackageIconUrl: written as iconUrl next to the kit's embedded icon, for clients
+       that predate embedded icons. -->
+  <PropertyGroup Condition="'$(_MSKit_PacksIcon)'=='True' AND '$(PackageIconUrl)'=='' AND '$(MSKit_DefaultPackageIconUrl)'!=''">
+    <PackageIconUrl>$(MSKit_DefaultPackageIconUrl)</PackageIconUrl>
+    <_MSKit_SetsIconUrl>True</_MSKit_SetsIconUrl>
+  </PropertyGroup>
   <PropertyGroup>
     <MSKit_PackageIconSourcePath Condition="'$(MSKit_PackageIconSourcePath)'=='' AND '$(_MSKit_PacksIcon)'=='True'">$(PackageIconPath)</MSKit_PackageIconSourcePath>
     <MSKit_PackageIconSourcePath Condition="'$(MSKit_PackageIconSourcePath)'=='' AND '$(PackageIcon)'!=''">$(MSBuildProjectDirectory)/$(PackageIcon)</MSKit_PackageIconSourcePath>
