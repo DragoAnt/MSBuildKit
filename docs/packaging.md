@@ -23,7 +23,7 @@ For projects with `IsPackable=True` (the owner layer makes that the default; tes
 | `PackageLicenseExpression` | `MIT` (owner layer), unless `PackageLicenseFile` is set | [licensing](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#licensing) |
 | `PackageRequireLicenseAcceptance` | `false` | |
 | `Authors`, `Copyright` | the owner; `Copyright (c) <year> <owner>` ([Build](./build.md#language-and-product-defaults)) | [copyright](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#copyright) |
-| `PackageIcon` | `PackageIconPath` (owner layer: `.toolkit/res/package.icon.png`, 128×128; PNG or JPEG) packed as `icon<extension, lowercased>` (`icon.png`, `icon.jpg`); a `PackageIcon` the project sets is kept | [icon](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#icon) |
+| `PackageIcon` | `PackageIconPath` (owner layer: `.toolkit/res/package.icon.png`, 128×128; PNG or JPEG) packed as `icon<extension, lowercased>` (`icon.png`, `icon.jpg`); a `PackageIcon` the project sets is kept. With the kit's icon, `MSKit_DefaultPackageIconUrl` also writes `PackageIconUrl` (nuget.org shows the embedded icon, older clients the URL) | [icon](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#icon) |
 | `PackageReadmeFile` | generated from `MSKit_PackageReadmeFrom` ([Package readme](./package-readme.md)), else `package.readme.md` next to the csproj, else `README.md` next to it; packed as `readme.md`. `MSKit_PackageReadmeSourcePath` names another file | [README](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#readme) |
 | `RepositoryType`, `RepositoryUrl`, `PackageProjectUrl` | `git`; `GITHUB_SERVER_URL/GITHUB_REPOSITORY` on GitHub Actions, else the git remote [Source Link](https://learn.microsoft.com/dotnet/standard/library-guidance/sourcelink) reads, without `.git` | [repository](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#repository-type-and-url) |
 | `PackageReleaseNotes` | on a `https://github.com/` repository the tag's release page on a tag build, else its releases page; on other hosts the releases page the generated readme links (needs `MSKit_PackageReadmeFrom`). `MSKit_DefaultReleaseNotes=False` turns the default off | [release notes](https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#release-notes) |
@@ -47,7 +47,7 @@ Set `MSKit_PackageValidationBaselineVersion` to the last published version once 
 | [`MSKITPKG005`](./reference/codes.md#mskitpkg005) | no icon |
 | [`MSKITPKG006`](./reference/codes.md#mskitpkg006) | no licence expression or file |
 | [`MSKITPKG007`](./reference/codes.md#mskitpkg007) | the deprecated `PackageLicenseUrl` is set |
-| [`MSKITPKG008`](./reference/codes.md#mskitpkg008) | the deprecated `PackageIconUrl` is set |
+| [`MSKITPKG008`](./reference/codes.md#mskitpkg008) | the project sets the deprecated `PackageIconUrl` (the one `MSKit_DefaultPackageIconUrl` writes is not reported) |
 | [`MSKITPKG009`](./reference/codes.md#mskitpkg009) | the README has relative images |
 | [`MSKITPKG010`](./reference/codes.md#mskitpkg010) | the README contains HTML |
 | [`MSKITPKG011`](./reference/codes.md#mskitpkg011) | the README uses GitHub alerts (`> [!NOTE]`) |

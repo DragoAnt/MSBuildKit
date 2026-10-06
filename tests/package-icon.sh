@@ -21,6 +21,10 @@ ic_icon() {
   actual=$(sed -n 's:.*<icon>\(.*\)</icon>.*:\1:p' "$out/icon-$1.nuspec")
   [ "$actual" = "$2" ] && pass "icon $1: nuspec <icon>$actual</icon>" || bad "icon $1: nuspec <icon> expected '$2', got '$actual'"
 }
+ic_icon_url() {
+  actual=$(sed -n 's:.*<iconUrl>\(.*\)</iconUrl>.*:\1:p' "$out/icon-$1.nuspec")
+  [ "$actual" = "$2" ] && pass "icon $1: nuspec <iconUrl>$actual</iconUrl>" || bad "icon $1: nuspec <iconUrl> expected '$2', got '$actual'"
+}
 ic_entry() { grep -qx -- "$2" "$out/icon-$1.files" && pass "icon $1: nupkg contains $2" || bad "icon $1: nupkg lacks $2"; }
 ic_no_entry() { grep -qx -- "$2" "$out/icon-$1.files" && bad "icon $1: nupkg still contains $2" || pass "icon $1: nupkg has no $2"; }
 ic_warns() { grep -q "warning $2" "$out/icon-$1.log" && pass "icon $1 warns $2" || bad "icon $1 does not warn $2 (see $out/icon-$1.log)"; }
@@ -58,3 +62,21 @@ ic_icon own logo.png
 ic_entry own logo.png
 ic_no_entry own icon.png
 ic_quiet own MSKITPKG015
+
+# MSKit_DefaultPackageIconUrl goes into the nuspec next to the kit's own embedded icon only.
+icon_url=https://example.com/fixture-icon.png
+ic_icon_url default ""
+ic_pack url Icons -p:MSKit_DefaultPackageIconUrl=$icon_url
+ic_icon url icon.png
+ic_icon_url url "$icon_url"
+ic_quiet url MSKITPKG008
+ic_quiet url NU5048
+
+ic_pack own-url Own -p:MSKit_DefaultPackageIconUrl=$icon_url
+ic_icon own-url logo.png
+ic_icon_url own-url ""
+
+# A PackageIconUrl the project sets itself is still reported, and the kit's default does not replace it.
+ic_pack project-url Icons -p:PackageIconUrl=https://example.com/own.png -p:MSKit_DefaultPackageIconUrl=$icon_url
+ic_icon_url project-url https://example.com/own.png
+ic_warns project-url MSKITPKG008
