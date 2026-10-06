@@ -60,7 +60,7 @@ rf_has github "[fenced](./fenced.md)"
 rf_has github "<!-- nuget:skip -->"
 awk '/^## /{exit} /\[Release notes\]/{found=1} END{exit !found}' "$out/readme-github.md" \
   && pass "readme github: the release-notes link is in the overview" || bad "readme github: the release-notes link is not in the overview"
-for code in MSKIT_PKG009 MSKIT_PKG012 MSKIT_PKG016 MSKIT_PKG017 MSKIT_PKG020 MSKIT_PKG021 MSKIT_PKG022; do rf_quiet github $code; done
+for code in MSKITPKG009 MSKITPKG012 MSKITPKG016 MSKITPKG017 MSKITPKG020 MSKITPKG021 MSKITPKG022; do rf_quiet github $code; done
 rf_notes github "https://github.com/DragoAnt/Fixture/releases"
 
 # Incremental: the same inputs leave the generated file alone; a new commit regenerates it.
@@ -97,17 +97,17 @@ rf_has gitlab "[the docs folder](https://gitlab.com/dragoant/sub/fixture/-/tree/
 rf_has gitlab "![diagram](https://gitlab.com/dragoant/sub/fixture/-/raw/$sha/$rel/docs/diagram.png)"
 rf_has gitlab "[Release notes](https://gitlab.com/dragoant/sub/fixture/-/releases)"
 rf_has gitlab "[Issues](https://gitlab.com/dragoant/sub/fixture/-/issues)"
-rf_quiet gitlab MSKIT_PKG021
-rf_quiet gitlab MSKIT_PKG017
-rf_quiet gitlab MSKIT_PKG016
+rf_quiet gitlab MSKITPKG021
+rf_quiet gitlab MSKITPKG017
+rf_quiet gitlab MSKITPKG016
 rf_notes gitlab "https://gitlab.com/dragoant/sub/fixture/-/releases"
 rf_pack gitlab-again Observer $gl
-rf_quiet gitlab-again MSKIT_PKG016
+rf_quiet gitlab-again MSKITPKG016
 rf_notes gitlab-again "https://gitlab.com/dragoant/sub/fixture/-/releases"
 rf_pack gitlab-no-releases Observer $gl -p:MSKit_ReleasesUrl=
-rf_warns gitlab-no-releases MSKIT_PKG016
+rf_warns gitlab-no-releases MSKITPKG016
 rf_pack gitlab-no-default Observer $gl -p:MSKit_DefaultReleaseNotes=False
-rf_warns gitlab-no-default MSKIT_PKG016
+rf_warns gitlab-no-default MSKITPKG016
 rf_pack gitlab-notes Observer $gl "-p:PackageReleaseNotes=See the changelog."
 rf_notes gitlab-notes "See the changelog."
 
@@ -116,29 +116,29 @@ rf_pack gitlab-self Observer -p:RepositoryUrl=https://git.example.org/team/fixtu
 rf_has gitlab-self "[the guide](https://git.example.org/team/fixture/-/blob/$sha/$rel/docs/guide.md)"
 rf_has gitlab-self "![diagram](https://git.example.org/team/fixture/-/raw/$sha/$rel/docs/diagram.png)"
 rf_has gitlab-self "[Issues](https://git.example.org/team/fixture/-/issues)"
-rf_quiet gitlab-self MSKIT_PKG016
+rf_quiet gitlab-self MSKITPKG016
 rf_notes gitlab-self "https://git.example.org/team/fixture/-/releases"
-rf_warns gitlab-self MSKIT_PKG021
-grep "warning MSKIT_PKG021" "$out/readme-gitlab-self.log" | grep -q "line 11" \
-  && pass "readme gitlab-self: MSKIT_PKG021 names the README line" || bad "readme gitlab-self: MSKIT_PKG021 does not name line 11"
-grep "warning MSKIT_PKG021" "$out/readme-gitlab-self.log" | grep -q "img.shields.io" \
+rf_warns gitlab-self MSKITPKG021
+grep "warning MSKITPKG021" "$out/readme-gitlab-self.log" | grep -q "line 11" \
+  && pass "readme gitlab-self: MSKITPKG021 names the README line" || bad "readme gitlab-self: MSKITPKG021 does not name line 11"
+grep "warning MSKITPKG021" "$out/readme-gitlab-self.log" | grep -q "img.shields.io" \
   && bad "readme gitlab-self: an allowed image host was warned" || pass "readme gitlab-self: allowed image hosts are not warned"
 
 # An unknown host: links stay relative, and the render checks on the generated file catch them.
 rf_pack unknown Observer -p:RepositoryUrl=https://code.example.net/team/fixture -p:RepositoryCommit=$sha
-rf_warns unknown MSKIT_PKG020
-rf_warns unknown MSKIT_PKG017
-rf_warns unknown MSKIT_PKG016
+rf_warns unknown MSKITPKG020
+rf_warns unknown MSKITPKG017
+rf_warns unknown MSKITPKG016
 rf_has unknown "[the guide](./docs/guide.md)"
 rf_pack unknown-releases Observer -p:RepositoryUrl=https://code.example.net/team/fixture -p:RepositoryCommit=$sha \
   "-p:MSKit_ReleasesUrl=https://code.example.net/team/fixture/changes"
-rf_quiet unknown-releases MSKIT_PKG016
+rf_quiet unknown-releases MSKITPKG016
 rf_notes unknown-releases "https://code.example.net/team/fixture/changes"
 
 # Overrides: provider, templates, an empty releases URL (link omitted), a custom issues URL.
 rf_pack provider Observer -p:RepositoryUrl=https://code.example.net/team/fixture -p:RepositoryCommit=$sha -p:MSKit_RepoProvider=GitLab
 rf_has provider "[the guide](https://code.example.net/team/fixture/-/blob/$sha/$rel/docs/guide.md)"
-rf_quiet provider MSKIT_PKG020
+rf_quiet provider MSKITPKG020
 rf_pack override Observer $gh \
   "-p:MSKit_RepoBlobUrlTemplate=https://src.example.net/{repoPath}/view/{commit}/{path}" \
   "-p:MSKit_RepoRawUrlTemplate=https://raw.githubusercontent.com/mirror/{repo}/{commit}/{path}" \
@@ -150,7 +150,7 @@ rf_has override "[Issues](https://tracker.example.net/fixture)"
 
 # A private repository: the links will not open for package readers.
 rf_pack private Observer $gh -p:MSKit_RepositoryVisibility=private
-rf_warns private MSKIT_PKG022
+rf_warns private MSKITPKG022
 
 # Title (MSKit_PackageReadmeTitle): the first level-1 heading becomes the package id, per package.
 rf_first() {
