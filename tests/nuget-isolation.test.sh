@@ -108,7 +108,7 @@ kill "$live" 2> /dev/null || true
   || bad "sweep left: $(ls -A "$root" | tr '\n' ' ')"
 
 # --- the run lifecycle, with a stub for the machine's folder --------------------------------------
-repo="$t/repo"; machine="$t/machine"; mkdir -p "$repo/dist" "$machine/somepkg/1.0.0"
+repo="$t/repo"; machine="$t/machine"; machine_long="$t/machine with a longer name"; mkdir -p "$repo/dist" "$machine/somepkg/1.0.0" "$machine_long"
 printf 'machine\n' > "$machine/somepkg/1.0.0/file"
 machine_before=$(listing "$machine")
 cat > "$t/runner.sh" <<'EOF'
@@ -200,6 +200,75 @@ for want in "added dragoant.fixture.cacheprobe/1.0.0 (the run packed it)" "chang
   grep -qxF "$want" "$t/guard.red" && pass "the guard reports: $want" || bad "the guard missed '$want': $(tr '\n' ';' < "$t/guard.red")"
 done
 grep -q newtonsoft "$t/guard.red" && bad "the guard reported a third-party package" || pass "the guard ignores third-party packages"
+
+# --- a folder another run is still creating --------------------------------------------------------
+root="$t/half"; mkdir -p "$root/no-marker" "$root/empty-marker" "$root/odd-marker"
+: > "$root/empty-marker/$ni_marker"; printf 'pid=soon\n' > "$root/odd-marker/$ni_marker"
+ni_sweep "$root"
+[ -d "$root/no-marker" ] && [ -d "$root/empty-marker" ] && [ -d "$root/odd-marker" ] \
+  && pass "the sweep leaves a folder whose marker is missing or not yet written" || bad "the sweep removed a half-created folder: left $(ls -A "$root" | tr '\n' ' ')"
+ni_mark "$root/fresh"
+[ "$(cat "$root/fresh/$ni_marker")" = "pid=$$" ] && [ "$(ls -A "$root/fresh")" = "$ni_marker" ] \
+  && pass "a run's folder appears with its marker already written" || bad "ni_mark left: $(ls -A "$root/fresh" 2> /dev/null | tr '\n' ' ')"
+
+# --- the machine's folder behind a link ----------------------------------------------------------
+link="$t/machine-link"; linked_parent="$t/parent-link"
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*)
+    cmd //c mklink //J "$(cygpath -w "$link")" "$(cygpath -w "$machine")" > /dev/null
+    cmd //c mklink //J "$(cygpath -w "$linked_parent")" "$(cygpath -w "$t")" > /dev/null ;;
+  *) ln -s "$machine" "$link"; ln -s "$t" "$linked_parent" ;;
+esac
+refused=0
+for candidate in "$link" "$linked_parent/machine" "$linked_parent/machine-link/"; do
+  ni_check_shared "$candidate" "$machine" 2> /dev/null && bad "a link to the machine's folder was accepted: $candidate" || refused=$((refused+1))
+done
+case "$(uname -s)" in MINGW*|MSYS*|CYGWIN*)
+  short=$(cygpath -m -s "$machine_long" 2> /dev/null || true)
+  if [ -n "$short" ] && [ "$short" != "$(cygpath -m "$machine_long")" ]; then
+    ni_check_shared "$short" "$machine_long" 2> /dev/null && bad "the short (8.3) name of the machine's folder was accepted: $short" || pass "the short (8.3) name of the machine's folder is refused"
+  fi ;;
+esac
+[ "$refused" = 3 ] && pass "a link to the machine's folder, in any path segment, is refused" || bad "refused $refused of 3 links to the machine's folder"
+for l in "$link" "$linked_parent"; do rm "$l" 2> /dev/null || rmdir "$l"; done
+
+# --- one kit-package predicate, exact on id boundaries --------------------------------------------
+kit=$(printf '%s\n' dragoant.msbuildkit DragoAnt.MSBuildKit.Manager dragoant.msbuildkitfoo dragoant.fixture.cacheprobe dragoant.fixtures newtonsoft.json | ni_filter_ids kit | tr '\n' ' ')
+[ "$kit" = "dragoant.msbuildkit DragoAnt.MSBuildKit.Manager dragoant.fixture.cacheprobe " ] \
+  && pass "a kit prefix matches the id itself and ids under it, in any case, and no longer id" || bad "kit ids: '$kit'"
+other=$(printf '%s\n' dragoant.msbuildkit dragoant.msbuildkitfoo newtonsoft.json | ni_filter_ids other | tr '\n' ' ')
+[ "$other" = "dragoant.msbuildkitfoo newtonsoft.json " ] && pass "every id is a kit package or not, never both" || bad "other ids: '$other'"
+
+# --- a shared folder that already holds a kit package ---------------------------------------------
+shared="$t/stale/shared"
+mkpkg "$shared" newtonsoft.json 13.0.3 "$nuget_org"; mkdir -p "$shared/.staging"
+ni_check_shared_content "$shared" 2> /dev/null && pass "a shared folder of third-party packages is accepted" || bad "a clean shared folder was refused"
+mkpkg "$shared" dragoant.msbuildkit.manager 0.1.0 "$nuget_org"
+if ni_check_shared_content "$shared" 2> "$t/stale.log"; then bad "a shared folder holding a kit package was accepted"
+else grep -q "dragoant.msbuildkit.manager" "$t/stale.log" && pass "a shared folder holding a kit package is refused by name" || bad "refusal without the package: $(cat "$t/stale.log")"; fi
+(
+  here="$repo"
+  ni_machine_folder() { printf '%s\n' "$machine"; }
+  MSBUILDKIT_TESTS_NUGET_SHARED_DIR="$shared"
+  ni_begin stale fallback
+) > "$t/stale-run.log" 2>&1 && bad "a run started on a shared folder holding a kit package" || pass "a run refuses a shared folder holding a kit package"
+
+# --- a package that cannot be saved ---------------------------------------------------------------
+src="$t/w/run"; shared="$t/w/shared"
+mkpkg "$src" newtonsoft.json 13.0.3 "$nuget_org"; mkpkg "$src" xunit.v3 4.0.1 "$nuget_org"
+status=0
+moved=$(ni_take_tree() { case "$1" in */newtonsoft.json/*) return 1 ;; *) mv "$1" "$2" ;; esac; }; ni_harvest "$src" "$shared" 2> "$t/w.err") || status=$?
+[ "$status" = 0 ] && [ "$moved" = 1 ] && grep -q "newtonsoft.json 13.0.3" "$t/w.err" && ! grep -q xunit "$t/w.err" \
+  && pass "a package that cannot be saved is named in a warning and the harvest goes on" || bad "failed save: exit $status, moved $moved, said '$(cat "$t/w.err")'"
+
+# --- a folder that cannot be removed --------------------------------------------------------------
+mkdir -p "$t/stuck"
+status=0
+tries=$(ni_rm() { echo try; return 1; }; ni_retry_pause() { :; }; ni_remove "$t/stuck" 2> "$t/stuck.err" | grep -c try) || status=$?
+[ "$tries" = 3 ] && grep -q "$t/stuck" "$t/stuck.err" && pass "a folder that cannot be removed is retried, reported and left to the next run's sweep" \
+  || bad "stuck folder: $tries tries, said '$(cat "$t/stuck.err")'"
+if grep -nE 'build-server|taskkill|pkill|killall|locals[^|]*--clear|locals[^|]* -c( |$)' "$here/tests/nuget-isolation.sh" > "$t/wide"; then bad "nuget-isolation.sh acts on the whole machine: $(cat "$t/wide")"
+else pass "nuget-isolation.sh stops no process and clears no machine cache"; fi
 
 echo
 if [ "$failures" -eq 0 ]; then echo "nuget isolation unit checks: all passed"; else echo "nuget isolation unit checks: $failures failure(s)"; exit 1; fi
