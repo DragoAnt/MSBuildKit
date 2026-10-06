@@ -18,7 +18,7 @@ The path is relative to the git root (or absolute). It wins over a `package.read
 3. **`<!-- nuget:only <PackageId> -->` … `<!-- /nuget:only -->`** blocks stay only in the readme of the packages they name (several ids: separate with spaces or commas). Unmarked content goes to every package, so a multi-package repository keeps one README.
 4. **The title is the package id.** The first level-1 heading (`# …`, or a `===`-underlined one) becomes `# <PackageId>`, so each package of a multi-package repository is named on its own page; a README with no level-1 heading gets the title as its first line. Only the content this package keeps counts: a heading inside a `nuget:skip` block, another package's `nuget:only` block or a code fence is never the one replaced. Set `MSKit_PackageReadmeTitle` to another title, or empty to keep the README's own heading.
 5. **Release notes and Issues links** are added to the overview when it does not already link those pages: the `## Overview` section when there is one, else the text above the first `##` heading.
-6. The `MSKIT_PKG` checks then run on the generated file, so a link the generator could not rewrite is still caught by `MSKIT_PKG017` / `MSKIT_PKG009`.
+6. The `MSKITPKG` checks then run on the generated file, so a link the generator could not rewrite is still caught by `MSKITPKG017` / `MSKITPKG009`.
 
 The markers are matched on lines of their own, outside code fences. A README that documents the markers in a fenced block is safe.
 
@@ -55,7 +55,7 @@ A self-hosted GitLab is recognised through the same item Source Link uses:
 | `MSKit_ReleasesUrl` | `auto` | The release-notes page, also the default `PackageReleaseNotes` off GitHub; empty leaves the link out |
 | `MSKit_IssuesUrl` | `auto` | The issues page; empty leaves the link out |
 | `MSKit_PackageReadmeTitle` | `auto` (the `PackageId`) | The text of the first level-1 heading; empty keeps the README's own heading |
-| `MSKit_RepositoryVisibility` | `$(CI_PROJECT_VISIBILITY)` | `private` or `internal` raises `MSKIT_PKG022` |
+| `MSKit_RepositoryVisibility` | `$(CI_PROJECT_VISIBILITY)` | `private` or `internal` raises `MSKITPKG022` |
 | `MSKit_GeneratedPackageReadmePath` | `obj/<Configuration>/package.readme.md` | Where the generated file goes |
 | `MSKit_PackageReadmeAllowedImageHosts` | the kit's list | `;`-separated hosts that replace the list below |
 
@@ -73,14 +73,14 @@ These stay warnings on CI; skip one with `MSKit_SkipPackageChecks` or `NoWarn` l
 
 | Code | Fires when |
 | --- | --- |
-| [`MSKIT_PKG020`](./reference/codes.md#mskitpkg020) | the README is missing, a marker is unbalanced, a path leaves the repository, or links cannot be rewritten (no repository URL, an unknown host, no commit) |
-| [`MSKIT_PKG021`](./reference/codes.md#mskitpkg021) | an image is served from a host nuget.org does not render images from; the warning names the image and its README line |
-| [`MSKIT_PKG022`](./reference/codes.md#mskitpkg022) | the repository is private or internal, so the links will not open for package readers |
+| [`MSKITPKG020`](./reference/codes.md#mskitpkg020) | the README is missing, a marker is unbalanced, a path leaves the repository, or links cannot be rewritten (no repository URL, an unknown host, no commit) |
+| [`MSKITPKG021`](./reference/codes.md#mskitpkg021) | an image is served from a host nuget.org does not render images from; the warning names the image and its README line |
+| [`MSKITPKG022`](./reference/codes.md#mskitpkg022) | the repository is private or internal, so the links will not open for package readers |
 
 ## Allowed image hosts
 
-nuget.org shows readme images only from [a fixed list of hosts](https://learn.microsoft.com/nuget/nuget-org/package-readme-on-nuget-org#allowed-domains-for-images-and-badges). The kit ships that list as `.toolkit/msbuild/DragoAnt.MSBuildKit.Packaging/nuget.allowed-image-hosts.txt` (copied from the page on 2026-10-05) and refreshes it with kit releases; nothing is downloaded during a build. `raw.githubusercontent.com` and `gitlab.com` are on it, so images from a GitHub or gitlab.com repository render; a self-hosted GitLab is not, and its images raise `MSKIT_PKG021`.
+nuget.org shows readme images only from [a fixed list of hosts](https://learn.microsoft.com/nuget/nuget-org/package-readme-on-nuget-org#allowed-domains-for-images-and-badges). The kit ships that list as `.toolkit/msbuild/DragoAnt.MSBuildKit.Packaging/nuget.allowed-image-hosts.txt` (copied from the page on 2026-10-05) and refreshes it with kit releases; nothing is downloaded during a build. `raw.githubusercontent.com` and `gitlab.com` are on it, so images from a GitHub or gitlab.com repository render; a self-hosted GitLab is not, and its images raise `MSKITPKG021`.
 
 ## Build cost
 
-The generator runs on `dotnet pack` only, once per project (before `GenerateNuspec`), never on `dotnet build`, a design-time build or a per-framework inner build. It is incremental: the README, the kit's host list and a stamp of the settings above are its inputs, so a second pack with nothing changed skips it. One in-process pass, no network, no process started. The generator and the `MSKIT_PKG` checks are one inline task, so a pack compiles it once whichever of the two runs.
+The generator runs on `dotnet pack` only, once per project (before `GenerateNuspec`), never on `dotnet build`, a design-time build or a per-framework inner build. It is incremental: the README, the kit's host list and a stamp of the settings above are its inputs, so a second pack with nothing changed skips it. One in-process pass, no network, no process started. The generator and the `MSKITPKG` checks are one inline task, so a pack compiles it once whichever of the two runs.

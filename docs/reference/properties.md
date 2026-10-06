@@ -29,6 +29,7 @@ Every property and item the kit sets or reads, grouped by topic. **Set** = a val
 | `MSKit_ProjectObjDir` | out | | The project's `obj` folder, absolute |
 | `MSKit_Templates` | set | `.toolkit/.local/` | Templates for local files ([Local files](../local-files.md)) |
 | `MSKit_Diagnostic` | set | `false` | Reserved; nothing reads it in this version |
+| `MSKit_CodesHelpBaseUrl` | set | `https://github.com/DragoAnt/MSBuildKit/blob/main/docs/reference/codes.md` | The page every warning and error links to (`HelpLink`); the link adds `#` and the code in lower case ([code reference](./codes.md)). Point it at your own copy of the page |
 
 ## Versioning
 
@@ -45,7 +46,7 @@ Every property and item the kit sets or reads, grouped by topic. **Set** = a val
 | `MSKit_IsReleaseTagValid` | out | | |
 | `MSKit_PullRequestNumber` | set | from `GITHUB_REF` / `GITHUB_REF_NAME` | `{prNumber}` |
 | `MSKit_BuildDateTimeUtc` | set | the environment variable of that name, else each project's own clock | One date for a whole build |
-| `MSKit_SkipAudit_ReleaseTagPrefix` | set | empty | `True` silences `MSKIT_VER007` |
+| `MSKit_SkipAudit_ReleaseTagPrefix` | set | empty | `True` silences `MSKITVER007` |
 
 ## Target frameworks
 
@@ -59,7 +60,7 @@ Every property and item the kit sets or reads, grouped by topic. **Set** = a val
 | `IsTfmConstantsImported` | out | | The constants file is loaded |
 | `MSKit_TargetFramework_Shared`, `MSKit_TargetFrameworks_Shared` | out | | The value declared in `Directory.Build.props` ([declared once](../build.md#target-frameworks-declared-once)) |
 | `MSKit_TargetFramework_Proj`, `MSKit_TargetFrameworks_Proj` | out | | The value declared in the csproj |
-| `MSKit_SkipAudit_TargetFrameworkOverride` | set | empty | `True` accepts a different csproj value (`MSKIT_SHARED008` / `009`) |
+| `MSKit_SkipAudit_TargetFrameworkOverride` | set | empty | `True` accepts a different csproj value (`MSKITSHARED008` / `009`) |
 | `MSKit_GuardXmlPeekRoutine`, `MSKit_GuardXmlPeekAudit` | set | empty (on) | `False` skips the text pre-check before parsing the csproj |
 
 ## Build defaults and reference checks
@@ -69,15 +70,15 @@ Every property and item the kit sets or reads, grouped by topic. **Set** = a val
 | `MSKit_IncludeCodeAnalysisGlobalUsings` | set | `True` | The kit's [global usings](../build.md#global-usings) |
 | `ExcludeFromCodeCoverage` | set | `True` for test projects | Adds `[ExcludeFromCodeCoverage]` to the assembly |
 | `MSKit_TreatWarningsAsErrors_Shared` | out | | `TreatWarningsAsErrors` before the csproj body |
-| `MSKit_SkipAudit_TreatWarningsAsErrors` | set | `True` on CI | Skips `MSKIT_SHARED020` |
+| `MSKit_SkipAudit_TreatWarningsAsErrors` | set | `True` on CI | Skips `MSKITSHARED020` |
 | `MSKit_ImplicitPackageVersions` | set | `True` | The kit's [package versions](../build.md#central-package-versions) |
-| `MSKit_SkipAudit_ImplicitPackageDuplicates` | set | `False` | `True` skips `MSKIT_DUP001` |
+| `MSKit_SkipAudit_ImplicitPackageDuplicates` | set | `False` | `True` skips `MSKITDUP001` |
 | `MSKit_RestrictPackageReference` | item | `Moq` (`Type="Error"`, owner layer) | A banned (`Type="Error"`) or discouraged (`Type="Warning"`) package, with a `Message` ([reference checks](../build.md#reference-checks)) |
 | `MSKit_PackageReferenceNotAllowed`, `MSKit_ProjectReferenceNotAllowed` | item | | The checks' findings; read-only |
 | `MSKit_RestrictReferences` | set | `False` | Allow-list mode for both reference kinds |
 | `MSKit_RestrictProjectReferences`, `MSKit_RestrictPackageReferences` | set | `MSKit_RestrictReferences` | Allow-list mode for one kind (`Allowed="True"` required) |
 | `MSKit_PrereleasePackagePrefix` | set | owner layer `DragoAnt.` | Ids the prerelease check covers |
-| `MSKit_PrereleasePackageCheckAsWarning` | set | `true` | `false` makes `MSKIT_PRE001` an error |
+| `MSKit_PrereleasePackageCheckAsWarning` | set | `true` | `false` makes `MSKITPRE001` an error |
 | `MSKit_ProjectReferenceAsPrivateAssets`, `MSKit_PackageReferenceAsPrivateAssets` | set | empty | `True` makes every reference of that kind private ([Build](../build.md#private-references)) |
 | `ManufacturerName`, `FullManufacturerName` | set | `DragoAnt` (owner layer, unconditional) | The owner ([Customizing](../customizing.md#the-owner-layer)) |
 
@@ -98,11 +99,11 @@ Every property and item the kit sets or reads, grouped by topic. **Set** = a val
 | `MSKit_PackageReadmeSourcePath` | set | `package.readme.md`, else `README.md` next to the csproj | The README packed as `readme.md` |
 | `MSKit_PackageValidationBaselineVersion` | set | empty | The release package validation compares against |
 | `MSKit_DefaultReleaseNotes` | set | empty (on) | `False` turns the `PackageReleaseNotes` default off |
-| `MSKit_PackageChecksAsErrors` | set | `True` on CI | The `MSKIT_PKG` checks as errors ([Packaging](../packaging.md#checks)) |
+| `MSKit_PackageChecksAsErrors` | set | `True` on CI | The `MSKITPKG` checks as errors ([Packaging](../packaging.md#checks)) |
 | `MSKit_SkipPackageChecks` | set | empty | Codes to skip, `;`-separated, or `All` |
-| `MSKit_PackageDescriptionMinLength` | set | `30` | `MSKIT_PKG002` |
-| `MSKit_PackageIconSize` | set | `128` | `MSKIT_PKG015` |
-| `MSKit_SemVerRegex` | set | SemVer 2.0 | `MSKIT_PKG013` |
+| `MSKit_PackageDescriptionMinLength` | set | `30` | `MSKITPKG002` |
+| `MSKit_PackageIconSize` | set | `128` | `MSKITPKG015` |
+| `MSKit_SemVerRegex` | set | SemVer 2.0 | `MSKITPKG013` |
 
 ## Package readme
 
@@ -114,7 +115,7 @@ Every property and item the kit sets or reads, grouped by topic. **Set** = a val
 | `MSKit_RepoProvider` | set | detected | `GitHub`, `GitLab`, `AzureDevOps`, `Bitbucket`, `Gitea` |
 | `MSKit_RepoBlobUrlTemplate`, `MSKit_RepoRawUrlTemplate` | set | the provider's | File-link and image templates |
 | `MSKit_ReleasesUrl`, `MSKit_IssuesUrl` | set | `auto` | The links added to the overview; empty leaves one out |
-| `MSKit_RepositoryVisibility` | set | `CI_PROJECT_VISIBILITY` | `private` / `internal` raises `MSKIT_PKG022` |
+| `MSKit_RepositoryVisibility` | set | `CI_PROJECT_VISIBILITY` | `private` / `internal` raises `MSKITPKG022` |
 | `MSKit_PackageReadmeAllowedImageHosts` | set | the hosts file | `;`-separated hosts that replace the file's list |
 | `MSKit_PackageReadmeAllowedImageHostsFile` | set | the kit's `nuget.allowed-image-hosts.txt` | The hosts file |
 
@@ -148,7 +149,7 @@ Every property and item the kit sets or reads, grouped by topic. **Set** = a val
 | `MSKit_CodeAnalyzerProjectNameRegex`, `MSKit_CodeFixerProjectNameRegex`, `MSKit_SourceGeneratorProjectNameRegex` | set | `\.Analyzers$`, `\.CodeFixes$`, `\.SourceGenerator$` | Role names |
 | `MSKit_DisableCodeAnalyzerAutoDetect`, `MSKit_DisableCodeFixerAutoDetect`, `MSKit_DisableSourceGeneratorAutoDetect` | set | empty | `true` above the kit import turns detection off |
 | `MSKit_IsCodeAnalyzerAutoDetected`, `MSKit_IsCodeFixerAutoDetected`, `MSKit_IsSourceGeneratorAutoDetected` | out | | The name matched |
-| `MSKit_AutoDetectedProjectType` | item | | Every role the name matched; more than one is `MSKIT_CORE001` |
+| `MSKit_AutoDetectedProjectType` | item | | Every role the name matched; more than one is `MSKITCORE001` |
 | `MSKit_CodeAnalyzerSatelliteAttached`, `MSKit_CodeFixerSatelliteAttached`, `MSKit_SourceGeneratorSatelliteAttached` | out | | The role's part is installed |
 | `CodeAnalyzerCommonPropsPath`, `CodeFixerCommonPropsPath`, `SourceGeneratorCommonPropsPath`, `RoslynComponentCommonPropsPath` | out | | The props a Roslyn project imports |
 | `MSKit_HasCodeFixer` | set | `True` | Look for the sibling code-fix project |
@@ -176,6 +177,6 @@ Every property and item the kit sets or reads, grouped by topic. **Set** = a val
 
 | Name | Kind | Default | Meaning |
 | --- | --- | --- | --- |
-| `PackageAsProj_SkipChecks` | set | empty | `True` skips `MSKIT_PAP002` ([PackageAsProj](../optional-parts.md#packageasproj)) |
+| `PackageAsProj_SkipChecks` | set | empty | `True` skips `MSKITPAP002` ([PackageAsProj](../optional-parts.md#packageasproj)) |
 | `ProjMetadataOutDir` | set | empty (off) | Where the metadata YAML goes ([ProjMetadata](../optional-parts.md#projmetadata)) |
 | `MSKit_EFScriptsDir` | out | | The EF scripts folder ([EF](../optional-parts.md#ef)) |

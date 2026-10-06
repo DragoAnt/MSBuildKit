@@ -97,7 +97,7 @@
     <_MSKit_Ph_versionTag>$(VersionTag)</_MSKit_Ph_versionTag>
     <_MSKit_Ph_releaseTag Condition="'$(MSKit_IsReleaseTagValid)'=='true'">$(MSKit_ReleaseTag)</_MSKit_Ph_releaseTag>
     <!-- An invalid tag renders a valid placeholder so restore does not fail first with an opaque
-         error; ValidateReleaseTag then stops the build with MSKIT_VER006. -->
+         error; ValidateReleaseTag then stops the build with MSKITVER006. -->
     <_MSKit_Ph_releaseTag Condition="'$(MSKit_IsReleaseTagValid)'!='true'">0.0.0-invalid-release-tag</_MSKit_Ph_releaseTag>
     <_MSKit_Ph_prNumber>$(MSKit_PullRequestNumber)</_MSKit_Ph_prNumber>
     <_MSKit_Ph_buildNumber>$(MSKit_BuildNumber)</_MSKit_Ph_buildNumber>

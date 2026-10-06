@@ -30,29 +30,29 @@
       <_MSKit_TFs_ProjNodeCount>@(_MSKit_TFs_NodeCheckXmlResult-&gt;Count())</_MSKit_TFs_ProjNodeCount>
     </PropertyGroup>
 
-    <!-- MSKIT_SHARED006: csproj <TargetFramework> declares the SAME value as the shared config.
+    <!-- MSKITSHARED006: csproj <TargetFramework> declares the SAME value as the shared config.
          Pure literal duplicate; not bypassable. Reads MSKit_TargetFramework_Proj (set by Core
          tfm.routine.props at props phase). -->
-    <Error Code="MSKIT_SHARED006"
+    <Error Code="MSKITSHARED006" HelpLink="$(MSKit_CodesHelpBaseUrl)#mskitshared006"
            Condition="'$(MSKit_TargetFramework_Proj)'!=''
                       AND '$(MSKit_TargetFramework_Shared)'!=''
                       AND '$(MSKit_TargetFramework_Proj)'=='$(MSKit_TargetFramework_Shared)'"
            File="$(MSBuildProjectFullPath)"
            Text="csproj '$(MSBuildProjectName)' declares &lt;TargetFramework&gt;$(MSKit_TargetFramework_Proj)&lt;/TargetFramework&gt; which equals Directory.Build.props's &lt;TargetFramework&gt;$(MSKit_TargetFramework_Shared)&lt;/TargetFramework&gt; - the csproj declaration is redundant.%0AFix: remove this from the csproj &lt;PropertyGroup&gt;:%0A  &lt;TargetFramework&gt;$(MSKit_TargetFramework_Proj)&lt;/TargetFramework&gt;%0ADirectory.Build.props is the single source of truth.%0AThis check is not bypassable; pure literal duplication is always a code smell." />
 
-    <!-- MSKIT_SHARED007: csproj <TargetFrameworks> declares the SAME value as the shared config.
+    <!-- MSKITSHARED007: csproj <TargetFrameworks> declares the SAME value as the shared config.
          Pure literal duplicate; not bypassable. -->
-    <Error Code="MSKIT_SHARED007"
+    <Error Code="MSKITSHARED007" HelpLink="$(MSKit_CodesHelpBaseUrl)#mskitshared007"
            Condition="'$(MSKit_TargetFrameworks_Proj)'!=''
                       AND '$(MSKit_TargetFrameworks_Shared)'!=''
                       AND '$(MSKit_TargetFrameworks_Proj)'=='$(MSKit_TargetFrameworks_Shared)'"
            File="$(MSBuildProjectFullPath)"
            Text="csproj '$(MSBuildProjectName)' declares &lt;TargetFrameworks&gt;$(MSKit_TargetFrameworks_Proj)&lt;/TargetFrameworks&gt; which equals Directory.Build.props's &lt;TargetFrameworks&gt;$(MSKit_TargetFrameworks_Shared)&lt;/TargetFrameworks&gt; - the csproj declaration is redundant.%0AFix: remove this from the csproj &lt;PropertyGroup&gt;:%0A  &lt;TargetFrameworks&gt;$(MSKit_TargetFrameworks_Proj)&lt;/TargetFrameworks&gt;%0ADirectory.Build.props is the single source of truth.%0AThis check is not bypassable; pure literal duplication is always a code smell." />
 
-    <!-- MSKIT_SHARED008: csproj <TargetFramework> overrides DBP's <TargetFramework> with a different value.
+    <!-- MSKITSHARED008: csproj <TargetFramework> overrides DBP's <TargetFramework> with a different value.
          Warning by default; bypass with MSKit_SkipAudit_TargetFrameworkOverride=True.
          Does not fire when the csproj switches shape. -->
-    <Warning Code="MSKIT_SHARED008"
+    <Warning Code="MSKITSHARED008" HelpLink="$(MSKit_CodesHelpBaseUrl)#mskitshared008"
              Condition="'$(MSKit_SkipAudit_TargetFrameworkOverride)'!='True'
                         AND '$(MSKit_TargetFramework_Proj)'!=''
                         AND '$(MSKit_TargetFramework_Shared)'!=''
@@ -61,10 +61,10 @@
              File="$(MSBuildProjectFullPath)"
              Text="csproj '$(MSBuildProjectName)' declares &lt;TargetFramework&gt;$(MSKit_TargetFramework_Proj)&lt;/TargetFramework&gt; but Directory.Build.props centralizes &lt;TargetFramework&gt;$(MSKit_TargetFramework_Shared)&lt;/TargetFramework&gt; as the default.%0ARecommended: remove the csproj-level &lt;TargetFramework&gt; declaration (DBP is the single source of truth).%0ATo override intentionally, add to the csproj &lt;PropertyGroup&gt;:%0A  &lt;MSKit_SkipAudit_TargetFrameworkOverride&gt;True&lt;/MSKit_SkipAudit_TargetFrameworkOverride&gt;" />
 
-    <!-- MSKIT_SHARED009: csproj <TargetFrameworks> overrides DBP's <TargetFrameworks> with a different value.
+    <!-- MSKITSHARED009: csproj <TargetFrameworks> overrides DBP's <TargetFrameworks> with a different value.
          Warning by default; bypass with MSKit_SkipAudit_TargetFrameworkOverride=True.
          Does not fire when the csproj switches shape. -->
-    <Warning Code="MSKIT_SHARED009"
+    <Warning Code="MSKITSHARED009" HelpLink="$(MSKit_CodesHelpBaseUrl)#mskitshared009"
              Condition="'$(MSKit_SkipAudit_TargetFrameworkOverride)'!='True'
                         AND '$(MSKit_TargetFrameworks_Proj)'!=''
                         AND '$(MSKit_TargetFrameworks_Shared)'!=''
@@ -73,12 +73,12 @@
              File="$(MSBuildProjectFullPath)"
              Text="csproj '$(MSBuildProjectName)' declares &lt;TargetFrameworks&gt;$(MSKit_TargetFrameworks_Proj)&lt;/TargetFrameworks&gt; but Directory.Build.props centralizes &lt;TargetFrameworks&gt;$(MSKit_TargetFrameworks_Shared)&lt;/TargetFrameworks&gt; as the default.%0ARecommended: remove the csproj-level &lt;TargetFrameworks&gt; declaration (DBP is the single source of truth).%0ATo override intentionally, add to the csproj &lt;PropertyGroup&gt;:%0A  &lt;MSKit_SkipAudit_TargetFrameworkOverride&gt;True&lt;/MSKit_SkipAudit_TargetFrameworkOverride&gt;" />
 
-    <!-- MSKIT_SHARED010: csproj declares BOTH <TargetFramework> AND <TargetFrameworks>.
+    <!-- MSKITSHARED010: csproj declares BOTH <TargetFramework> AND <TargetFrameworks>.
          Error, non-bypassable. SDK silently ignores <TargetFramework>
          when <TargetFrameworks> is non-empty (cross-targeting wins); the redundant declaration
          is a code smell that should be fixed at source. Uses NODE-presence count (not value)
          so even the legacy <TargetFramework></TargetFramework> "clear" trick fires the audit. -->
-    <Error Code="MSKIT_SHARED010"
+    <Error Code="MSKITSHARED010" HelpLink="$(MSKit_CodesHelpBaseUrl)#mskitshared010"
            Condition="$(_MSKit_TF_ProjNodeCount) &gt; 0 AND $(_MSKit_TFs_ProjNodeCount) &gt; 0"
            File="$(MSBuildProjectFullPath)"
            Text="csproj '$(MSBuildProjectName)' declares BOTH &lt;TargetFramework&gt; AND &lt;TargetFrameworks&gt; in the same project. SDK silently ignores &lt;TargetFramework&gt; when &lt;TargetFrameworks&gt; is non-empty.%0AFix: remove one of these from the csproj &lt;PropertyGroup&gt; - pick the shape you actually want:%0A  &lt;TargetFramework&gt;$(MSKit_TargetFramework_Proj)&lt;/TargetFramework&gt;%0A    -- OR --%0A  &lt;TargetFrameworks&gt;$(MSKit_TargetFrameworks_Proj)&lt;/TargetFrameworks&gt;%0AThis check is not bypassable; declaring both is always wrong." />
@@ -87,7 +87,7 @@
     <PropertyGroup>
       <MSKit_SkipAudit_TreatWarningsAsErrors Condition="'$(MSKit_IsDevEnv)'!='True'">True</MSKit_SkipAudit_TreatWarningsAsErrors>
     </PropertyGroup>
-    <Error Code="MSKIT_SHARED020"
+    <Error Code="MSKITSHARED020" HelpLink="$(MSKit_CodesHelpBaseUrl)#mskitshared020"
            Condition="'$(MSKit_SkipAudit_TreatWarningsAsErrors)'!='True'
                       AND '$(MSKit_TreatWarningsAsErrors_Shared)'!=''
                       AND '$(TreatWarningsAsErrors)'!='$(MSKit_TreatWarningsAsErrors_Shared)'"

@@ -40,26 +40,26 @@ Set `MSKit_PackageValidationBaselineVersion` to the last published version once 
 
 | Code | Fires when |
 | --- | --- |
-| [`MSKIT_PKG001`](./reference/codes.md#mskitpkg001) | `Description` is missing, the SDK default, or the package id |
-| [`MSKIT_PKG002`](./reference/codes.md#mskitpkg002) | `Description` is shorter than `MSKit_PackageDescriptionMinLength` (30) |
-| [`MSKIT_PKG003`](./reference/codes.md#mskitpkg003) | no README is packed |
-| [`MSKIT_PKG004`](./reference/codes.md#mskitpkg004) | no `PackageTags` |
-| [`MSKIT_PKG005`](./reference/codes.md#mskitpkg005) | no icon |
-| [`MSKIT_PKG006`](./reference/codes.md#mskitpkg006) | no licence expression or file |
-| [`MSKIT_PKG007`](./reference/codes.md#mskitpkg007) | the deprecated `PackageLicenseUrl` is set |
-| [`MSKIT_PKG008`](./reference/codes.md#mskitpkg008) | the deprecated `PackageIconUrl` is set |
-| [`MSKIT_PKG009`](./reference/codes.md#mskitpkg009) | the README has relative images |
-| [`MSKIT_PKG010`](./reference/codes.md#mskitpkg010) | the README contains HTML |
-| [`MSKIT_PKG011`](./reference/codes.md#mskitpkg011) | the README uses GitHub alerts (`> [!NOTE]`) |
-| [`MSKIT_PKG012`](./reference/codes.md#mskitpkg012) | the README loads images from a host nuget.org blocks |
-| [`MSKIT_PKG013`](./reference/codes.md#mskitpkg013) | the version is not SemVer 2.0 (`MSKit_SemVerRegex`) |
-| [`MSKIT_PKG014`](./reference/codes.md#mskitpkg014) | no repository or project URL |
-| [`MSKIT_PKG015`](./reference/codes.md#mskitpkg015) | the icon is not a 128×128 PNG or JPEG (`MSKit_PackageIconSize`) |
-| [`MSKIT_PKG016`](./reference/codes.md#mskitpkg016) | no `PackageReleaseNotes` |
-| [`MSKIT_PKG017`](./reference/codes.md#mskitpkg017) | the README has relative links |
-| [`MSKIT_PKG018`](./reference/codes.md#mskitpkg018) | an open-source licence with an "All rights reserved" copyright |
-| [`MSKIT_PKG019`](./reference/codes.md#mskitpkg019) | the README contains a Mermaid diagram |
+| [`MSKITPKG001`](./reference/codes.md#mskitpkg001) | `Description` is missing, the SDK default, or the package id |
+| [`MSKITPKG002`](./reference/codes.md#mskitpkg002) | `Description` is shorter than `MSKit_PackageDescriptionMinLength` (30) |
+| [`MSKITPKG003`](./reference/codes.md#mskitpkg003) | no README is packed |
+| [`MSKITPKG004`](./reference/codes.md#mskitpkg004) | no `PackageTags` |
+| [`MSKITPKG005`](./reference/codes.md#mskitpkg005) | no icon |
+| [`MSKITPKG006`](./reference/codes.md#mskitpkg006) | no licence expression or file |
+| [`MSKITPKG007`](./reference/codes.md#mskitpkg007) | the deprecated `PackageLicenseUrl` is set |
+| [`MSKITPKG008`](./reference/codes.md#mskitpkg008) | the deprecated `PackageIconUrl` is set |
+| [`MSKITPKG009`](./reference/codes.md#mskitpkg009) | the README has relative images |
+| [`MSKITPKG010`](./reference/codes.md#mskitpkg010) | the README contains HTML |
+| [`MSKITPKG011`](./reference/codes.md#mskitpkg011) | the README uses GitHub alerts (`> [!NOTE]`) |
+| [`MSKITPKG012`](./reference/codes.md#mskitpkg012) | the README loads images from a host nuget.org blocks |
+| [`MSKITPKG013`](./reference/codes.md#mskitpkg013) | the version is not SemVer 2.0 (`MSKit_SemVerRegex`) |
+| [`MSKITPKG014`](./reference/codes.md#mskitpkg014) | no repository or project URL |
+| [`MSKITPKG015`](./reference/codes.md#mskitpkg015) | the icon is not a 128×128 PNG or JPEG (`MSKit_PackageIconSize`) |
+| [`MSKITPKG016`](./reference/codes.md#mskitpkg016) | no `PackageReleaseNotes` |
+| [`MSKITPKG017`](./reference/codes.md#mskitpkg017) | the README has relative links |
+| [`MSKITPKG018`](./reference/codes.md#mskitpkg018) | an open-source licence with an "All rights reserved" copyright |
+| [`MSKITPKG019`](./reference/codes.md#mskitpkg019) | the README contains a Mermaid diagram |
 
-Images, links, HTML and alerts inside a fenced block or inline code are ignored; a GitHub Actions workflow badge from `github.com` counts as an allowed image. The readme generator adds three warnings of its own, `MSKIT_PKG020`-`022`, which stay warnings on CI ([Package readme](./package-readme.md#warnings)).
+Images, links, HTML and alerts inside a fenced block or inline code are ignored; a GitHub Actions workflow badge from `github.com` counts as an allowed image. The readme generator adds three warnings of its own, `MSKITPKG020`-`022`, which stay warnings on CI ([Package readme](./package-readme.md#warnings)).
 
-**Skipping a check:** list its code in `MSKit_SkipPackageChecks` (`MSKIT_PKG004;MSKIT_PKG016`) or in `NoWarn`; `MSKit_SkipPackageChecks=All` skips them all. Set it in a csproj to skip for one package.
+**Skipping a check:** list its code in `MSKit_SkipPackageChecks` (`MSKITPKG004;MSKITPKG016`) or in `NoWarn`; `MSKit_SkipPackageChecks=All` skips them all. Set it in a csproj to skip for one package.

@@ -19,8 +19,8 @@ The kit imports `Directory.PackageAsProj.targets` from the solution folder when 
 
 | Code | When |
 | --- | --- |
-| [`MSKIT_PAP001`](./reference/codes.md#mskitpap001) | a package switched to a project is still resolved from the package: restore with `--force` |
-| [`MSKIT_PAP002`](./reference/codes.md#mskitpap002) | a package switched back is not restored yet: restore with `--force`, or set `PackageAsProj_SkipChecks=True` |
+| [`MSKITPAP001`](./reference/codes.md#mskitpap001) | a package switched to a project is still resolved from the package: restore with `--force` |
+| [`MSKITPAP002`](./reference/codes.md#mskitpap002) | a package switched back is not restored yet: restore with `--force`, or set `PackageAsProj_SkipChecks=True` |
 
 Keep `Directory.PackageAsProj.targets` out of git if the paths point at your own checkouts.
 

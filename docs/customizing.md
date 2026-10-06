@@ -32,7 +32,7 @@ Almost every default is written as `<X Condition="'$(X)'==''">`, so the first va
 | `MSKit_TestingFramework`, `MSKit_TestsAssertions` | `xunit.v3`, `AwesomeAssertions` | [Testing](./testing.md) |
 | `MSKit_RestrictPackageReference` | `Moq` as an error | [reference checks](./build.md#reference-checks) |
 
-**Another owner:** fork the kit, change `kit/.toolkit/msbuild/init.company.props` (and `.targets`) and `kit/.toolkit/res/package.icon.png`, publish releases from the fork and install with `update.sh --repo <owner>/<fork>` (recorded in `kit.json`, so later updates come from the fork). No part names an owner.
+**Another owner:** fork the kit, change `kit/.toolkit/msbuild/init.company.props` (and `.targets`) and `kit/.toolkit/res/package.icon.png`, publish releases from the fork and install with `update.sh --repo <owner>/<fork>` (recorded in `kit.json`, so later updates come from the fork). Set `MSKit_CodesHelpBaseUrl` in the owner layer to point the code links at the fork's code reference. No part names an owner.
 
 ## Extension files
 
