@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DragoAnt.MSBuildKit.Manager/DragoAnt.MSBuildKit.Manager.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DragoAnt.MSBuildKit.Manager.Tests/DragoAnt.MSBuildKit.Manager.Tests.csproj" />
+  </Folder>
+</Solution>
