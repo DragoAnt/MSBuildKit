@@ -3,13 +3,30 @@ using Spectre.Console.Cli;
 
 namespace DragoAnt.MSBuildKit.Manager.Infrastructure;
 
+/// <summary>Lets <see cref="CommandApp"/> resolve commands from an <see cref="IServiceCollection"/>; everything is a singleton.</summary>
 public sealed class DependencyInjectionTypeRegistrar(IServiceCollection _services) : ITypeRegistrar
 {
-    public ITypeResolver Build() => throw new NotImplementedException(_services.Count.ToString());
+    /// <inheritdoc />
+    public ITypeResolver Build() => new DependencyInjectionTypeResolver(_services.BuildServiceProvider());
 
-    public void Register(Type service, Type implementation) => throw new NotImplementedException();
+    /// <inheritdoc />
+    public void Register(Type service, Type implementation) => _services.AddSingleton(service, implementation);
 
-    public void RegisterInstance(Type service, object implementation) => throw new NotImplementedException();
+    /// <inheritdoc />
+    public void RegisterInstance(Type service, object implementation) => _services.AddSingleton(service, implementation);
 
-    public void RegisterLazy(Type service, Func<object> factory) => throw new NotImplementedException();
+    /// <inheritdoc />
+    public void RegisterLazy(Type service, Func<object> factory)
+    {
+        ArgumentNullException.ThrowIfNull(factory);
+        _services.AddSingleton(service, _ => factory());
+    }
+}
+
+internal sealed class DependencyInjectionTypeResolver(ServiceProvider _provider) : ITypeResolver, IDisposable
+{
+    // Spectre expects null for an unregistered type; throwing reads as a crashed resolver.
+    public object? Resolve(Type? type) => type is null ? null : _provider.GetService(type);
+
+    public void Dispose() => _provider.Dispose();
 }
