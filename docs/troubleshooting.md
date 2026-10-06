@@ -1,6 +1,6 @@
 # Troubleshooting
 
-Symptoms, their cause, and the fix. A build message with an `MSKIT` code is explained in the [code reference](./reference/codes.md).
+Symptoms, their cause, and the fix. A build message with an `MSKIT_` code is explained in the [code reference](./reference/codes.md).
 
 ## Updating
 
