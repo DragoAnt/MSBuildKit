@@ -95,6 +95,7 @@ Every property and item the kit sets or reads, grouped by topic. **Set** = a val
 | --- | --- | --- | --- |
 | `IsPackable` | set | `True` (owner layer); `False` for test projects and code fixes | |
 | `PackageIconPath` | set | `.toolkit/res/package.icon.png` (owner layer) | The icon (PNG or JPEG), packed as `icon<extension, lowercased>` |
+| `MSKit_DefaultPackageIconUrl` | set | empty (off) | A URL of the same icon, written as `PackageIconUrl` next to the kit's embedded icon for older clients; ignored when the project sets `PackageIcon` or `PackageIconUrl` ([Packaging](../packaging.md#package-metadata)) |
 | `MSKit_PackageIconSourcePath` | out | | The icon file the checks read |
 | `MSKit_PackageReadmeSourcePath` | set | `package.readme.md`, else `README.md` next to the csproj | The README packed as `readme.md` |
 | `MSKit_PackageValidationBaselineVersion` | set | empty | The release package validation compares against |
