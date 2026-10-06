@@ -31,12 +31,21 @@ It builds and tests the tool from `manager/`, so its `global.json` selects Micro
 
 ### NuGet packages during a run
 
-Both scripts restore into a global-packages folder of their own, `dist/selftest-nuget-packages` and `dist/manager-nuget-packages`, and remove it when the run ends. A package built by a test therefore never reaches the machine's folder (`dotnet nuget locals global-packages --list`), where any other build on the machine would resolve it instead of the published one.
+Both scripts restore into folders of their own and share third-party packages between runs, so a package built by a test never reaches the machine's global-packages folder (`dotnet nuget locals global-packages --list`), where any other build on the machine would resolve it instead of the published one.
 
-- The machine's folder stays a fallback folder (`NUGET_FALLBACK_PACKAGES`): a package it already holds is read from there, and NuGet writes nothing to a fallback folder. Everything else is downloaded into the run's folder; the HTTP cache is shared as usual.
-- `--no-nuget-fallback` restores every package into the run's folder.
-- Set `NUGET_PACKAGES` before the run to choose the folder yourself: the scripts then use it as it is and leave it in place.
-- Each run ends by packing a probe package, restoring it, and failing if a package the run built is in the machine's folder.
+| Folder | What | Lifetime |
+| --- | --- | --- |
+| `dist/nuget-runs/<script>.<pid>.<time>/packages` | the run's global-packages folder (`NUGET_PACKAGES`) | removed when the run ends, also on Ctrl+C or a termination signal |
+| `dist/nuget-runs/<script>.<pid>.<time>/http-cache` | the run's HTTP cache (`NUGET_HTTP_CACHE_PATH`) | the same |
+| `dist/nuget-shared` | the shared fallback folder (`NUGET_FALLBACK_PACKAGES`): third-party packages earlier runs downloaded | kept; delete it to start cold |
+
+- **Harvest.** When a run ends, each package it downloaded from an `https` feed moves into the shared folder, staged first and published with one rename, so parallel runs and a killed run cannot leave a half-written package. A package from a local folder, a loopback feed or plain `http` never moves there, and neither does a **kit package**: an id that starts with one of `DragoAnt.MSBuildKit`, `DragoAnt.Fixture.`, `DragoAnt.Samples.`. So a restore never gets a shared copy in place of a fresh local build.
+- **Variables.** `MSBUILDKIT_TESTS_NUGET_SHARED_DIR` names another shared folder, for example one that several checkouts use; the scripts refuse the machine's global-packages folder there. `MSBUILDKIT_TESTS_KIT_PACKAGE_PREFIXES` replaces the kit prefixes (`;`-separated).
+- **Clearing.** `rm -rf dist/nuget-shared` (or your own folder); the next run downloads again. A run killed outright leaves its `dist/nuget-runs` folder behind, and the next run removes it: only folders that carry the run marker file and whose process is gone.
+- `--no-nuget-fallback` neither reads nor fills the shared folder. A caller's `NUGET_PACKAGES`, `NUGET_HTTP_CACHE_PATH` or `NUGET_FALLBACK_PACKAGES` is used as it is; with your own `NUGET_PACKAGES` nothing is harvested.
+- **Guard.** Each run records the kit packages in the machine's folder with their hashes when it starts, and fails at its end if that list changed or the folder holds a package the run built. `tests/nuget-isolation.test.sh` checks the rules on hand-made folders, with a stand-in for the machine's folder.
+- A test reads restored packages through `ni_packages_dir`; a test file that names a packages folder itself fails the run. A scenario that needs a folder of its own sets `NUGET_PACKAGES` for that command: the variable outranks `globalPackagesFolder` in a `nuget.config`.
+- Do not wrap the scripts in `timeout`: it ends a child `dotnet` process in the middle of a restore.
 
 ## Changing the kit
 
@@ -46,7 +55,7 @@ Both scripts restore into a global-packages folder of their own, `dist/selftest-
 - The README stays short: key features, install, links. Detail goes to the topic page in `docs/`.
 - A new part needs a line in `kit/.toolkit/kit.parts` and its `init.props` / `init.targets` imports in the entry points.
 - Keep scripts POSIX `sh` and PowerShell 7 equivalent; `update.sh` and `update.ps1` must produce the same `.toolkit/`.
-- A test that restores a package built in this repository runs from `tests/run.sh` or `tests/manager.sh`, which keep it out of the machine's global-packages folder.
+- A test that restores a package built in this repository runs from `tests/run.sh` or `tests/manager.sh`, which keep it out of the machine's global-packages folder and out of the shared folder.
 - Add a line to `CHANGELOG.md` under `Unreleased`.
 
 ## Releasing
