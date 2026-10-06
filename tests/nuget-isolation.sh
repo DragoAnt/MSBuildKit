@@ -10,7 +10,7 @@ ni_native() { if command -v cygpath > /dev/null 2>&1; then cygpath -m "$1"; else
 # The global-packages folder NuGet uses under <dir> when no caller overrides it.
 ni_machine_folder() {
   (cd "$1" && env -u NUGET_PACKAGES dotnet nuget locals global-packages --list) | tr -d '\r' \
-    | sed -n 's/^global-packages: //p' | tr '\' '/' | sed 's:/*$::'
+    | sed -n 's/^global-packages: //p' | tr '\\' '/' | sed 's:/*$::'
 }
 
 # ni_begin <packages-dir> <fallback|no-fallback>: fallback reads the machine's folder for what it
@@ -70,10 +70,11 @@ ni_verify() {
     bad "nuget isolation: the probe package did not pack (see $ni_out/pack.log)"; return 0
   fi
 
-  if ni_restore_probe "$ni_out/run" "$ni_out/feed" "$ni_version" env && [ -d "$NUGET_PACKAGES/$ni_probe_id/$ni_version" ]; then
-    pass "nuget isolation: a package built and restored by the run lands in $NUGET_PACKAGES"
+  ni_target=${NUGET_PACKAGES:-$ni_machine}
+  if ni_restore_probe "$ni_out/run" "$ni_out/feed" "$ni_version" env && [ -d "$ni_target/$ni_probe_id/$ni_version" ]; then
+    pass "nuget isolation: a package built and restored by the run lands in $ni_target"
   else
-    bad "nuget isolation: the probe package is not in $NUGET_PACKAGES (see $ni_out/run/restore.log)"
+    bad "nuget isolation: the probe package is not in $ni_target (see $ni_out/run/restore.log)"
   fi
 
   if ni_leaked=$(ni_leaks "$ni_machine" "$ni_out/feed" "$@"); then
