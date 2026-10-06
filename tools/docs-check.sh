@@ -89,18 +89,18 @@ for k in properties items codes diagnostics; do touch "$work/$k"; sort -o "$work
 
 if [ -n "$list" ]; then cat "$work/$list"; exit 0; fi
 
-# Codes are spelled MSKIT<FAMILY><nnn>. The old spelling, an underscore after MSKIT (a code or a
+# Codes are spelled MSKIT<FAMILY><nnn>. The old spelling, an underscore after the prefix (a code or a
 # family), may appear only as "formerly `...`" in the code reference and in released changelog sections.
 if [ -e .git ]; then git ls-files -co --exclude-standard
 else find . \( -name .git -o -name bin -o -name obj -o -name dist -o -name .claude -o -name node_modules -o -name .toolkit \) -prune \
   -o -type f -print | sed 's|^\./||'; find kit/.toolkit -type f; fi > "$work/files"
 released=$(grep -n '^## \[[0-9]' CHANGELOG.md 2>/dev/null | head -n 1 | cut -d: -f1)
-tr '\n' '\0' < "$work/files" | xargs -0 grep -nIE 'MSKIT_[A-Z]' /dev/null 2>/dev/null \
+tr '\n' '\0' < "$work/files" | xargs -0 grep -nI 'MSKIT[_]' /dev/null 2>/dev/null \
   | awk -v released="${released:-0}" '
       { sub(/\r$/, ""); p = index($0, ":"); f = substr($0, 1, p - 1); rest = substr($0, p + 1); p = index(rest, ":"); ln = substr(rest, 1, p - 1); text = substr(rest, p + 1) }
       f == "CHANGELOG.md" && released > 0 && ln + 0 >= released { next }
-      f == "docs/reference/codes.md" { gsub(/formerly `MSKIT_[A-Z]+[0-9][0-9][0-9]`/, "", text) }
-      { while (match(text, /MSKIT_[A-Z]+[0-9]*/)) { print f ":" ln "\t" substr(text, RSTART, RLENGTH); text = substr(text, RSTART + RLENGTH) } }' > "$work/oldspelling" || true
+      f == "docs/reference/codes.md" { gsub(/formerly `MSKIT[_][A-Z]+[0-9][0-9][0-9]`/, "", text) }
+      { while (match(text, /MSKIT[_][A-Z]*[0-9]*/)) { print f ":" ln "\t" substr(text, RSTART, RLENGTH); text = substr(text, RSTART + RLENGTH) } }' > "$work/oldspelling" || true
 
 # Every Markdown file a reader sees, and every path in the repository for the link check.
 { for f in README.md CONTRIBUTING.md SECURITY.md; do [ -f "$f" ] && echo "$f"; done
@@ -120,9 +120,9 @@ awk -v dir="$work" '
     split($0, cell, "|"); c = cell[2]
     while (match(c, /`[^`]+`/)) { print "D\t" f "\t" substr(c, RSTART + 1, RLENGTH - 2); c = substr(c, RSTART + RLENGTH) }
   }
-  f == "docs/reference/codes.md" && /^#+[[:space:]]+`?MSKIT_?[A-Z]+[0-9][0-9][0-9]/ {
-    match($0, /MSKIT_?[A-Z]+[0-9][0-9][0-9]/); c = substr($0, RSTART, RLENGTH)
-    print (c ~ /^MSKIT_/ ? "U\t" f ":" FNR "\t" c : "D\t" f "\t" c)
+  f == "docs/reference/codes.md" && /^#+[[:space:]]+`?MSKIT[_]?[A-Z]+[0-9][0-9][0-9]/ {
+    match($0, /MSKIT[_]?[A-Z]+[0-9][0-9][0-9]/); c = substr($0, RSTART, RLENGTH)
+    print (c ~ /^MSKIT[_]/ ? "U\t" f ":" FNR "\t" c : "D\t" f "\t" c)
   }
   { line = $0; gsub(/`[^`]*`/, "", line)
     while (match(line, /\]\([^) ]+\)/)) { print "L\t" f "\t" FNR "\t" d "\t" substr(line, RSTART + 2, RLENGTH - 3); line = substr(line, RSTART + RLENGTH) } }
