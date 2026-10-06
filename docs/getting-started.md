@@ -88,7 +88,7 @@ A project whose name ends in `.Tests` is a test project: [xUnit v3](https://xuni
 </Project>
 ```
 
-With [central package management](https://learn.microsoft.com/nuget/consume-packages/central-package-management), leave the test packages out of `Directory.Packages.props`: the kit provides their versions ([`MSKITDUP001`](./reference/codes.md#mskitdup001) reports a duplicate).
+With [central package management](https://learn.microsoft.com/nuget/consume-packages/central-package-management), leave the test packages out of `Directory.Packages.props`: the kit provides their versions ([`MSKIT_DUP001`](./reference/codes.md#mskitdup001) reports a duplicate).
 
 ## 5 Build, test, pack
 

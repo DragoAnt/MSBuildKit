@@ -73,9 +73,9 @@ These stay warnings on CI; skip one with `MSKit_SkipPackageChecks` or `NoWarn` l
 
 | Code | Fires when |
 | --- | --- |
-| `MSKIT_PKG020` | the README is missing, a marker is unbalanced, a path leaves the repository, or links cannot be rewritten (no repository URL, an unknown host, no commit) |
-| `MSKIT_PKG021` | an image is served from a host nuget.org does not render images from; the warning names the image and its README line |
-| `MSKIT_PKG022` | the repository is private or internal, so the links will not open for package readers |
+| [`MSKIT_PKG020`](./reference/codes.md#mskitpkg020) | the README is missing, a marker is unbalanced, a path leaves the repository, or links cannot be rewritten (no repository URL, an unknown host, no commit) |
+| [`MSKIT_PKG021`](./reference/codes.md#mskitpkg021) | an image is served from a host nuget.org does not render images from; the warning names the image and its README line |
+| [`MSKIT_PKG022`](./reference/codes.md#mskitpkg022) | the repository is private or internal, so the links will not open for package readers |
 
 ## Allowed image hosts
 
