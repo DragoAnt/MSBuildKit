@@ -1,7 +1,7 @@
 #!/bin/sh
 # Kit self-test: installs the working-tree kit into the sample and the fixtures with update.sh,
 # then checks the version scheme, the sample's build/test/pack output and every package check.
-# Restores into a global-packages folder of its own (tests/nuget-isolation.sh) unless NUGET_PACKAGES is set.
+# Restores into folders of its own and shares third-party packages between runs (tests/nuget-isolation.sh).
 # Usage: sh tests/run.sh [--skip-tests] [--no-nuget-fallback]
 set -eu
 
@@ -29,8 +29,7 @@ pass() { echo "PASS  $*"; }
 bad() { echo "FAIL  $*"; failures=$((failures+1)); }
 
 . "$here/tests/nuget-isolation.sh"
-ni_begin "$out-nuget-packages" "$nuget_fallback"
-trap ni_end EXIT
+ni_begin selftest "$nuget_fallback"
 
 for root in "$sample" "$fixtures" "$readme_fixture" "$tfm_fixture" "$icon_fixture"; do
   sh "$kit/.toolkit/update.sh" --source "$kit" --root "$root" > "$out/install.log" || { cat "$out/install.log"; exit 1; }
@@ -56,7 +55,8 @@ version_case "pull request 15" "0.1.0-pr.15.7" GITHUB_EVENT_NAME=pull_request GI
 version_case "tag v2.0.0" "2.0.0" GITHUB_EVENT_NAME=release GITHUB_REF_TYPE=tag GITHUB_REF_NAME=v2.0.0 GITHUB_REF=refs/tags/v2.0.0
 version_case "tag 2.0.0" "2.0.0" GITHUB_EVENT_NAME=release GITHUB_REF_TYPE=tag GITHUB_REF_NAME=2.0.0 GITHUB_REF=refs/tags/2.0.0
 version_case "tag v2.1.0-beta.1" "2.1.0-beta.1" GITHUB_EVENT_NAME=release GITHUB_REF_TYPE=tag GITHUB_REF_NAME=v2.1.0-beta.1 GITHUB_REF=refs/tags/v2.1.0-beta.1
-explicit=$($clean_env $ci_env GITHUB_EVENT_NAME=release GITHUB_REF_TYPE=tag GITHUB_REF_NAME=v9.9.9 GITHUB_REF=refs/tags/v9.9.9 dotnet msbuild "$lib" -nologo -p:Version=3.4.5 -getProperty:Version 2>&1 | tr -d '' | tail -n 1)
+explicit=$($clean_env $ci_env GITHUB_EVENT_NAME=release GITHUB_REF_TYPE=tag GITHUB_REF_NAME=v9.9.9 GITHUB_REF=refs/tags/v9.9.9 dotnet msbuild "$lib" -nologo -p:Version=3.4.5 -getProperty:Version 2>&1 | tr -d '
+' | tail -n 1)
 [ "$explicit" = "3.4.5" ] && pass "version -p:Version=3.4.5 on a tag build -> $explicit (caller wins)" || bad "explicit -p:Version: expected 3.4.5, got '$explicit'"
 
 if $clean_env $ci_env GITHUB_EVENT_NAME=release GITHUB_REF_TYPE=tag GITHUB_REF_NAME=release-x GITHUB_REF=refs/tags/release-x \
@@ -125,6 +125,8 @@ grep -q "MSKITPKG" "$out/checks-skip.log" && bad "MSKit_SkipPackageChecks=All di
 . "$here/tests/package-icon.sh"
 . "$here/tests/codes.sh"
 . "$here/tests/docs.sh"
+if sh "$here/tests/nuget-isolation.test.sh" > "$out/nuget-isolation-unit.log" 2>&1; then pass "nuget isolation: the unit checks pass"
+else bad "nuget isolation: the unit checks (see $out/nuget-isolation-unit.log)"; grep "^FAIL" "$out/nuget-isolation-unit.log" || tail -n 5 "$out/nuget-isolation-unit.log"; fi
 ni_verify "$out" "$out"
 
 echo

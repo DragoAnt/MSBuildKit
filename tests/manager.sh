@@ -22,8 +22,7 @@ pass() { echo "PASS  $*"; }
 bad() { echo "FAIL  $*"; failures=$((failures+1)); }
 
 . "$here/tests/nuget-isolation.sh"
-ni_begin "$out-nuget-packages" "$fallback"
-trap ni_end EXIT
+ni_begin manager "$fallback"
 
 cd "$here/manager"
 dotnet build DragoAnt.MSBuildKit.Manager.slnx -c Release -nologo
