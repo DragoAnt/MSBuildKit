@@ -4,6 +4,10 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Changed
+
+- The documentation moved from the README into [docs/](./docs/README.md), one page per topic in reading order, with a [property reference](./docs/reference/properties.md) and a [code reference](./docs/reference/codes.md) that cover everything the kit sets, reads and reports. Corrected along the way: most packaging defaults apply to every project, not only packable ones; a Roslyn project imports its role's props itself; an update rewrites more than `.toolkit/msbuild/`; any tag build is a release build.
+
 ## [0.2.1] - 2026-10-05
 
 ### Added
