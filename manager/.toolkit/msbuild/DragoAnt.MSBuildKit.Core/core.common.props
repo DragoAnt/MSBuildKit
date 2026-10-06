@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <MSKit_Diagnostic Condition="'$(MSKit_Diagnostic)'==''">false</MSKit_Diagnostic>
+    <MSKit_CodesHelpBaseUrl Condition="'$(MSKit_CodesHelpBaseUrl)'==''">https://github.com/DragoAnt/MSBuildKit/blob/main/docs/reference/codes.md</MSKit_CodesHelpBaseUrl>
     <!-- True on a developer machine; the Vcs.GitHub part flips it to False on GitHub Actions. -->
     <MSKit_IsDevEnv Condition="'$(MSKit_IsDevEnv)'==''">True</MSKit_IsDevEnv>
 
