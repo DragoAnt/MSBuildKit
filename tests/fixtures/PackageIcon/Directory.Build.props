@@ -1,0 +1,12 @@
+<Project>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Description>A fixture package that checks which icon is packed, and under which name.</Description>
+    <PackageTags>fixture icon</PackageTags>
+    <PackageIconPath Condition="'$(FixtureIcon)'!=''">$(MSBuildThisFileDirectory)Icons/$(FixtureIcon)</PackageIconPath>
+  </PropertyGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory).toolkit/msbuild/init.props" />
+
+</Project>

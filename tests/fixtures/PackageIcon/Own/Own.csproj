@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Sets its own PackageIcon: the kit must not replace it or pack its own icon next to it. -->
+  <PropertyGroup>
+    <PackageId>DragoAnt.Fixture.OwnIcon</PackageId>
+    <PackageIcon>logo.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="logo.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

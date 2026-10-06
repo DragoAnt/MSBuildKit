@@ -29,7 +29,7 @@
       <Output TaskParameter="HtmlTags" PropertyName="_MSKit_HtmlTags" />
       <Output TaskParameter="Alerts" PropertyName="_MSKit_Alerts" />
       <Output TaskParameter="HasMermaid" PropertyName="_MSKit_HasMermaid" />
-      <Output TaskParameter="IconIsPng" PropertyName="_MSKit_IconIsPng" />
+      <Output TaskParameter="IconFormat" PropertyName="_MSKit_IconFormat" />
       <Output TaskParameter="IconWidth" PropertyName="_MSKit_IconWidth" />
       <Output TaskParameter="IconHeight" PropertyName="_MSKit_IconHeight" />
     </MSKit_PackageAssets>
@@ -60,7 +60,7 @@
                          Text="Package '$(PackageId)' has no PackageTags. Add a few search terms that are not already in the package id."
                          Rule="$(_MSKit_PkgRules)#tags" />
       <_MSKit_PkgFinding Include="MSKIT_PKG005" Condition="'$(PackageIcon)'==''"
-                         Text="Package '$(PackageId)' has no icon. Set PackageIconPath to a 128x128 PNG (the company layer of the kit sets one for every package)."
+                         Text="Package '$(PackageId)' has no icon. Set PackageIconPath to a 128x128 PNG or JPEG (the company layer of the kit sets one for every package)."
                          Rule="$(_MSKit_PkgRules)#icon" />
       <_MSKit_PkgFinding Include="MSKIT_PKG006" Condition="'$(PackageLicenseExpression)'=='' AND '$(PackageLicenseFile)'==''"
                          Text="Package '$(PackageId)' has no licence. Without one nobody may use it. Set PackageLicenseExpression to an SPDX id (for example MIT)."
@@ -89,8 +89,8 @@
       <_MSKit_PkgFinding Include="MSKIT_PKG014" Condition="'$(_MSKit_RepoUrlFinal)'=='' OR '$(PackageProjectUrl)'==''"
                          Text="Package '$(PackageId)' has no repository or project URL. Set RepositoryUrl, or build from a git clone whose origin remote Source Link can read."
                          Rule="$(_MSKit_PkgRules)#repository-type-and-url" />
-      <_MSKit_PkgFinding Include="MSKIT_PKG015" Condition="'$(MSKit_PackageIconSourcePath)'!='' AND Exists('$(MSKit_PackageIconSourcePath)') AND ('$(_MSKit_IconIsPng)'!='True' OR '$(_MSKit_IconWidth)'!='$(MSKit_PackageIconSize)' OR '$(_MSKit_IconHeight)'!='$(MSKit_PackageIconSize)')"
-                         Text="Package '$(PackageId)' icon is not a $(MSKit_PackageIconSize)x$(MSKit_PackageIconSize) PNG (PNG: $(_MSKit_IconIsPng), size: $(_MSKit_IconWidth)x$(_MSKit_IconHeight))."
+      <_MSKit_PkgFinding Include="MSKIT_PKG015" Condition="'$(MSKit_PackageIconSourcePath)'!='' AND Exists('$(MSKit_PackageIconSourcePath)') AND (('$(_MSKit_IconFormat)'!='PNG' AND '$(_MSKit_IconFormat)'!='JPEG') OR '$(_MSKit_IconWidth)'!='$(MSKit_PackageIconSize)' OR '$(_MSKit_IconHeight)'!='$(MSKit_PackageIconSize)')"
+                         Text="Package '$(PackageId)' icon is not a $(MSKit_PackageIconSize)x$(MSKit_PackageIconSize) PNG or JPEG (format: $(_MSKit_IconFormat), size: $(_MSKit_IconWidth)x$(_MSKit_IconHeight))."
                          Rule="$(_MSKit_PkgRules)#icon" />
       <_MSKit_PkgFinding Include="MSKIT_PKG016" Condition="'$(PackageReleaseNotes)'==''"
                          Text="Package '$(PackageId)' has no PackageReleaseNotes. Set them, or a link to the changelog (the kit links the releases page by default on GitHub, and on any host the generated readme knows with MSKit_PackageReadmeFrom)."

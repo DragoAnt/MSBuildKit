@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The kit's icon by default; FixtureIcon picks another file in this folder. -->
+  <PropertyGroup>
+    <PackageId>DragoAnt.Fixture.Icons</PackageId>
+  </PropertyGroup>
+
+</Project>

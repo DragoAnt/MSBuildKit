@@ -34,7 +34,7 @@ Every warning and error the kit reports, one section per code. The kit reports e
 
 ### MSKITPKG005
 
-`MSKIT_PKG005` — no icon. Set `PackageIconPath` to a 128×128 PNG; the owner layer sets one for every package.
+`MSKIT_PKG005` — no icon. Set `PackageIconPath` to a 128×128 PNG or JPEG, packed as `icon<extension, lowercased>`; the owner layer sets one for every package.
 
 ### MSKITPKG006
 
@@ -74,7 +74,7 @@ Every warning and error the kit reports, one section per code. The kit reports e
 
 ### MSKITPKG015
 
-`MSKIT_PKG015` — the icon is not a PNG of `MSKit_PackageIconSize` × `MSKit_PackageIconSize` pixels (128).
+`MSKIT_PKG015` — the icon is not a PNG or JPEG of `MSKit_PackageIconSize` × `MSKit_PackageIconSize` pixels (128); the size is checked on both formats.
 
 ### MSKITPKG016
 

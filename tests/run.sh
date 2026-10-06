@@ -10,6 +10,7 @@ sample="$here/samples/MinimalLibrary"
 fixtures="$here/tests/fixtures/PackageChecks"
 readme_fixture="$here/tests/fixtures/PackageReadme"
 tfm_fixture="$here/tests/fixtures/TfmConstants"
+icon_fixture="$here/tests/fixtures/PackageIcon"
 out="$here/dist/selftest"
 run_tests=1
 [ "${1:-}" = "--skip-tests" ] && run_tests=0
@@ -19,7 +20,7 @@ failures=0
 pass() { echo "PASS  $*"; }
 bad() { echo "FAIL  $*"; failures=$((failures+1)); }
 
-for root in "$sample" "$fixtures" "$readme_fixture" "$tfm_fixture"; do
+for root in "$sample" "$fixtures" "$readme_fixture" "$tfm_fixture" "$icon_fixture"; do
   sh "$kit/.toolkit/update.sh" --source "$kit" --root "$root" > "$out/install.log" || { cat "$out/install.log"; exit 1; }
 done
 pass "update.sh installed the kit into the sample and the fixtures"
@@ -109,6 +110,7 @@ grep -q "MSKIT_PKG" "$out/checks-skip.log" && bad "MSKit_SkipPackageChecks=All d
 
 . "$here/tests/package-readme.sh"
 . "$here/tests/tfm-constants.sh"
+. "$here/tests/package-icon.sh"
 . "$here/tests/docs.sh"
 
 echo
