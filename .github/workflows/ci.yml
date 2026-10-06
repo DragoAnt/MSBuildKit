@@ -78,3 +78,82 @@ jobs:
           path: |
             dist/selftest
             dist/kit
+
+  manager:
+    name: Manager (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: manager
+    env:
+      TOOL_VERSION: 0.0.0-ci.${{ github.run_number }}
+      OUT: ../dist/manager
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Install .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Build
+        run: dotnet build DragoAnt.MSBuildKit.Manager.slnx -c Release -nologo
+
+      - name: Test
+        run: |
+          mkdir -p "$OUT"
+          dotnet test --solution DragoAnt.MSBuildKit.Manager.slnx -c Release --no-build \
+            --coverage --coverage-output-format cobertura --report-trx --report-xunit-junit \
+            --results-directory "$OUT/TestResults" 2>&1 | tee "$OUT/test.log"
+
+      - name: Prove the tests ran on Microsoft.Testing.Platform
+        run: |
+          grep -q 'Test run summary:' "$OUT/test.log" || { echo "dotnet test did not run on Microsoft.Testing.Platform (no MTP summary in the log)"; exit 1; }
+          echo "dotnet test ran on Microsoft.Testing.Platform (manager/global.json test.runner)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Coverage gate (70 %)
+        run: |
+          files=$(find "$OUT/TestResults" -name '*.cobertura.xml')
+          [ -n "$files" ] || { echo "no cobertura report"; exit 1; }
+          for f in $files; do
+            rate=$(tr -d '\r' < "$f" | sed -n 's/.*<coverage line-rate="\([0-9.]*\)".*/\1/p' | head -n 1)
+            awk -v r="$rate" -v f="$f" 'BEGIN { printf "line coverage %.1f %% in %s\n", r * 100, f; exit !(r >= 0.70) }'
+          done
+
+      - name: Pack the tool
+        run: dotnet pack src/DragoAnt.MSBuildKit.Manager/DragoAnt.MSBuildKit.Manager.csproj -c Release -nologo -o "$OUT/feed" -p:Version="$TOOL_VERSION"
+
+      - name: Install and run the packed tool
+        run: |
+          dotnet tool install --tool-path "$OUT/tools" --add-source "$OUT/feed" DragoAnt.MSBuildKit.Manager --version "$TOOL_VERSION"
+          "$OUT/tools/mskit-manager" --help
+          "$OUT/tools/mskit-manager" status --json > "$OUT/status.json"
+          cat "$OUT/status.json"
+          tr -d '\r' < "$OUT/status.json" | grep -q "\"version\": \"$TOOL_VERSION\"" || { echo "status --json did not report $TOOL_VERSION"; exit 1; }
+
+      - name: Test results
+        if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # v3.0.0
+        with:
+          name: Manager tests (${{ matrix.os }})
+          path: dist/manager/TestResults/*.trx
+          reporter: dotnet-trx
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: manager-${{ matrix.os }}
+          path: dist/manager
