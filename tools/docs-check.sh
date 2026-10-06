@@ -1,7 +1,7 @@
 #!/bin/sh
 # Keeps the documentation honest against the kit: every property and item the kit defines has a row
 # in docs/reference/properties.md, every code it reports a section headed by the code id without the
-# underscore in docs/reference/codes.md, every MSKit_ name and MSKIT code the docs mention exists in
+# underscore in docs/reference/codes.md, every MSKit_ name and MSKIT_ code the docs mention exists in
 # the kit, and every relative link resolves (anchors included).
 # Usage: sh tools/docs-check.sh [--root DIR] [--list properties|items|codes]
 set -eu
@@ -55,7 +55,7 @@ find kit/.toolkit/msbuild -type f \( -name '*.props' -o -name '*.targets' -o -na
     rest = out
     while (match(rest, /MSKIT_?[A-Z]+[0-9][0-9][0-9]/)) { print "C", id(substr(rest, RSTART, RLENGTH)), FILENAME ":" FNR; rest = substr(rest, RSTART + RLENGTH) }
   }
-  function id(c) { sub(/^MSKIT_/, "MSKIT", c); return c }' {} + > "$work/raw"
+  function id(c) { sub(/_/, "", c); return c }' {} + > "$work/raw"
 
 # Public names: MSKit_* (set or read) and Is* (set); never the kit's own _-prefixed state.
 # Each is listed with the first place that sets it, else the first place that reads it.
@@ -109,7 +109,7 @@ awk -v dir="$work" '
     rest = $0
     while (match(rest, /MSKit_[A-Za-z0-9_]+[*<]?/)) { t = substr(rest, RSTART, RLENGTH); rest = substr(rest, RSTART + RLENGTH); if (t !~ /[*<]$/) print "N\t" f ":" FNR "\t" t }
     rest = $0
-    while (match(rest, /MSKIT_?[A-Z]+[0-9][0-9][0-9]/)) { t = substr(rest, RSTART, RLENGTH); rest = substr(rest, RSTART + RLENGTH); sub(/^MSKIT_/, "MSKIT", t); print "M\t" f ":" FNR "\t" t }
+    while (match(rest, /MSKIT_?[A-Z]+[0-9][0-9][0-9]/)) { t = substr(rest, RSTART, RLENGTH); rest = substr(rest, RSTART + RLENGTH); sub(/_/, "", t); print "M\t" f ":" FNR "\t" t }
   }' $(cat "$work/docs.lst") > "$work/docs.tsv"
 
 awk -v dir="$work" -F'\t' '
@@ -131,7 +131,7 @@ awk -v dir="$work" -F'\t' '
   $1 == "N" { if (!($3 in known)) problem($2 " mentions " $3 ", which the kit does not define or read"); next }
   $1 == "M" { if (!($3 in code)) problem($2 " mentions " $3 ", which the kit never reports"); next }
   $1 == "U" { problem($2 ": write the heading as " gensub_id($3) " so its anchor is the code id without the underscore"); next }
-  function gensub_id(c) { sub(/^MSKIT_/, "MSKIT", c); return c }
+  function gensub_id(c) { sub(/_/, "", c); return c }
   $1 == "L" { links[++nl] = $0; next }
   END {
     for (i = 1; i <= n; i++) if (!(order[i] in documented)) problem(what[order[i]] " " order[i] " (" known[order[i]] ") has no row in docs/reference/properties.md")
