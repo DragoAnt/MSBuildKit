@@ -6,7 +6,7 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ### Fixed
 
-- A JPEG `PackageIconPath` no longer fails `dotnet pack` with NU5046: the icon is packed as `icon.<extension>`, lowercased (`icon.jpg`), and the nuspec names that file. `MSKIT_PKG015` accepts a 128×128 JPEG as well as a PNG, as nuget.org does.
+- A JPEG `PackageIconPath` no longer fails `dotnet pack` with NU5046: the icon is packed as `icon.<extension>`, lowercased (`icon.jpg`), and the nuspec names that file. `MSKIT_PKG015` accepts a 128×128 JPEG as well as a PNG, as nuget.org does ([#11](https://github.com/DragoAnt/MSBuildKit/pull/11)).
 
 ## [0.2.1] - 2026-10-05
 
