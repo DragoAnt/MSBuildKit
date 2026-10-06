@@ -8,7 +8,7 @@ The kit is split into parts, one folder each under `.toolkit/msbuild/` (`DragoAn
 | `Trunk` | default | | Language defaults, product and copyright, the version engine, global usings, reference and consistency checks | [Build](./build.md), [Versioning](./versioning.md) |
 | `Vcs.GitHub` | default | | Reads the GitHub Actions variables: CI detection, run number, tag, pull request, repository URL | [Versioning](./versioning.md#ci-variables) |
 | `TfmConstants` | default | | `IsNET8`, `IsNET8_OR_GREATER`, `IsNETSTANDARD` and the rest, for conditions | [Build](./build.md#target-framework-constants) |
-| `Packaging` | default | | nuget.org metadata defaults, the readme generator and the `MSKIT_PKG` checks | [Packaging](./packaging.md) |
+| `Packaging` | default | | nuget.org metadata defaults, the readme generator and the `MSKITPKG` checks | [Packaging](./packaging.md) |
 | `Testing` | default | | Test-project detection, Microsoft.Testing.Platform, assertions, mocking, `InternalsVisibleTo` | [Testing](./testing.md) |
 | `Testing.XUnit.v3` | default | `Testing` | The xUnit v3 wiring | [Testing](./testing.md) |
 | `Locals.Secrets`, `Locals.DirectorySecrets`, `Locals.Compile` | default | | Secrets and source files that stay on the developer's machine | [Local files](./local-files.md) |

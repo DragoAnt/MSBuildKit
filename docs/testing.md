@@ -9,7 +9,7 @@ The Testing and Testing.XUnit.v3 parts turn a project into a test project by its
 | test project | `MSKit_TestsProjectNameRegex`, default `\.(Tests(\.Integration\|\.Unit)?\|IntegrationTests\|UnitTests)$`: `Acme.Tests`, `Acme.Tests.Unit`, `Acme.Tests.Integration`, `Acme.UnitTests`, `Acme.IntegrationTests` | `IsTestsProject=True`: an executable test host, never packable |
 | test helper library | `MSKit_TestsLibProjectNameRegex`, default `\.(TestsSuite\|TestsFixtures\|Fixtures)$` | `IsTestsLibProject=True`: shared fixtures and base classes with the assertion and xUnit libraries, not runnable |
 
-Detection runs in the props phase, because the test framework's own targets read the result before `Directory.Build.targets`. So a project whose name does not match cannot just set `IsTestsProject` in its csproj — that fails with [`MSKIT_TEST013`](./reference/codes.md#mskittest013). Use the explicit endpoint instead:
+Detection runs in the props phase, because the test framework's own targets read the result before `Directory.Build.targets`. So a project whose name does not match cannot just set `IsTestsProject` in its csproj — that fails with [`MSKITTEST013`](./reference/codes.md#mskittest013). Use the explicit endpoint instead:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -48,7 +48,7 @@ dotnet test --solution MyRepo.slnx -c Release --coverage --coverage-output-forma
 
 ## `InternalsVisibleTo`
 
-Every project that is neither a test project nor a helper library exposes its internals to **every** test project and helper library found under `MSKit_TestsDir` (default: the solution folder, else the git root), and to `DynamicProxyGenAssembly2`, so NSubstitute can mock internal types. `InternalsVisibleToAllTestsProjects=False` in a csproj turns it off for that project. [`MSKIT_TEST030`](./reference/codes.md#mskittest030) and [`MSKIT_TEST031`](./reference/codes.md#mskittest031) warn when `MSKit_TestsDir` is empty or missing.
+Every project that is neither a test project nor a helper library exposes its internals to **every** test project and helper library found under `MSKit_TestsDir` (default: the solution folder, else the git root), and to `DynamicProxyGenAssembly2`, so NSubstitute can mock internal types. `InternalsVisibleToAllTestsProjects=False` in a csproj turns it off for that project. [`MSKITTEST030`](./reference/codes.md#mskittest030) and [`MSKITTEST031`](./reference/codes.md#mskittest031) warn when `MSKit_TestsDir` is empty or missing.
 
 ## Package versions
 
@@ -73,8 +73,8 @@ The kit provides these versions ([Build](./build.md#central-package-versions)); 
 
 | Code | When |
 | --- | --- |
-| [`MSKIT_TEST005`](./reference/codes.md#mskittest005) | an xUnit v3 test project targets a framework older than net8.0 |
-| [`MSKIT_TEST010`](./reference/codes.md#mskittest010)-[`012`](./reference/codes.md#mskittest012), [`MSKIT_TEST020`](./reference/codes.md#mskittest020)-[`022`](./reference/codes.md#mskittest022) | the explicit endpoint was imported before `MSKit_TestingFramework` was set, the framework changed after it, or no wiring exists for it |
-| [`MSKIT_TEST013`](./reference/codes.md#mskittest013) | a csproj sets `IsTestsProject` directly |
-| [`MSKIT_TEST014`](./reference/codes.md#mskittest014) | a project named like a test project is marked as a helper library |
-| [`MSKIT_TEST025`](./reference/codes.md#mskittest025), [`MSKIT_TEST026`](./reference/codes.md#mskittest026) | a test project has no `MSKit_TestingFramework`, or no installed part wires it |
+| [`MSKITTEST005`](./reference/codes.md#mskittest005) | an xUnit v3 test project targets a framework older than net8.0 |
+| [`MSKITTEST010`](./reference/codes.md#mskittest010)-[`012`](./reference/codes.md#mskittest012), [`MSKITTEST020`](./reference/codes.md#mskittest020)-[`022`](./reference/codes.md#mskittest022) | the explicit endpoint was imported before `MSKit_TestingFramework` was set, the framework changed after it, or no wiring exists for it |
+| [`MSKITTEST013`](./reference/codes.md#mskittest013) | a csproj sets `IsTestsProject` directly |
+| [`MSKITTEST014`](./reference/codes.md#mskittest014) | a project named like a test project is marked as a helper library |
+| [`MSKITTEST025`](./reference/codes.md#mskittest025), [`MSKITTEST026`](./reference/codes.md#mskittest026) | a test project has no `MSKit_TestingFramework`, or no installed part wires it |

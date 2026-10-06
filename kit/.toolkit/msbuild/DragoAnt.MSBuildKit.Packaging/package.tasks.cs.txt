@@ -165,7 +165,7 @@ public sealed class MSKit_PackageAssets : Task
 
     private void GenerateReadme()
     {
-        var codes =new[] { "MSKIT_PKG020", "MSKIT_PKG021", "MSKIT_PKG022" };
+        var codes =new[] { "MSKITPKG020", "MSKITPKG021", "MSKITPKG022" };
         var findings = codes.ToDictionary(c => c, c => new List<string>());
         Action<string, string> report = (code, text) => findings[code].Add(text.Replace("\r", " ").Replace("\n", " "));
 
@@ -238,7 +238,7 @@ public sealed class MSKit_PackageAssets : Task
             case "":
                 break;
             default:
-                report("MSKIT_PKG020", display + ": MSKit_RepoProvider '" + provider + "' is not one of GitHub, GitLab, AzureDevOps, Bitbucket, Gitea; set MSKit_RepoBlobUrlTemplate and MSKit_RepoRawUrlTemplate instead.");
+                report("MSKITPKG020", display + ": MSKit_RepoProvider '" + provider + "' is not one of GitHub, GitLab, AzureDevOps, Bitbucket, Gitea; set MSKit_RepoBlobUrlTemplate and MSKit_RepoRawUrlTemplate instead.");
                 break;
         }
         if (norm(BlobTemplate).Length > 0) { blob = norm(BlobTemplate); tree = blob.Contains("/blob/") ? blob.Replace("/blob/", "/tree/") : blob; }
@@ -277,7 +277,7 @@ public sealed class MSKit_PackageAssets : Task
             if (!Uri.TryCreate(url.Trim('<', '>'), UriKind.Absolute, out u) || (u.Scheme != "https" && u.Scheme != "http")) return;
             var h = u.Host.ToLowerInvariant();
             if (allowed.Contains(h) || (h == "github.com" && Regex.IsMatch(u.AbsolutePath, @"^/[^/]+/[^/]+/(actions/)?workflows/[^/]+/badge\.svg$", RegexOptions.IgnoreCase))) return;
-            report("MSKIT_PKG021", display + " line " + n + ": the image " + url + " comes from " + h + ", a host nuget.org does not show images from. Use an allowed host (nuget.allowed-image-hosts.txt in the kit) or point MSKit_RepoRawUrlTemplate at one.");
+            report("MSKITPKG021", display + " line " + n + ": the image " + url + " comes from " + h + ", a host nuget.org does not show images from. Use an allowed host (nuget.allowed-image-hosts.txt in the kit) or point MSKit_RepoRawUrlTemplate at one.");
         };
 
         Func<string, bool, int, string> resolve = (target, isImage, n) =>
@@ -293,7 +293,7 @@ public sealed class MSKit_PackageAssets : Task
             var rp = combine(Uri.UnescapeDataString(p));
             if (rp == null)
             {
-                report("MSKIT_PKG020", display + " line " + n + ": " + t + " points outside the repository and is left as it is.");
+                report("MSKITPKG020", display + " line " + n + ": " + t + " points outside the repository and is left as it is.");
                 return target;
             }
             var isDir = Directory.Exists(Path.Combine(root, rp.Replace('/', Path.DirectorySeparatorChar)));
@@ -361,25 +361,25 @@ public sealed class MSKit_PackageAssets : Task
             }
             if (skipOpen.IsMatch(line))
             {
-                if (skipping) report("MSKIT_PKG020", display + " line " + n + ": nuget:skip opened again before line " + skipLine + "'s was closed.");
+                if (skipping) report("MSKITPKG020", display + " line " + n + ": nuget:skip opened again before line " + skipLine + "'s was closed.");
                 skipping = true; skipLine = n; continue;
             }
             if (skipClose.IsMatch(line))
             {
-                if (!skipping) report("MSKIT_PKG020", display + " line " + n + ": /nuget:skip has no matching nuget:skip.");
+                if (!skipping) report("MSKITPKG020", display + " line " + n + ": /nuget:skip has no matching nuget:skip.");
                 skipping = false; continue;
             }
             var om = onlyOpen.Match(line);
             if (om.Success)
             {
-                if (inOnly) report("MSKIT_PKG020", display + " line " + n + ": nuget:only opened again before line " + onlyLine + "'s was closed.");
+                if (inOnly) report("MSKITPKG020", display + " line " + n + ": nuget:only opened again before line " + onlyLine + "'s was closed.");
                 inOnly = true; onlyLine = n;
                 keepOnly = Regex.Split(om.Groups[1].Value.Trim(), @"[\s,]+").Any(id => string.Equals(id, PackageId, StringComparison.OrdinalIgnoreCase));
                 continue;
             }
             if (onlyClose.IsMatch(line))
             {
-                if (!inOnly) report("MSKIT_PKG020", display + " line " + n + ": /nuget:only has no matching nuget:only.");
+                if (!inOnly) report("MSKITPKG020", display + " line " + n + ": /nuget:only has no matching nuget:only.");
                 inOnly = false; keepOnly = true; continue;
             }
             var fm = fenceRe.Match(line);
@@ -393,10 +393,10 @@ public sealed class MSKit_PackageAssets : Task
             outLines.Add(rewriteLine(line, n));
             outFence.Add(false);
         }
-        if (skipping) report("MSKIT_PKG020", display + " line " + skipLine + ": nuget:skip is never closed, so everything after it is left out.");
-        if (inOnly) report("MSKIT_PKG020", display + " line " + onlyLine + ": nuget:only is never closed.");
+        if (skipping) report("MSKITPKG020", display + " line " + skipLine + ": nuget:skip is never closed, so everything after it is left out.");
+        if (inOnly) report("MSKITPKG020", display + " line " + onlyLine + ": nuget:only is never closed.");
         if (!canRewrite && unresolved > 0)
-            report("MSKIT_PKG020", display + ": " + unresolved + " relative link(s) and image(s) stay relative because " + why + ".");
+            report("MSKITPKG020", display + ": " + unresolved + " relative link(s) and image(s) stay relative because " + why + ".");
 
         var title = norm(ReadmeTitle) == "auto" ? norm(PackageId) : norm(ReadmeTitle);
         if (title.Length > 0)
@@ -449,7 +449,7 @@ public sealed class MSKit_PackageAssets : Task
 
         var visibility = norm(Visibility).ToLowerInvariant();
         if (visibility == "private" || visibility == "internal")
-            report("MSKIT_PKG022", "The repository " + (repoUrl.Length > 0 ? repoUrl : "of " + PackageId) + " is " + visibility + ": the links in the package readme of " + PackageId + " will not open for people reading it on nuget.org. Publish from a public repository, or point MSKit_RepoBlobUrlTemplate and MSKit_RepoRawUrlTemplate at a public mirror.");
+            report("MSKITPKG022", "The repository " + (repoUrl.Length > 0 ? repoUrl : "of " + PackageId) + " is " + visibility + ": the links in the package readme of " + PackageId + " will not open for people reading it on nuget.org. Publish from a public repository, or point MSKit_RepoBlobUrlTemplate and MSKit_RepoRawUrlTemplate at a public mirror.");
 
         var result = new List<string>();
         var blank = true;

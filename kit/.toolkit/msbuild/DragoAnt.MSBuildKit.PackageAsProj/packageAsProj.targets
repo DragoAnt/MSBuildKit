@@ -21,7 +21,7 @@
 
     <Message Text="PackageAsProj: packages attached as ProjectReference instead of PackageReference: @(PackageAsProj_ProjectReference)" Importance="high" />
 
-    <Error Code="MSKIT_PAP001"
+    <Error Code="MSKITPAP001" HelpLink="$(MSKit_CodesHelpBaseUrl)#mskitpap001"
            Condition="'@(PackageAsProj_ProjectReference_Reference)'!=''"
            Text="A package switched to a ProjectReference is still resolved from the package. Fix: run 'dotnet restore --force'."
            File="$(MSBuildProjectFullPath)" />
@@ -33,7 +33,7 @@
       <PackageAsProj_PackageReference_Reference Include="@(PackageAsProj_PackageReference)" Condition="'@(PackageAsProj_PackageReference->'%(Identity)')'=='@(ReferenceAssemblyFilename->'%(Identity)')' And %(Identity)!=''" />
     </ItemGroup>
 
-    <Error Code="MSKIT_PAP002"
+    <Error Code="MSKITPAP002" HelpLink="$(MSKit_CodesHelpBaseUrl)#mskitpap002"
            Condition="'$(PackageAsProj_SkipChecks)'!='True' AND @(PackageAsProj_PackageReference_Reference->Count())!=@(PackageAsProj_PackageReference->Count()) And @(ReferenceAssemblyFilename->Count())!=0"
            Text="A package switched back from a ProjectReference is not restored yet. Fix: run 'dotnet restore --force', or set PackageAsProj_SkipChecks=True to skip this check."
            File="$(MSBuildProjectFullPath)" />
