@@ -4,9 +4,13 @@ namespace DragoAnt.MSBuildKit.Manager.Install;
 
 /// <summary>
 /// <c>&lt;kit&gt;/.manager/manifest.json</c>: every file the last install deployed and its SHA-256 — the source of
-/// orphan removal and <c>verify</c>. Written sorted, indented, LF-only, so it round-trips byte for byte.
+/// orphan removal and <c>verify</c> — and where the packages came from. Written sorted, indented, LF-only, so it
+/// round-trips byte for byte; <c>source</c> is written only when it is <c>local</c>.
 /// </summary>
-internal sealed record Manifest(IReadOnlyList<ManifestPackage> Packages, IReadOnlyList<ManifestFile> Files)
+internal sealed record Manifest(
+    IReadOnlyList<ManifestPackage> Packages,
+    IReadOnlyList<ManifestFile> Files,
+    KitSourceKind Source = KitSourceKind.Feed)
 {
     public const int Schema = 1;
     private const string Document = KitLayout.ManifestFileName;
@@ -42,13 +46,22 @@ internal sealed record Manifest(IReadOnlyList<ManifestPackage> Packages, IReadOn
             return new ManifestFile(path, f.Package, sha256);
         }).ToList();
 
-        return new Manifest(packages, files);
+        var source = dto.Source switch
+        {
+            null or "feed" => KitSourceKind.Feed,
+            "local" => KitSourceKind.Local,
+            _ => throw new KitDocumentException(Document, $"unknown source '{dto.Source}' (expected feed or local)"),
+        };
+
+        return new Manifest(packages, files, source);
     }
 
     public string ToJson() => KitDocumentFormat.Write(writer =>
     {
         writer.WriteStartObject();
         writer.WriteNumber("schema", Schema);
+        if (Source == KitSourceKind.Local)
+            writer.WriteString("source", "local");
         writer.WriteStartArray("packages");
         foreach (var package in Packages.OrderBy(p => p.Id, StringComparer.Ordinal))
         {
@@ -76,6 +89,7 @@ internal sealed record Manifest(IReadOnlyList<ManifestPackage> Packages, IReadOn
     private sealed class Dto
     {
         public int? Schema { get; init; }
+        public string? Source { get; init; }
         public PackageDto[]? Packages { get; init; }
         public FileDto[]? Files { get; init; }
     }

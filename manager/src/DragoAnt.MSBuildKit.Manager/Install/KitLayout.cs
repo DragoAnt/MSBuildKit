@@ -7,7 +7,7 @@ internal sealed class KitLayout
     public const string MsbuildDirName = "msbuild";
     public const string LocalDirName = ".local";
     public const string ManagerDirName = ".manager";
-    public const string KitJsonFileName = "kit.json";
+    public const string LegacyKitJsonFileName = "kit.json";
     public const string InitPropsFileName = "init.props";
     public const string InitTargetsFileName = "init.targets";
     public const string PackagesProjectFileName = "packages.csproj";
@@ -27,14 +27,14 @@ internal sealed class KitLayout
     public string Root { get; }
     public string KitDirName { get; }
     public string KitPath { get; }
-    public string KitJsonPath => Path.Combine(KitPath, KitJsonFileName);
+    public string LegacyKitJsonPath => Path.Combine(KitPath, LegacyKitJsonFileName);
     public string MsbuildPath => Path.Combine(KitPath, MsbuildDirName);
     public string InitPropsPath => Path.Combine(MsbuildPath, InitPropsFileName);
     public string InitTargetsPath => Path.Combine(MsbuildPath, InitTargetsFileName);
     public string LocalPath => Path.Combine(KitPath, LocalDirName);
     public string ManagerPath => Path.Combine(KitPath, ManagerDirName);
-    public string PackagesProjectPath => Path.Combine(ManagerPath, PackagesProjectFileName);
-    public string LockFilePath => Path.Combine(ManagerPath, LockFileName);
+    public string PackagesProjectPath => Path.Combine(KitPath, PackagesProjectFileName);
+    public string LockFilePath => Path.Combine(KitPath, LockFileName);
     public string ManifestPath => Path.Combine(ManagerPath, ManifestFileName);
 
     /// <summary>The folder a package's <c>msbuild/**</c> content is deployed to: <c>msbuild/&lt;package id&gt;</c>.</summary>

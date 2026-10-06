@@ -76,33 +76,6 @@ internal static class KitDocumentFormat
     public static string Required(string document, string? value, string name) =>
         string.IsNullOrWhiteSpace(value) ? throw new KitDocumentException(document, $"{name} is missing") : value;
 
-    public static KitTier ParseTier(string document, string? value) => value switch
-    {
-        "core" => KitTier.Core,
-        "company" => KitTier.Company,
-        "team" => KitTier.Team,
-        null => throw new KitDocumentException(document, "tier is missing"),
-        _ => throw new KitDocumentException(document, $"unknown tier '{value}' (expected core, company or team)"),
-    };
-
-    public static string TierName(KitTier tier) => tier switch
-    {
-        KitTier.Core => "core",
-        KitTier.Company => "company",
-        _ => "team",
-    };
-
-    /// <summary>Throws when a part is listed twice, or in both <paramref name="enable"/> and <paramref name="disable"/>.</summary>
-    public static void RequireDisjoint(string document, IReadOnlyList<string> enable, IReadOnlyList<string> disable)
-    {
-        var seen = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var part in enable.Concat(disable))
-        {
-            if (!seen.Add(part))
-                throw new KitDocumentException(document, $"part '{part}' is listed twice in enable/disable");
-        }
-    }
-
     /// <summary>Writes an indented document with LF line ends and a final newline, whatever the OS.</summary>
     public static string Write(Action<Utf8JsonWriter> write)
     {
