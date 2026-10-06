@@ -8,6 +8,10 @@ All notable changes to this project are documented here. The format follows [Kee
 
 - `manager/`: the first build of `mskit-manager`, the `DragoAnt.MSBuildKit.Manager` .NET tool (`net8.0`, `net10.0`, `RollForward=Major`) that will install, update and migrate the kit. This build has one command, `status [--json]`, which prints the tool version; the logo goes to stderr, only on a terminal and never with `--no-logo`, so `--json` output always parses. Each run writes a log under `<system temp>/mskit-manager/logs/`, named after the command, newest 20 kept. Not published yet.
 
+### Changed
+
+- The documentation moved from the README into [docs/](./docs/README.md), one page per topic in reading order, with a [property reference](./docs/reference/properties.md) and a [code reference](./docs/reference/codes.md) that cover everything the kit sets, reads and reports. Corrected along the way: most packaging defaults apply to every project, not only packable ones; a Roslyn project imports its role's props itself; an update rewrites more than `.toolkit/msbuild/`; any tag build is a release build.
+
 ## [0.2.1] - 2026-10-05
 
 ### Added
