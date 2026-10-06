@@ -52,9 +52,9 @@ Declare `TargetFramework` or `TargetFrameworks` once, in `Directory.Build.props`
 
 | Code | When |
 | --- | --- |
-| [`MSKITSHARED006`](./reference/codes.md#mskitshared006), [`MSKITSHARED007`](./reference/codes.md#mskitshared007) | error: the csproj repeats the shared `TargetFramework` / `TargetFrameworks` value |
-| [`MSKITSHARED008`](./reference/codes.md#mskitshared008), [`MSKITSHARED009`](./reference/codes.md#mskitshared009) | warning: the csproj sets a different value of the same shape; `MSKit_SkipAudit_TargetFrameworkOverride=True` accepts it |
-| [`MSKITSHARED010`](./reference/codes.md#mskitshared010) | error: the csproj declares both shapes |
+| [`MSKIT_SHARED006`](./reference/codes.md#mskitshared006), [`MSKIT_SHARED007`](./reference/codes.md#mskitshared007) | error: the csproj repeats the shared `TargetFramework` / `TargetFrameworks` value |
+| [`MSKIT_SHARED008`](./reference/codes.md#mskitshared008), [`MSKIT_SHARED009`](./reference/codes.md#mskitshared009) | warning: the csproj sets a different value of the same shape; `MSKit_SkipAudit_TargetFrameworkOverride=True` accepts it |
+| [`MSKIT_SHARED010`](./reference/codes.md#mskitshared010) | error: the csproj declares both shapes |
 
 `MSKit_GuardXmlPeekRoutine=False` and `MSKit_GuardXmlPeekAudit=False` turn off a cheap text pre-check and always parse the csproj; leave them alone unless a declaration is missed.
 
@@ -86,7 +86,7 @@ A project with `ExcludeFromCodeCoverage=true` gets the [`[ExcludeFromCodeCoverag
 
 ## Central package versions
 
-The parts that add package references also provide their versions: as `PackageVersion` items with [central package management](https://learn.microsoft.com/nuget/consume-packages/central-package-management), else on the `PackageReference` itself when it has no version. Each version is a property you can override, `MSKit_PackageVersion_<Package>` (lists: [Testing](./testing.md#package-versions), [Roslyn](./roslyn.md#package-versions)); `MSKit_ImplicitPackageVersions=False` turns them all off. A `PackageVersion` of yours for the same id fails restore with [`MSKITDUP001`](./reference/codes.md#mskitdup001) (bypass: `MSKit_SkipAudit_ImplicitPackageDuplicates=True`).
+The parts that add package references also provide their versions: as `PackageVersion` items with [central package management](https://learn.microsoft.com/nuget/consume-packages/central-package-management), else on the `PackageReference` itself when it has no version. Each version is a property you can override, `MSKit_PackageVersion_<Package>` (lists: [Testing](./testing.md#package-versions), [Roslyn](./roslyn.md#package-versions)); `MSKit_ImplicitPackageVersions=False` turns them all off. A `PackageVersion` of yours for the same id fails restore with [`MSKIT_DUP001`](./reference/codes.md#mskitdup001) (bypass: `MSKit_SkipAudit_ImplicitPackageDuplicates=True`).
 
 `PrivateAssets=all` is set on references to `Fody`, `ConfigureAwait.Fody`, `IgnoresAccessChecksToGenerator`, `Grpc.Tools`, `Microsoft.EntityFrameworkCore.Design` and `Microsoft.EntityFrameworkCore.Tools`, so these build-time tools never become package dependencies. Add your own `Update` items in `Directory.Packages.Metadata.targets`.
 
@@ -101,13 +101,13 @@ The parts that add package references also provide their versions: as `PackageVe
 </ItemGroup>
 ```
 
-A reference to a `Type="Error"` package fails with [`MSKITRES001`](./reference/codes.md#mskitres001), a `Type="Warning"` one warns with [`MSKITRES002`](./reference/codes.md#mskitres002). `SkipGlobalRestriction="True"` on one `PackageReference` allows it (an error becomes a warning). The owner layer bans `Moq`.
+A reference to a `Type="Error"` package fails with [`MSKIT_RES001`](./reference/codes.md#mskitres001), a `Type="Warning"` one warns with [`MSKIT_RES002`](./reference/codes.md#mskitres002). `SkipGlobalRestriction="True"` on one `PackageReference` allows it (an error becomes a warning). The owner layer bans `Moq`.
 
-**Allow-list mode.** With `MSKit_RestrictProjectReferences=True` (or `MSKit_RestrictPackageReferences`, or `MSKit_RestrictReferences` for both) every reference must carry `Allowed="True"`, else [`MSKITRES003`](./reference/codes.md#mskitres003) / [`MSKITRES004`](./reference/codes.md#mskitres004). Off by default.
+**Allow-list mode.** With `MSKit_RestrictProjectReferences=True` (or `MSKit_RestrictPackageReferences`, or `MSKit_RestrictReferences` for both) every reference must carry `Allowed="True"`, else [`MSKIT_RES003`](./reference/codes.md#mskitres003) / [`MSKIT_RES004`](./reference/codes.md#mskitres004). Off by default.
 
-**Prerelease dependencies on a stable branch.** On a stable branch a reference to a prerelease version of a package whose id starts with `MSKit_PrereleasePackagePrefix` (owner layer: `DragoAnt.`) warns with [`MSKITPRE001`](./reference/codes.md#mskitpre001); `MSKit_PrereleasePackageCheckAsWarning=false` makes it an error.
+**Prerelease dependencies on a stable branch.** On a stable branch a reference to a prerelease version of a package whose id starts with `MSKit_PrereleasePackagePrefix` (owner layer: `DragoAnt.`) warns with [`MSKIT_PRE001`](./reference/codes.md#mskitpre001); `MSKit_PrereleasePackageCheckAsWarning=false` makes it an error.
 
-**`TreatWarningsAsErrors` drift.** On a developer machine a csproj that changes the shared `TreatWarningsAsErrors` fails with [`MSKITSHARED020`](./reference/codes.md#mskitshared020); `MSKit_SkipAudit_TreatWarningsAsErrors=True` allows it.
+**`TreatWarningsAsErrors` drift.** On a developer machine a csproj that changes the shared `TreatWarningsAsErrors` fails with [`MSKIT_SHARED020`](./reference/codes.md#mskitshared020); `MSKit_SkipAudit_TreatWarningsAsErrors=True` allows it.
 
 ## Private references
 
