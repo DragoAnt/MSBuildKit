@@ -1,9 +1,9 @@
 #!/bin/sh
 # Keeps the documentation honest against the kit: every property and item the kit defines has a row
-# in docs/reference/properties.md, every code it reports a section headed by the code id without the
-# underscore in docs/reference/codes.md, every MSKit_ name and MSKIT_ code the docs mention exists in
-# the kit, and every relative link resolves (anchors included).
-# Usage: sh tools/docs-check.sh [--root DIR] [--list properties|items|codes]
+# in docs/reference/properties.md, every code it reports a section headed by the code id in
+# docs/reference/codes.md, every <Warning>/<Error> a HelpLink to that section, every MSKit_ name and
+# code the docs mention exists in the kit, no file spells a code the old way, and every link resolves.
+# Usage: sh tools/docs-check.sh [--root DIR] [--list properties|items|codes|diagnostics]
 set -eu
 
 root=$(cd "$(dirname "$0")/.." && pwd)
@@ -16,7 +16,7 @@ while [ $# -gt 0 ]; do
     *) echo "docs-check: unknown argument '$1'" >&2; exit 2 ;;
   esac
 done
-case "$list" in ""|properties|items|codes) ;; *) echo "docs-check: --list takes properties, items or codes" >&2; exit 2 ;; esac
+case "$list" in ""|properties|items|codes|diagnostics) ;; *) echo "docs-check: --list takes properties, items, codes or diagnostics" >&2; exit 2 ;; esac
 
 [ -d "$root/kit/.toolkit/msbuild" ] || { echo "docs-check: no kit at $root/kit/.toolkit/msbuild" >&2; exit 2; }
 work=$(mktemp -d)
@@ -24,14 +24,14 @@ trap 'rm -rf "$work"' EXIT INT TERM
 cd "$root"
 
 # Kit inventory with XML comments removed, one process for every file:
-# "P <name> <where>" property set, "I" item, "R" property read, "C" diagnostic code.
-# A code is keyed by its id without the underscore (MSKIT_VER006 and MSKITVER006 are one code).
+# "P <name> <where>" property set, "I" item, "R" property read, "C" diagnostic code,
+# "W <where> <Code> <HelpLink>" a <Warning> or <Error> task ("-" for a missing attribute).
 find kit/.toolkit/msbuild -type f \( -name '*.props' -o -name '*.targets' -o -name '*.cs.txt' \) -exec awk '
-  FNR == 1 { incomment = 0; pg = 0; ig = 0 }
+  FNR == 1 { incomment = 0; pg = 0; ig = 0; inel = 0 }
   { sub(/\r$/, "") }
   FILENAME ~ /\.cs\.txt$/ {
     rest = $0
-    while (match(rest, /"MSKIT_?[A-Z]+[0-9][0-9][0-9]"/)) { print "C", id(substr(rest, RSTART + 1, RLENGTH - 2)), FILENAME ":" FNR; rest = substr(rest, RSTART + RLENGTH) }
+    while (match(rest, /"MSKIT[A-Z]+[0-9][0-9][0-9]"/)) { print "C", substr(rest, RSTART + 1, RLENGTH - 2), FILENAME ":" FNR; rest = substr(rest, RSTART + RLENGTH) }
     next
   }
   {
@@ -53,9 +53,17 @@ find kit/.toolkit/msbuild -type f \( -name '*.props' -o -name '*.targets' -o -na
     rest = out
     while (match(rest, /\$\(MSKit_[A-Za-z0-9_]+/)) { print "R", substr(rest, RSTART + 2, RLENGTH - 2), FILENAME ":" FNR; rest = substr(rest, RSTART + RLENGTH) }
     rest = out
-    while (match(rest, /MSKIT_?[A-Z]+[0-9][0-9][0-9]/)) { print "C", id(substr(rest, RSTART, RLENGTH)), FILENAME ":" FNR; rest = substr(rest, RSTART + RLENGTH) }
+    while (match(rest, /MSKIT[A-Z]+[0-9][0-9][0-9]/)) { print "C", substr(rest, RSTART, RLENGTH), FILENAME ":" FNR; rest = substr(rest, RSTART + RLENGTH) }
+    if (!inel && (match(out, /<(Warning|Error)[[:space:]\/>]/) || match(out, /<(Warning|Error)$/))) { inel = 1; el = substr(out, RSTART); elat = FILENAME ":" FNR }
+    else if (inel) el = el " " out
+    if (inel && (e = closed(el))) { el = substr(el, 1, e); print "W", elat, attr(el, "Code"), attr(el, "HelpLink"); inel = 0 }
   }
-  function id(c) { sub(/_/, "", c); return c }' {} + > "$work/raw"
+  function closed(s,   i, c, q) { for (i = 1; i <= length(s); i++) { c = substr(s, i, 1); if (c == "\"") q = !q; else if (c == ">" && !q) return i }; return 0 }
+  function attr(s, name,   v) {
+    if (!match(s, "[[:space:]]" name "=\"[^\"]*\"")) return "-"
+    v = substr(s, RSTART, RLENGTH); sub(/^[[:space:]]*[A-Za-z]+="/, "", v); sub(/"$/, "", v)
+    return v == "" ? "-" : v
+  }' {} + > "$work/raw"
 
 # Public names: MSKit_* (set or read) and Is* (set); never the kit's own _-prefixed state.
 # Each is listed with the first place that sets it, else the first place that reads it.
@@ -66,6 +74,7 @@ awk -v dir="$work" '
     la = a; sub(/^.*:/, "", la); lb = b; sub(/^.*:/, "", lb)
     return fa < fb || (fa == fb && la + 0 < lb + 0)
   }
+  $1 == "W" { print $2 "\t" $3 "\t" $4 > (dir "/diagnostics"); next }
   $1 == "C" { if (better($3, c[$2])) c[$2] = $3; next }
   $1 == "I" { if (better($3, i[$2])) i[$2] = $3; next }
   $1 == "P" && ($2 ~ /^MSKit_/ || $2 ~ /^Is[A-Z]/) { if (better($3, set[$2])) set[$2] = $3; next }
@@ -76,9 +85,22 @@ awk -v dir="$work" '
     for (n in set) print n "\t" set[n] "\t" (n in read ? "set, read" : "set") > (dir "/properties")
     for (n in read) if (!(n in set)) print n "\t" read[n] "\tread" > (dir "/properties")
   }' "$work/raw"
-for k in properties items codes; do touch "$work/$k"; sort -o "$work/$k" "$work/$k"; done
+for k in properties items codes diagnostics; do touch "$work/$k"; sort -o "$work/$k" "$work/$k"; done
 
 if [ -n "$list" ]; then cat "$work/$list"; exit 0; fi
+
+# Codes are spelled MSKIT<FAMILY><nnn>. The old spelling, an underscore after the prefix (a code or a
+# family), may appear only as "formerly `...`" in the code reference and in released changelog sections.
+if [ -e .git ]; then git ls-files -co --exclude-standard
+else find . \( -name .git -o -name bin -o -name obj -o -name dist -o -name .claude -o -name node_modules -o -name .toolkit \) -prune \
+  -o -type f -print | sed 's|^\./||'; find kit/.toolkit -type f; fi > "$work/files"
+released=$(grep -n '^## \[[0-9]' CHANGELOG.md 2>/dev/null | head -n 1 | cut -d: -f1)
+tr '\n' '\0' < "$work/files" | xargs -0 grep -nI 'MSKIT[_]' /dev/null 2>/dev/null \
+  | awk -v released="${released:-0}" '
+      { sub(/\r$/, ""); p = index($0, ":"); f = substr($0, 1, p - 1); rest = substr($0, p + 1); p = index(rest, ":"); ln = substr(rest, 1, p - 1); text = substr(rest, p + 1) }
+      f == "CHANGELOG.md" && released > 0 && ln + 0 >= released { next }
+      f == "docs/reference/codes.md" { gsub(/formerly `MSKIT[_][A-Z]+[0-9][0-9][0-9]`/, "", text) }
+      { while (match(text, /MSKIT[_][A-Z]*[0-9]*/)) { print f ":" ln "\t" substr(text, RSTART, RLENGTH); text = substr(text, RSTART + RLENGTH) } }' > "$work/oldspelling" || true
 
 # Every Markdown file a reader sees, and every path in the repository for the link check.
 { for f in README.md CONTRIBUTING.md SECURITY.md; do [ -f "$f" ] && echo "$f"; done
@@ -98,9 +120,9 @@ awk -v dir="$work" '
     split($0, cell, "|"); c = cell[2]
     while (match(c, /`[^`]+`/)) { print "D\t" f "\t" substr(c, RSTART + 1, RLENGTH - 2); c = substr(c, RSTART + RLENGTH) }
   }
-  f == "docs/reference/codes.md" && /^#+[[:space:]]+`?MSKIT_?[A-Z]+[0-9][0-9][0-9]/ {
-    match($0, /MSKIT_?[A-Z]+[0-9][0-9][0-9]/); c = substr($0, RSTART, RLENGTH)
-    print (c ~ /^MSKIT_/ ? "U\t" f ":" FNR "\t" c : "D\t" f "\t" c)
+  f == "docs/reference/codes.md" && /^#+[[:space:]]+`?MSKIT[_]?[A-Z]+[0-9][0-9][0-9]/ {
+    match($0, /MSKIT[_]?[A-Z]+[0-9][0-9][0-9]/); c = substr($0, RSTART, RLENGTH)
+    print (c ~ /^MSKIT[_]/ ? "U\t" f ":" FNR "\t" c : "D\t" f "\t" c)
   }
   { line = $0; gsub(/`[^`]*`/, "", line)
     while (match(line, /\]\([^) ]+\)/)) { print "L\t" f "\t" FNR "\t" d "\t" substr(line, RSTART + 2, RLENGTH - 3); line = substr(line, RSTART + RLENGTH) } }
@@ -109,7 +131,7 @@ awk -v dir="$work" '
     rest = $0
     while (match(rest, /MSKit_[A-Za-z0-9_]+[*<]?/)) { t = substr(rest, RSTART, RLENGTH); rest = substr(rest, RSTART + RLENGTH); if (t !~ /[*<]$/) print "N\t" f ":" FNR "\t" t }
     rest = $0
-    while (match(rest, /MSKIT_?[A-Z]+[0-9][0-9][0-9]/)) { t = substr(rest, RSTART, RLENGTH); rest = substr(rest, RSTART + RLENGTH); sub(/_/, "", t); print "M\t" f ":" FNR "\t" t }
+    while (match(rest, /MSKIT[A-Z]+[0-9][0-9][0-9]/)) { t = substr(rest, RSTART, RLENGTH); rest = substr(rest, RSTART + RLENGTH); print "M\t" f ":" FNR "\t" t }
   }' $(cat "$work/docs.lst") > "$work/docs.tsv"
 
 awk -v dir="$work" -F'\t' '
@@ -125,6 +147,8 @@ awk -v dir="$work" -F'\t' '
   function problem(m) { print "docs-check: " m; problems++ }
   FILENAME == dir "/properties" || FILENAME == dir "/items" { known[$1] = $2; what[$1] = (FILENAME == dir "/items" ? "item" : "property"); order[++n] = $1; next }
   FILENAME == dir "/codes" { code[$1] = $2; corder[++nc] = $1; next }
+  FILENAME == dir "/diagnostics" { dwhere[++nd] = $1; dcode[nd] = $2; dlink[nd] = $3; next }
+  FILENAME == dir "/oldspelling" { o = $2; sub(/_/, "", o); problem($1 ": " $2 " is the old spelling of " o); next }
   FILENAME == dir "/paths" { exists[$0] = 1; next }
   $1 == "S" { slug[$2 "#" $3] = 1; next }
   $1 == "D" { if ($2 == "docs/reference/properties.md") documented[$3] = 1; else documentedCode[$3] = 1; next }
@@ -136,6 +160,16 @@ awk -v dir="$work" -F'\t' '
   END {
     for (i = 1; i <= n; i++) if (!(order[i] in documented)) problem(what[order[i]] " " order[i] " (" known[order[i]] ") has no row in docs/reference/properties.md")
     for (i = 1; i <= nc; i++) if (!(corder[i] in documentedCode)) problem("code " corder[i] " (" code[corder[i]] ") has no section in docs/reference/codes.md")
+    for (i = 1; i <= nd; i++) {
+      c = dcode[i]; h = dlink[i]
+      if (c == "-") { problem(dwhere[i] ": a <Warning>/<Error> without a Code"); continue }
+      if (c ~ /^MSKIT[A-Z]+[0-9][0-9][0-9]$/) { want = "$(MSKit_CodesHelpBaseUrl)#" tolower(c); anchor = tolower(c) }
+      else if (c ~ /^%\([A-Za-z_][A-Za-z0-9_.]*\)$/) { want = "$(MSKit_CodesHelpBaseUrl)#$([System.String]::Copy(\047" c "\047).ToLowerInvariant())"; anchor = "" }
+      else continue
+      if (h == "-") problem(dwhere[i] ": " c " has no HelpLink; set HelpLink=\"" want "\"")
+      else if (h != want) problem(dwhere[i] ": " c " has HelpLink=\"" h "\"; expected \"" want "\"")
+      if (anchor != "" && !(("docs/reference/codes.md#" anchor) in slug)) problem(dwhere[i] ": HelpLink anchor #" anchor " has no heading in docs/reference/codes.md")
+    }
     relative = 0
     for (i = 1; i <= nl; i++) {
       split(links[i], l, "\t"); src = l[2]; ln = l[3]; base = l[4]; target = l[5]
@@ -152,5 +186,5 @@ awk -v dir="$work" -F'\t' '
       if (anchor != "" && dest ~ /\.md$/ && !((dest "#" anchor) in slug)) problem(src ":" ln ": link " target " names a heading that does not exist")
     }
     if (problems) { print "docs-check: " problems " problem(s)"; exit 1 }
-    printf "docs-check: %d properties and items, %d codes documented; %d relative links resolve\n", n, nc, relative
-  }' "$work/properties" "$work/items" "$work/codes" "$work/paths" "$work/docs.tsv"
+    printf "docs-check: %d properties and items, %d codes documented, %d diagnostics with a HelpLink; %d relative links resolve\n", n, nc, nd, relative
+  }' "$work/properties" "$work/items" "$work/codes" "$work/diagnostics" "$work/oldspelling" "$work/paths" "$work/docs.tsv"

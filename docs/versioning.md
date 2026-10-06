@@ -14,7 +14,7 @@ With the owner layer's `MSKit_VersionStrategy=ReleaseTag`:
 | A stable branch (`main`, `release/*`), run 7 | `1.4.0-ci.7` | `MSKit_StableVersionTemplate` = `{prefix}-ci.{buildNumber}` |
 | Any other branch, run 7 | `1.4.0-ci.7` | `MSKit_VersionTemplate` = `{prefix}-ci.{buildNumber}` |
 
-A **tag build** is any GitHub Actions run with `GITHUB_REF_TYPE=tag`: publishing a GitHub release creates one, and so does pushing a tag without a release. A leading `v` or `V` is removed; the rest must be [SemVer 2.0](https://semver.org/), or restore fails with [`MSKIT_VER006`](./reference/codes.md#mskitver006). When the tag's `MAJOR.MINOR.PATCH` differs from `VersionPrefix`, [`MSKIT_VER007`](./reference/codes.md#mskitver007) reminds you to bump `VersionPrefix` after the release, so branch builds sort above it.
+A **tag build** is any GitHub Actions run with `GITHUB_REF_TYPE=tag`: publishing a GitHub release creates one, and so does pushing a tag without a release. A leading `v` or `V` is removed; the rest must be [SemVer 2.0](https://semver.org/), or restore fails with [`MSKITVER006`](./reference/codes.md#mskitver006). When the tag's `MAJOR.MINOR.PATCH` differs from `VersionPrefix`, [`MSKITVER007`](./reference/codes.md#mskitver007) reminds you to bump `VersionPrefix` after the release, so branch builds sort above it.
 
 The template is picked in this order: a tag build with `MSKit_ReleaseVersionTemplate` set; a pull-request build with `MSKit_PullRequestVersionTemplate` set; a stable branch (`MSKit_IsStableBranch`, [Build](./build.md#roots-branch-and-commit)) → `MSKit_StableVersionTemplate`; anything else → `MSKit_VersionTemplate`. The version is rendered twice — in the props phase, so `dotnet msbuild -getProperty:Version` answers, and again before compile and pack, so a `VersionPrefix` or template set in a csproj is honoured.
 
@@ -31,7 +31,7 @@ Set `MSKit_VersionStrategy` in `Directory.Build.props`. Any template can be over
 | `VersionTag` | | `{versionTag}` | `{versionTag}` |
 | `Manual` | | the engine is off: set `Version` yourself | |
 
-Only `ReleaseTag` defines release-tag and pull-request templates; with the others a tag or pull-request build uses the branch templates unless you set them. `DateBased` uses the run id modulo 65535 as `{buildNumber}` (never 0). `VersionTag` needs `-p:VersionTag=1.2.3`, else [`MSKIT_VER004`](./reference/codes.md#mskitver004).
+Only `ReleaseTag` defines release-tag and pull-request templates; with the others a tag or pull-request build uses the branch templates unless you set them. `DateBased` uses the run id modulo 65535 as `{buildNumber}` (never 0). `VersionTag` needs `-p:VersionTag=1.2.3`, else [`MSKITVER004`](./reference/codes.md#mskitver004).
 
 ## Placeholders
 
@@ -50,12 +50,12 @@ Only `ReleaseTag` defines release-tag and pull-request templates; with the other
 | `{versionTag}` | `VersionTag` |
 | `{commitShaShort}` | the first 8 characters of `MSKit_CommitSha` |
 
-An unknown placeholder fails the build with [`MSKIT_VER002`](./reference/codes.md#mskitver002). Each project reads the clock on its own; set `MSKit_BuildDateTimeUtc` (property or environment variable) once in CI so every project of one build gets the same date.
+An unknown placeholder fails the build with [`MSKITVER002`](./reference/codes.md#mskitver002). Each project reads the clock on its own; set `MSKit_BuildDateTimeUtc` (property or environment variable) once in CI so every project of one build gets the same date.
 
 ## Setting the version yourself
 
 - **`-p:Version=2.0.0`**, or `Version` set in `Directory.Build.props` above the kit import, always wins: the engine renders nothing (`MSKit_ExplicitVersion`).
-- **`<Version>` in a csproj** fails with [`MSKIT_VER001`](./reference/codes.md#mskitver001) while a template strategy is active, because it would be ignored: declare `VersionPrefix` in `Directory.Version.props`, or set `MSKit_VersionStrategy=Manual`.
+- **`<Version>` in a csproj** fails with [`MSKITVER001`](./reference/codes.md#mskitver001) while a template strategy is active, because it would be ignored: declare `VersionPrefix` in `Directory.Version.props`, or set `MSKit_VersionStrategy=Manual`.
 
 ## CI variables
 

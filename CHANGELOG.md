@@ -4,8 +4,13 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Breaking changes
+
+- Warning and error codes drop the underscore after the prefix: `MSKITVER006`, `MSKITPKG015`, and so on, with the same family and number. `NoWarn`, `WarningsAsErrors`, `WarningsNotAsErrors` and `MSKit_SkipPackageChecks` entries that name a code the old way no longer match: rename them. Each section of the [code reference](./docs/reference/codes.md) names the code's former spelling.
+
 ### Added
 
+- Every warning and error links to its section of the [code reference](./docs/reference/codes.md) (`HelpLink`, shown by the terminal logger and IDEs). `MSKit_CodesHelpBaseUrl` points the links at another copy of the page.
 - `manager/`: the first build of `mskit-manager`, the `DragoAnt.MSBuildKit.Manager` .NET tool (`net8.0`, `net10.0`, `RollForward=Major`) that will install, update and migrate the kit. This build has one command, `status [--json]`, which prints the tool version; the logo goes to stderr, only on a terminal and never with `--no-logo`, so `--json` output always parses. Each run writes a log under `<system temp>/mskit-manager/logs/`, named after the command, newest 20 kept. Not published yet.
 
 ### Changed
@@ -14,7 +19,7 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ### Fixed
 
-- A JPEG `PackageIconPath` no longer fails `dotnet pack` with NU5046: the icon is packed as `icon.<extension>`, lowercased (`icon.jpg`), and the nuspec names that file. `MSKIT_PKG015` accepts a 128×128 JPEG as well as a PNG, as nuget.org does ([#11](https://github.com/DragoAnt/MSBuildKit/pull/11)).
+- A JPEG `PackageIconPath` no longer fails `dotnet pack` with NU5046: the icon is packed as `icon.<extension>`, lowercased (`icon.jpg`), and the nuspec names that file. `MSKITPKG015` accepts a 128×128 JPEG as well as a PNG, as nuget.org does ([#11](https://github.com/DragoAnt/MSBuildKit/pull/11)).
 
 ## [0.2.1] - 2026-10-05
 
