@@ -120,7 +120,7 @@ jobs:
 
       - name: Prove the tests ran on Microsoft.Testing.Platform
         run: |
-          grep -q '^Test run summary:' "$OUT/test.log" || { echo "dotnet test did not run on Microsoft.Testing.Platform (no MTP summary in the log)"; exit 1; }
+          grep -q 'Test run summary:' "$OUT/test.log" || { echo "dotnet test did not run on Microsoft.Testing.Platform (no MTP summary in the log)"; exit 1; }
           echo "dotnet test ran on Microsoft.Testing.Platform (manager/global.json test.runner)" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Coverage gate (70 %)
