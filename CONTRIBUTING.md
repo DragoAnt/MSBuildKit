@@ -8,6 +8,7 @@ Issues and pull requests are welcome.
 - `samples/MinimalLibrary` is a consumer with a library and a test project; its `.toolkit/` is installed by the self-test and not committed.
 - `tests/run.sh` is the self-test; `tests/fixtures/PackageChecks` breaks every package rule on purpose.
 - `tools/pack-kit.sh` builds the release zip and its SHA-256.
+- `manager/` is the `mskit-manager` .NET tool: its own solution, central package versions and `global.json`, built against `manager/.toolkit/` — the working-tree kit installed with `sh kit/.toolkit/update.sh --source kit --root manager` and committed.
 
 ## Build and test
 
@@ -18,6 +19,14 @@ sh tests/run.sh
 ```
 
 It installs the working-tree kit into the sample and the fixtures with `update.sh`, then checks the computed versions for local, branch, pull-request and tag builds, runs the sample's tests with coverage, inspects the packed nuspec, and asserts that every `MSKIT_PKG` check fires on the fixtures. CI runs the same script on Linux and Windows.
+
+The tool's tests run from `manager/`, so its `global.json` selects Microsoft.Testing.Platform:
+
+```sh
+cd manager && dotnet test --solution DragoAnt.MSBuildKit.Manager.slnx
+```
+
+CI's `manager` job also packs the tool, installs it into a tool path and runs `mskit-manager --help` and `status --json`.
 
 ## Changing the kit
 
