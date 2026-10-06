@@ -33,3 +33,51 @@ for needle in "property MSKit_SemVerRegex" "code MSKITVER004" "write the heading
   where=${needle%%|*}; what=${needle#*|}
   grep -F "$where" "$out/docs-check-broken.log" | grep -qF "$what" && pass "docs: the check reports '$needle'" || bad "docs: the check missed '$needle' (see $out/docs-check-broken.log)"
 done
+
+# The diagnostic catalog: a copy with one descriptor missing, doubled, orphaned, in the wrong part,
+# in the wrong file and unimported, and with each piece of metadata wrong, must fail on each.
+dc_cat="$out/docs-check-catalog"
+dc_copy "$dc_cat"
+dc_parts="$dc_cat/kit/.toolkit/msbuild"
+dc_item() { sed "/Include=\"$2\"/,/\/>/ $3" "$dc_parts/$1/diagnostic.descriptors.props" > "$dc_cat/item.tmp" && mv "$dc_cat/item.tmp" "$dc_parts/$1/diagnostic.descriptors.props"; }
+dc_fake() { printf '    <BuildDiagnosticDescriptor Include="%s" Title="Fake" MessageFormat="Fake." Description="Fake." Category="Versioning" DefaultSeverity="Error" HelpLink="$(MSKit_CodesHelpBaseUrl)#%s" />' "$1" "$2"; }
+if [ -f "$dc_parts/DragoAnt.MSBuildKit/diagnostic.descriptors.props" ]; then
+  dc_item DragoAnt.MSBuildKit.Testing MSKITTEST031 d
+  dc_item DragoAnt.MSBuildKit.Packaging MSKITPKG019 d
+  dc_item DragoAnt.MSBuildKit.Testing.XUnit.v3 MSKITTEST005 d
+  sed "s|^</Project>|  <ItemGroup>\n$(dc_fake MSKITVER003 mskitver003)\n$(dc_fake MSKITVER007 mskitver007)\n$(dc_fake MSKITTEST005 mskittest005)\n  </ItemGroup>\n&|" \
+    "$here/kit/.toolkit/msbuild/DragoAnt.MSBuildKit/diagnostic.descriptors.props" > "$dc_parts/DragoAnt.MSBuildKit/diagnostic.descriptors.props"
+  sed "s|^</Project>|  <ItemGroup>\n$(dc_fake MSKITVER098 mskitver098)\n  </ItemGroup>\n&|" \
+    "$here/kit/.toolkit/msbuild/DragoAnt.MSBuildKit/audit/audit.version.targets" > "$dc_parts/DragoAnt.MSBuildKit/audit/audit.version.targets"
+  grep -v 'diagnostic.descriptors.props' "$here/kit/.toolkit/msbuild/DragoAnt.MSBuildKit.Core/init.props" > "$dc_parts/DragoAnt.MSBuildKit.Core/init.props"
+  grep -v 'DragoAnt.MSBuildKit.PackageAsProj/init.props' "$here/kit/.toolkit/msbuild/init.props" > "$dc_parts/init.props"
+  dc_item DragoAnt.MSBuildKit.Core MSKITCORE001 's/#mskitcore001"/#mskitroslyn001"/'
+  dc_item DragoAnt.MSBuildKit.Core MSKITROSLYN001 's/DefaultSeverity="Error"/DefaultSeverity="Warning"/'
+  dc_item DragoAnt.MSBuildKit.Core MSKITROSLYN002 's/DefaultSeverity="Error"/DefaultSeverity="Info"/'
+  dc_item DragoAnt.MSBuildKit MSKITPRE001 's/DefaultSeverity="Warning"/DefaultSeverity="Error"/'
+  dc_item DragoAnt.MSBuildKit MSKITRES001 's/Category="[^"]*"/Category="Versioning"/'
+  dc_item DragoAnt.MSBuildKit MSKITDUP001 's/Description="/Description="In short: /'
+  dc_item DragoAnt.MSBuildKit MSKITVER004 's/MessageFormat="/MessageFormat="Oops. /'
+  dc_item DragoAnt.MSBuildKit.Packaging MSKITPKG004 's/MessageFormat="/MessageFormat="Oops. /'
+  dc_item DragoAnt.MSBuildKit.Packaging MSKITPKG003 's/ Title="[^"]*"/ Title=""/'
+  dc_item DragoAnt.MSBuildKit.PackageAsProj MSKITPAP002 's/Title="/Title="Not /'
+  dc_item DragoAnt.MSBuildKit.Testing MSKITTEST010 's/%24(/$(/'
+fi
+sh "$dc_cat/tools/docs-check.sh" > "$out/docs-check-catalog.log" 2>&1 && bad "docs: the check passed a broken catalog (see $out/docs-check-catalog.log)"
+for needle in "code MSKITTEST031 (|has no BuildDiagnosticDescriptor item; add one to kit/.toolkit/msbuild/DragoAnt.MSBuildKit.Testing/diagnostic.descriptors.props" \
+    "code MSKITPKG019 (|has no BuildDiagnosticDescriptor item" "MSKITVER007 already has a BuildDiagnosticDescriptor" \
+    "MSKITVER003 has a BuildDiagnosticDescriptor, but no <Warning> or <Error> reports it" \
+    "MSKITTEST005 is described in part DragoAnt.MSBuildKit, but reported by DragoAnt.MSBuildKit.Testing.XUnit.v3" \
+    "audit.version.targets:|declare MSKITVER098 in its part folder, in diagnostic.descriptors.props" \
+    "diagnostic.descriptors.props is not imported by kit/.toolkit/msbuild/DragoAnt.MSBuildKit.Core/init.props" \
+    "does not import DragoAnt.MSBuildKit.PackageAsProj/init.props" \
+    "MSKITCORE001 has HelpLink=" "MSKITROSLYN001 has DefaultSeverity=\"Warning\", but no <Warning> reports it" \
+    "MSKITROSLYN002 has DefaultSeverity=\"Info\"; use Warning or Error" \
+    "MSKITPRE001 has DefaultSeverity=\"Error\", but its section in docs/reference/codes.md says (warning)" \
+    "MSKITRES001 has Category=\"Versioning\", but its section in docs/reference/codes.md is under \"References\"" \
+    "the Description of MSKITDUP001 is not the opening sentence(s)" "the MessageFormat of MSKITVER004 is not the text its task reports" \
+    "the MessageFormat of MSKITPKG004 is not the text its task reports" "MSKITPKG003 has no Title" "MSKITPAP002 has Title=\"Not " \
+    "MSKITTEST010 has metadata MSBuild would expand"; do
+  where=${needle%%|*}; what=${needle#*|}
+  grep -F "$where" "$out/docs-check-catalog.log" | grep -qF "$what" && pass "docs: the check reports '$needle'" || bad "docs: the check missed '$needle' (see $out/docs-check-catalog.log)"
+done
