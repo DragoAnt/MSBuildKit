@@ -12,6 +12,10 @@ All notable changes to this project are documented here. The format follows [Kee
 
 - The documentation moved from the README into [docs/](./docs/README.md), one page per topic in reading order, with a [property reference](./docs/reference/properties.md) and a [code reference](./docs/reference/codes.md) that cover everything the kit sets, reads and reports. Corrected along the way: most packaging defaults apply to every project, not only packable ones; a Roslyn project imports its role's props itself; an update rewrites more than `.toolkit/msbuild/`; any tag build is a release build.
 
+### Fixed
+
+- A JPEG `PackageIconPath` no longer fails `dotnet pack` with NU5046: the icon is packed as `icon.<extension>`, lowercased (`icon.jpg`), and the nuspec names that file. `MSKIT_PKG015` accepts a 128×128 JPEG as well as a PNG, as nuget.org does ([#11](https://github.com/DragoAnt/MSBuildKit/pull/11)).
+
 ## [0.2.1] - 2026-10-05
 
 ### Added

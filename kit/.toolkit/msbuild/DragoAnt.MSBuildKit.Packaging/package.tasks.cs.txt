@@ -31,7 +31,7 @@ public sealed class MSKit_PackageAssets : Task
     [Output] public string HtmlTags { get; set; }
     [Output] public string Alerts { get; set; }
     [Output] public bool HasMermaid { get; set; }
-    [Output] public bool IconIsPng { get; set; }
+    [Output] public string IconFormat { get; set; }
     [Output] public int IconWidth { get; set; }
     [Output] public int IconHeight { get; set; }
 
@@ -96,16 +96,18 @@ public sealed class MSKit_PackageAssets : Task
 
         if (!string.IsNullOrEmpty(IconPath) && File.Exists(IconPath))
         {
-            var header = new byte[24];
-            using (var stream = File.OpenRead(IconPath))
+            var icon = File.ReadAllBytes(IconPath);
+            IconFormat = "unknown";
+            if (icon.Length >= 24 && icon[0] == 0x89 && icon[1] == 0x50 && icon[2] == 0x4E && icon[3] == 0x47)
             {
-                var read = stream.Read(header, 0, header.Length);
-                IconIsPng = read == 24 && header[0] == 0x89 && header[1] == 0x50 && header[2] == 0x4E && header[3] == 0x47;
+                IconFormat = "PNG";
+                IconWidth = BigEndian(icon, 16, 4);
+                IconHeight = BigEndian(icon, 20, 4);
             }
-            if (IconIsPng)
+            else if (icon.Length >= 4 && icon[0] == 0xFF && icon[1] == 0xD8)
             {
-                IconWidth = (header[16] << 24) | (header[17] << 16) | (header[18] << 8) | header[19];
-                IconHeight = (header[20] << 24) | (header[21] << 16) | (header[22] << 8) | header[23];
+                IconFormat = "JPEG";
+                ReadJpegSize(icon);
             }
         }
 
@@ -114,6 +116,31 @@ public sealed class MSKit_PackageAssets : Task
         RelativeLinks = string.Join(", ", relativeLinks.Distinct());
         HtmlTags = string.Join(", ", htmlTags.Distinct());
         Alerts = string.Join(", ", alerts.Distinct());
+    }
+
+    private static int BigEndian(byte[] bytes, int offset, int count)
+    {
+        var value = 0;
+        for (var i = 0; i < count; i++) value = (value << 8) | bytes[offset + i];
+        return value;
+    }
+
+    // Walks the JPEG segments to the first start-of-frame marker (SOF0..SOF15 except DHT, JPG, DAC).
+    private void ReadJpegSize(byte[] jpeg)
+    {
+        var i = 2;
+        while (i + 8 < jpeg.Length && jpeg[i] == 0xFF)
+        {
+            var marker = jpeg[i + 1];
+            if (marker == 0xFF) { i++; continue; }
+            if (marker >= 0xC0 && marker <= 0xCF && marker != 0xC4 && marker != 0xC8 && marker != 0xCC)
+            {
+                IconHeight = BigEndian(jpeg, i + 5, 2);
+                IconWidth = BigEndian(jpeg, i + 7, 2);
+                return;
+            }
+            i += 2 + BigEndian(jpeg, i + 2, 2);
+        }
     }
 
     public string OutputPath { get; set; }
