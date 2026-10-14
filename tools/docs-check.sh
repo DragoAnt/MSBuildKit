@@ -134,7 +134,7 @@ if [ -n "$list" ]; then cat "$work/$list"; exit 0; fi
 # Codes are spelled MSKIT<FAMILY><nnn>. The old spelling, an underscore after the prefix (a code or a
 # family), may appear only as "formerly `...`" in the code reference and in released changelog sections.
 if [ -e .git ]; then git ls-files -co --exclude-standard
-else find . \( -name .git -o -name bin -o -name obj -o -name dist -o -name .claude -o -name node_modules -o -name .toolkit \) -prune \
+else find . \( -name .git -o -name bin -o -name obj -o -name dist -o -name .claude -o -name node_modules -o -name .toolkit -o -name .mskit \) -prune \
   -o -type f -print | sed 's|^\./||'; find kit/.toolkit -type f; fi > "$work/files"
 released=$(grep -n '^## \[[0-9]' CHANGELOG.md 2>/dev/null | head -n 1 | cut -d: -f1)
 tr '\n' '\0' < "$work/files" | xargs -0 grep -nI 'MSKIT[_]' /dev/null 2>/dev/null \

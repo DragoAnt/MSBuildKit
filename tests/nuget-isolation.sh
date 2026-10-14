@@ -231,7 +231,7 @@ ni_guard() {
 ni_hardcoded() {
   ni_m=$1; shift
   ni_mb=$(printf '%s' "$ni_m" | tr '/' '\\')
-  grep -rnIiE --exclude-dir=bin --exclude-dir=obj --exclude-dir=dist --exclude-dir=.toolkit --exclude-dir=TestResults \
+  grep -rnIiE --exclude-dir=bin --exclude-dir=obj --exclude-dir=dist --exclude-dir=.toolkit --exclude-dir=.mskit --exclude-dir=TestResults \
     --exclude=nuget-isolation.sh --exclude=nuget-isolation.test.sh \
     -e '\.nuget[/\\]+packages' -e '\$\{?NUGET_PACKAGES' -e '"NUGET_PACKAGES"' -e 'NuGetPackageRoot' \
     -e "$(printf '%s' "$ni_m" | sed 's/[][\\.*^$+?(){}|]/\\&/g')" -e "$(printf '%s' "$ni_mb" | sed 's/[][\\.*^$+?(){}|]/\\&/g')" \

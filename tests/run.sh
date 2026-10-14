@@ -31,10 +31,25 @@ bad() { echo "FAIL  $*"; failures=$((failures+1)); }
 . "$here/tests/nuget-isolation.sh"
 ni_begin selftest "$nuget_fallback"
 
-for root in "$sample" "$fixtures" "$readme_fixture" "$tfm_fixture" "$icon_fixture"; do
+# The sample starts as a v0.2.1 install in .toolkit/, so every check below builds a migrated tree;
+# TfmConstants keeps the kit in .toolkit/ through --kit-dir, so a non-default folder builds too.
+rm -rf "$sample/.toolkit" "$sample/.mskit"
+if git -C "$here" rev-parse -q --verify 'refs/tags/v0.2.1^{commit}' > /dev/null 2>&1; then
+  git -C "$here" archive v0.2.1 kit/.toolkit/update.sh | tar -x -C "$out"
+  sh "$out/kit/.toolkit/update.sh" --source "$kit" --root "$sample" > "$out/install-v0.2.1.log" || { cat "$out/install-v0.2.1.log"; exit 1; }
+  [ -d "$sample/.toolkit/msbuild" ] && pass "the v0.2.1 update.sh installed the kit into the sample's .toolkit/" || bad "the v0.2.1 update.sh left no .toolkit/ in the sample"
+else
+  echo "SKIP  the sample's v0.2.1 start (no v0.2.1 tag; fetch the tags)"
+fi
+for root in "$sample" "$fixtures" "$readme_fixture" "$icon_fixture"; do
   sh "$kit/.toolkit/update.sh" --source "$kit" --root "$root" > "$out/install.log" || { cat "$out/install.log"; exit 1; }
 done
+sh "$kit/.toolkit/update.sh" --source "$kit" --root "$tfm_fixture" --kit-dir .toolkit > "$out/install.log" || { cat "$out/install.log"; exit 1; }
 pass "update.sh installed the kit into the sample and the fixtures"
+[ -f "$sample/.mskit/kit.json" ] && [ ! -e "$sample/.toolkit" ] && pass "update.sh moved the sample's kit to .mskit/" || bad "the sample's kit is not in .mskit/ alone"
+[ -f "$tfm_fixture/.toolkit/kit.json" ] && [ ! -e "$tfm_fixture/.mskit" ] && pass "update.sh kept TfmConstants on --kit-dir .toolkit" || bad "TfmConstants did not keep .toolkit/"
+if sh "$here/tests/update-dir.test.sh" > "$out/update-dir.log" 2>&1; then pass "update dir: the kit-folder checks pass"
+else bad "update dir: the kit-folder checks (see $out/update-dir.log)"; grep "^FAIL" "$out/update-dir.log" || tail -n 5 "$out/update-dir.log"; fi
 . "$here/tests/update-self.sh"
 
 lib="$sample/src/DragoAnt.Samples.MinimalLibrary/DragoAnt.Samples.MinimalLibrary.csproj"

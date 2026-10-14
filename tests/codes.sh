@@ -33,7 +33,7 @@ catalog_items() {
     /^[[:space:]]*"Title":/ { title = val($0) }
     /^[[:space:]]*"DefaultSeverity":/ { severity = val($0) }
     /^[[:space:]]*"HelpLink":/ { link = val($0) }
-    /^[[:space:]]*"DefiningProjectFullPath":/ { part = val($0); if (!sub(/^.*\/\.toolkit\/msbuild\//, "", part) || !sub(/\/diagnostic\.descriptors\.props$/, "", part)) part = "?" }
+    /^[[:space:]]*"DefiningProjectFullPath":/ { part = val($0); if (!sub(/^.*\/\.(toolkit|mskit)\/msbuild\//, "", part) || !sub(/\/diagnostic\.descriptors\.props$/, "", part)) part = "?" }
     /^[[:space:]]*}/ { if (id != "") print id "\t" part "\t" severity "\t" link "\t" (title == "" ? "-" : "titled"); id = part = severity = link = title = "" }
   ' "$out/$name.json" | sort > "$out/$name.tsv"
 }
@@ -60,7 +60,7 @@ grep -q "^MSKITVER006	DragoAnt.MSBuildKit	Error	$codes_url#mskitver006	" "$out/c
 
 catalog_items "$lib" catalog-sample
 while IFS='	' read -r code part where; do
-  [ -d "$sample/.toolkit/msbuild/$part" ] && printf '%s\t%s\n' "$code" "$part"
+  [ -d "$sample/.mskit/msbuild/$part" ] && printf '%s\t%s\n' "$code" "$part"
 done < "$out/catalog-declared.tsv" > "$out/catalog-sample.expected"
 cut -f1,2 "$out/catalog-sample.tsv" > "$out/catalog-sample.actual"
 [ -s "$out/catalog-sample.actual" ] && cmp -s "$out/catalog-sample.expected" "$out/catalog-sample.actual" && ! grep -q "PackageAsProj" "$out/catalog-sample.actual" \
