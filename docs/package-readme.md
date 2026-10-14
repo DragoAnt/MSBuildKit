@@ -79,7 +79,7 @@ These stay warnings on CI; skip one with `MSKit_SkipPackageChecks` or `NoWarn` l
 
 ## Allowed image hosts
 
-nuget.org shows readme images only from [a fixed list of hosts](https://learn.microsoft.com/nuget/nuget-org/package-readme-on-nuget-org#allowed-domains-for-images-and-badges). The kit ships that list as `.toolkit/msbuild/DragoAnt.MSBuildKit.Packaging/nuget.allowed-image-hosts.txt` (copied from the page on 2026-10-05) and refreshes it with kit releases; nothing is downloaded during a build. `raw.githubusercontent.com` and `gitlab.com` are on it, so images from a GitHub or gitlab.com repository render; a self-hosted GitLab is not, and its images raise `MSKITPKG021`.
+nuget.org shows readme images only from [a fixed list of hosts](https://learn.microsoft.com/nuget/nuget-org/package-readme-on-nuget-org#allowed-domains-for-images-and-badges). The kit ships that list as `.mskit/msbuild/DragoAnt.MSBuildKit.Packaging/nuget.allowed-image-hosts.txt` (copied from the page on 2026-10-05) and refreshes it with kit releases; nothing is downloaded during a build. `raw.githubusercontent.com` and `gitlab.com` are on it, so images from a GitHub or gitlab.com repository render; a self-hosted GitLab is not, and its images raise `MSKITPKG021`.
 
 ## Build cost
 

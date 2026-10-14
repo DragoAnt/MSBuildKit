@@ -4,9 +4,9 @@ Issues and pull requests are welcome.
 
 ## Layout
 
-- `kit/.toolkit/` is exactly what a release zip contains and what `update.sh` / `update.ps1` install: `msbuild/` (one folder per part plus the `init.props` / `init.targets` entry points), `res/`, `kit.parts` and the update scripts.
-- `samples/MinimalLibrary` is a consumer with a library and a test project; its `.toolkit/` is installed by the self-test and not committed.
-- `tests/run.sh` is the self-test; `tests/fixtures/PackageChecks` breaks every package rule on purpose. `tests/manager.sh` builds, tests, packs and installs the tool.
+- `kit/.toolkit/` is exactly what a release zip contains (under `.toolkit/`, the layout the 0.2.1 updater reads) and what `update.sh` / `update.ps1` install into a consumer's kit folder, `.mskit/` by default: `msbuild/` (one folder per part plus the `init.props` / `init.targets` entry points), `res/`, `kit.parts` and the update scripts.
+- `samples/MinimalLibrary` is a consumer with a library and a test project; its `.mskit/` is installed by the self-test, starting from a v0.2.1 `.toolkit/` install that the new `update.sh` moves, and not committed. `tests/fixtures/TfmConstants` keeps its kit in `.toolkit/` through `--kit-dir`, so a non-default folder builds too.
+- `tests/run.sh` is the self-test; `tests/fixtures/PackageChecks` breaks every package rule on purpose. `tests/update-dir.test.sh` checks the kit folder of both update scripts (fresh install, `--kit-dir`, the move from `.toolkit/`, the two-run upgrade from the real v0.2.1 scripts) without `dotnet`. `tests/manager.sh` builds, tests, packs and installs the tool.
 - `tools/pack-kit.sh` builds the release zip and its SHA-256.
 - `manager/` is the `mskit-manager` .NET tool: its own solution, central package versions and `global.json`, built against `manager/.toolkit/` — the working-tree kit installed with `sh kit/.toolkit/update.sh --source kit --root manager` and committed.
 - `docs/` holds the user documentation, read in the order of [docs/README.md](./docs/README.md); `docs/reference/` lists every property and code. `tools/docs-check.sh` keeps them honest against the kit.
@@ -55,7 +55,7 @@ Both scripts restore into folders of their own and share third-party packages be
 - `sh tools/docs-check.sh` fails on a property, item or code without its reference entry, on a name the docs mention that the kit lacks, and on a broken relative link; `--list properties|items|codes` prints the kit's inventory with the file and line of each.
 - The README stays short: key features, install, links. Detail goes to the topic page in `docs/`.
 - A new part needs a line in `kit/.toolkit/kit.parts` and its `init.props` / `init.targets` imports in the entry points.
-- Keep scripts POSIX `sh` and PowerShell 7 equivalent; `update.sh` and `update.ps1` must produce the same `.toolkit/`.
+- Keep scripts POSIX `sh` and PowerShell 7 equivalent; `update.sh` and `update.ps1` must produce the same kit folder.
 - A test that restores a package built in this repository runs from `tests/run.sh` or `tests/manager.sh`, which keep it out of the machine's global-packages folder and out of the shared folder.
 - Add a line to `CHANGELOG.md` under `Unreleased`.
 

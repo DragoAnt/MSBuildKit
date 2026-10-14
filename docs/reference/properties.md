@@ -23,11 +23,12 @@ Every property and item the kit sets or reads, grouped by topic. **Set** = a val
 | `MSKit_IsStableBranchRegex` | set | owner layer `^(main\|release/.+)$`; kit `^(main\|master\|release/.+)$` | Branches that use `MSKit_StableVersionTemplate` and the prerelease check |
 | `MSKit_IsStableBranch` | out | | `true` when `MSKit_Branch` matches |
 | `MSKit_GitRoot` | set | the nearest folder with `.git` | |
-| `MSKit_SlnFileDirectory` | set | the `.slnx` folder, else the folder holding `.toolkit/` | Where the extension files are looked up |
+| `MSKit_SlnFileDirectory` | set | the `.slnx` folder, else the folder holding `.mskit/` | Where the extension files are looked up |
 | `MSKit_SlnFileName` | set | the `.slnx` name | |
-| `MSKit_ToolkitDir`, `MSKit_ToolkitMSBuildDir` | out | | `.toolkit/` and `.toolkit/msbuild/`, absolute |
+| `MSKit_ToolkitDir`, `MSKit_ToolkitMSBuildDir` | out | | The kit folder (`.mskit/` by default) and its `msbuild/`, absolute |
+| `MSKit_KitDirName` | out | | The kit folder's name, `.mskit` unless installed with `--kit-dir`; the kit's messages name the update scripts with it |
 | `MSKit_ProjectObjDir` | out | | The project's `obj` folder, absolute |
-| `MSKit_Templates` | set | `.toolkit/.local/` | Templates for local files ([Local files](../local-files.md)) |
+| `MSKit_Templates` | set | `.mskit/.local/` | Templates for local files ([Local files](../local-files.md)) |
 | `MSKit_Diagnostic` | set | `false` | Reserved; nothing reads it in this version |
 | `BuildDiagnosticDescriptor` | item | one per code of each installed part | A code the kit reports, with its `Title`, `MessageFormat`, `Description`, `Category`, `DefaultSeverity` and `HelpLink`, for tools that read a build's diagnostics ([diagnostic catalog](./diagnostic-catalog.md)) |
 | `MSKit_CodesHelpBaseUrl` | set | `https://github.com/DragoAnt/MSBuildKit/blob/main/docs/reference/codes.md` | The page every warning and error links to (`HelpLink`); the link adds `#` and the code in lower case ([code reference](./codes.md)). Point it at your own copy of the page |
@@ -95,7 +96,7 @@ Every property and item the kit sets or reads, grouped by topic. **Set** = a val
 | Name | Kind | Default | Meaning |
 | --- | --- | --- | --- |
 | `IsPackable` | set | `True` (owner layer); `False` for test projects and code fixes | |
-| `PackageIconPath` | set | `.toolkit/res/package.icon.png` (owner layer) | The icon (PNG or JPEG), packed as `icon<extension, lowercased>` |
+| `PackageIconPath` | set | `.mskit/res/package.icon.png` (owner layer) | The icon (PNG or JPEG), packed as `icon<extension, lowercased>` |
 | `MSKit_DefaultPackageIconUrl` | set | empty (off) | A URL of the same icon, written as `PackageIconUrl` next to the kit's embedded icon for older clients; ignored when the project sets `PackageIcon` or `PackageIconUrl` ([Packaging](../packaging.md#package-metadata)) |
 | `MSKit_PackageIconSourcePath` | out | | The icon file the checks read |
 | `MSKit_PackageReadmeSourcePath` | set | `package.readme.md`, else `README.md` next to the csproj | The README packed as `readme.md` |

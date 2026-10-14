@@ -20,22 +20,22 @@ The script downloads the latest release, checks its SHA-256, and writes:
 
 | Path | What |
 | --- | --- |
-| `.toolkit/msbuild/` | the kit: one folder per [part](./parts.md) and the `init.props` / `init.targets` entry points |
-| `.toolkit/res/package.icon.png` | the package icon |
-| `.toolkit/kit.json` | the pinned version, its SHA-256 and your optional parts |
-| `.toolkit/kit.parts`, `.toolkit/update.sh`, `.toolkit/update.ps1` | the part list and the update scripts |
+| `.mskit/msbuild/` | the kit: one folder per [part](./parts.md) and the `init.props` / `init.targets` entry points |
+| `.mskit/res/package.icon.png` | the package icon |
+| `.mskit/kit.json` | the pinned version, its SHA-256 and your optional parts |
+| `.mskit/kit.parts`, `.mskit/update.sh`, `.mskit/update.ps1` | the part list and the update scripts |
 | `Directory.Build.props`, `Directory.Build.targets` | only when missing: one import each |
 
 If the two `Directory.Build.*` files already exist, the script prints the line each needs instead of editing them:
 
 ```xml
 <!-- Directory.Build.props -->
-<Import Project="$(MSBuildThisFileDirectory).toolkit/msbuild/init.props" />
+<Import Project="$(MSBuildThisFileDirectory).mskit/msbuild/init.props" />
 <!-- Directory.Build.targets -->
-<Import Project="$(MSBuildThisFileDirectory).toolkit/msbuild/init.targets" />
+<Import Project="$(MSBuildThisFileDirectory).mskit/msbuild/init.targets" />
 ```
 
-Commit `.toolkit/` with the rest of the repository: the kit is reviewed like any other change. [Install and update](./install-and-update.md) has every option.
+Commit `.mskit/` with the rest of the repository: the kit is reviewed like any other change. To use another folder name, pass `--kit-dir <name>` (`-KitDir`); an older `.toolkit/` install moves on its own. [Install and update](./install-and-update.md) has every option.
 
 ## 2 Declare the next version
 

@@ -1,6 +1,6 @@
 # Customizing
 
-Three ways to change what the kit does without editing `.toolkit/msbuild/` (an update overwrites it): set a property, add one of the extension files the kit looks for, or hook your own file in around the kit. To use the kit for another owner, change the owner layer.
+Three ways to change what the kit does without editing `.mskit/msbuild/` (an update overwrites it): set a property, add one of the extension files the kit looks for, or hook your own file in around the kit. To use the kit for another owner, change the owner layer.
 
 ## Overriding a default
 
@@ -15,13 +15,13 @@ Almost every default is written as `<X Condition="'$(X)'==''">`, so the first va
 
 ## The owner layer
 
-`.toolkit/msbuild/init.company.props` is loaded before every part and holds the owner's defaults; `init.company.targets` is its targets-phase twin (empty for DragoAnt).
+`.mskit/msbuild/init.company.props` is loaded before every part and holds the owner's defaults; `init.company.targets` is its targets-phase twin (empty for DragoAnt).
 
 | Setting | DragoAnt value | Note |
 | --- | --- | --- |
 | `ManufacturerName`, `FullManufacturerName` | `DragoAnt` | **unconditional**: set them below the kit import to change them; they feed `Authors`, `Company`, `Copyright` |
 | `PackageLicenseExpression` | `MIT`, unless `PackageLicenseFile` is set | |
-| `PackageIconPath` | `.toolkit/res/package.icon.png` | |
+| `PackageIconPath` | `.mskit/res/package.icon.png` | |
 | `MSKit_DefaultPackageIconUrl` | not set | another owner sets it here to a hosted copy of its icon, so older clients show it too ([Packaging](./packaging.md#package-metadata)) |
 | `MSKit_PrereleasePackagePrefix` | `DragoAnt.` | [prerelease check](./build.md#reference-checks) |
 | `MSKit_IsStableBranchRegex` | `^(main\|release/.+)$` | |
@@ -61,7 +61,7 @@ Name your own files in `Directory.Build.props` above the kit import; each is imp
 <PropertyGroup>
   <MSKit_AfterInitTargets>$(MSBuildThisFileDirectory)build/after-kit.targets</MSKit_AfterInitTargets>
 </PropertyGroup>
-<Import Project="$(MSBuildThisFileDirectory).toolkit/msbuild/init.props" />
+<Import Project="$(MSBuildThisFileDirectory).mskit/msbuild/init.props" />
 ```
 
 `MSKit_BeforeInitTargets` and `MSKit_AfterInitTargets` are read in the targets phase, so they can also be set in the csproj.

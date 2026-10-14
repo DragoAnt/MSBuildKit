@@ -3,7 +3,7 @@
 Four optional parts build [Roslyn](https://github.com/dotnet/roslyn) analyzers, code fixes and source generators and pack them the way the compiler loads them. Install the ones you need; each brings the parts it requires:
 
 ```sh
-sh .toolkit/update.sh --add Project.CodeAnalyzer --add Project.CodeFixer --add Project.SourceGenerator
+sh .mskit/update.sh --add Project.CodeAnalyzer --add Project.CodeFixer --add Project.SourceGenerator
 ```
 
 ## Wiring a project

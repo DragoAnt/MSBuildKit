@@ -1,6 +1,6 @@
 # Optional parts
 
-Three parts that are not installed by default. Add one with `sh .toolkit/update.sh --add <Part>` ([Install and update](./install-and-update.md)); the Roslyn parts have [their own page](./roslyn.md).
+Three parts that are not installed by default. Add one with `sh .mskit/update.sh --add <Part>` ([Install and update](./install-and-update.md)); the Roslyn parts have [their own page](./roslyn.md).
 
 ## PackageAsProj
 
@@ -62,9 +62,9 @@ $dbContextProj = "$PSScriptRoot/src/Acme.Orders.Data/Acme.Orders.Data.csproj"
 ```
 
 ```sh
-pwsh .toolkit/msbuild/DragoAnt.MSBuildKit.EF/scripts/add-migration.ps1 -migrationName AddShippingAddress
-pwsh .toolkit/msbuild/DragoAnt.MSBuildKit.EF/scripts/apply-migrations.ps1
-pwsh .toolkit/msbuild/DragoAnt.MSBuildKit.EF/scripts/remove-migration.ps1
+pwsh .mskit/msbuild/DragoAnt.MSBuildKit.EF/scripts/add-migration.ps1 -migrationName AddShippingAddress
+pwsh .mskit/msbuild/DragoAnt.MSBuildKit.EF/scripts/apply-migrations.ps1
+pwsh .mskit/msbuild/DragoAnt.MSBuildKit.EF/scripts/remove-migration.ps1
 ```
 
 | Script | Runs |
