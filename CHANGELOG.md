@@ -4,9 +4,27 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Added
+
+- `manager/`: the first build of `mskit-manager`, the `DragoAnt.MSBuildKit.Manager` .NET tool (`net8.0`, `net10.0`, `RollForward=Major`) that will install, update and migrate the kit. This build has one command, `status [--json]`, which prints the tool version; the logo goes to stderr, only on a terminal and never with `--no-logo`, so `--json` output always parses. Each run writes a log under `<system temp>/mskit-manager/logs/`, named after the command, newest 20 kept. Not published yet.
+- `manager/`: the package model behind the coming `install` — readers for `mskit.package.json`, the trunk's `catalog.json` and a company or team `filter.json`; the part selection (core defaults, then the company filter, the team filter and the repository's `kit.json`, a later layer winning per part, with required and company-locked parts refused and `requires` closed); `kit.json` schema 2, which also reads the schema 1 that `update.sh` writes and keeps a `parts` array spread over several lines; and the install manifest. No command uses them yet.
+
+## [0.3.0] - 2026-10-14
+
 ### Breaking changes
 
-- The kit's default folder is `.mskit/` instead of `.toolkit/`: a fresh install writes `.mskit/`, and `Directory.Build.props` / `.targets` import `.mskit/msbuild/init.props` / `init.targets`. `update.sh --kit-dir NAME` (`update.ps1 -KitDir NAME`) picks another folder name, and `kit.json` records it as `kitDir`, so later runs find it. A run that finds an older `.toolkit/` install moves it to the kit folder (`git mv` when it is tracked) and rewrites `.toolkit` in `Directory.Build.props`, `Directory.Build.targets`, `.gitignore` and `.github/dependabot.yml`; it stops when both folders exist, and `--dry-run` shows the move and changes nothing. **From 0.2.1 the upgrade takes two runs:** 0.2.1's `update.sh` installs the new version into `.toolkit/` and copies the new script, which moves the folder when you run it again (`sh .toolkit/update.sh`). Keep `.toolkit/` with `--kit-dir .toolkit`. The release zip keeps its `.toolkit/` layout so that 0.2.1's script can install it. See [Moving from `.toolkit/`](./docs/install-and-update.md#moving-from-toolkit).
+- The kit's default folder is `.mskit/` instead of `.toolkit/`: a fresh install writes `.mskit/`, and `Directory.Build.props` / `.targets` import `.mskit/msbuild/init.props` / `init.targets`. `update.sh --kit-dir NAME` (`update.ps1 -KitDir NAME`) picks another folder name, and `kit.json` records it as `kitDir`, so later runs find it. A run that finds an older `.toolkit/` install moves it to the kit folder (`git mv` when it is tracked) and rewrites `.toolkit` in `Directory.Build.props`, `Directory.Build.targets`, `.gitignore` and `.github/dependabot.yml`; it stops when both folders exist, and `--dry-run` shows the move and changes nothing. Keep `.toolkit/` with `--kit-dir .toolkit`. The release zip keeps its `.toolkit/` layout so that 0.2.1's script can install it. See [Moving from `.toolkit/`](./docs/install-and-update.md#moving-from-toolkit) ([#21](https://github.com/DragoAnt/MSBuildKit/pull/21)).
+- **Upgrading from 0.2.1 takes two runs**, from the repository root. The first runs 0.2.1's script, which installs 0.3.0 into `.toolkit/` and copies in the new script; the second runs the new script, which moves `.toolkit/` to `.mskit/`. Commit after the second run.
+
+  ```sh
+  sh .toolkit/update.sh --version 0.3.0
+  sh .toolkit/update.sh
+  ```
+
+  ```powershell
+  pwsh .toolkit/update.ps1 -Version 0.3.0
+  pwsh .toolkit/update.ps1
+  ```
 - Warning and error codes drop the underscore after the prefix: `MSKITVER006`, `MSKITPKG015`, and so on, with the same family and number. `NoWarn`, `WarningsAsErrors`, `WarningsNotAsErrors` and `MSKit_SkipPackageChecks` entries that name a code the old way no longer match: rename them. Each section of the [code reference](./docs/reference/codes.md) names the code's former spelling.
 
 ### Added
@@ -15,8 +33,6 @@ All notable changes to this project are documented here. The format follows [Kee
 - A machine-readable catalog of the codes: every part declares each code it reports as a `BuildDiagnosticDescriptor` item (`Title`, `MessageFormat`, `Description`, `Category`, `DefaultSeverity`, `HelpLink`) in its own `diagnostic.descriptors.props`, so a tool can read them with `dotnet msbuild -getItem:BuildDiagnosticDescriptor` and tell the owning part from the item's `DefiningProjectFullPath`. Each section of the [code reference](./docs/reference/codes.md) now opens with the code's title. See the [diagnostic catalog](./docs/reference/diagnostic-catalog.md).
 - `MSKit_KitDirName`: the kit folder's name. The `MSKITROSLYN001`..`003` messages name the update scripts with it, so they show the folder the kit is installed in.
 - `MSKit_DefaultPackageIconUrl`: when the kit packs its own icon, this URL is also written as `PackageIconUrl`, so clients that predate embedded icons show it; nuget.org keeps showing the embedded one. Empty by default; an owner sets it in its owner layer. `MSKITPKG008` now reports only a `PackageIconUrl` the project sets itself. See [docs/packaging.md](./docs/packaging.md#package-metadata).
-- `manager/`: the first build of `mskit-manager`, the `DragoAnt.MSBuildKit.Manager` .NET tool (`net8.0`, `net10.0`, `RollForward=Major`) that will install, update and migrate the kit. This build has one command, `status [--json]`, which prints the tool version; the logo goes to stderr, only on a terminal and never with `--no-logo`, so `--json` output always parses. Each run writes a log under `<system temp>/mskit-manager/logs/`, named after the command, newest 20 kept. Not published yet.
-- `manager/`: the package model behind the coming `install` — readers for `mskit.package.json`, the trunk's `catalog.json` and a company or team `filter.json`; the part selection (core defaults, then the company filter, the team filter and the repository's `kit.json`, a later layer winning per part, with required and company-locked parts refused and `requires` closed); `kit.json` schema 2, which also reads the schema 1 that `update.sh` writes and keeps a `parts` array spread over several lines; and the install manifest. No command uses them yet.
 
 ### Changed
 
@@ -69,3 +85,10 @@ All notable changes to this project are documented here. The format follows [Kee
 - Microsoft.Testing.Platform v2 test projects with xUnit v3, Cobertura coverage, TRX and JUnit reports.
 - `update.sh` and `update.ps1`: install or update `.toolkit/` from a SHA-256 checked release zip, with optional parts and a dry run.
 - `samples/MinimalLibrary`, the `tests/run.sh` self-test, and the CI and release workflows, with every action pinned to a full commit SHA.
+
+[Unreleased]: https://github.com/DragoAnt/MSBuildKit/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/DragoAnt/MSBuildKit/compare/v0.2.1...v0.3.0
+[0.2.1]: https://github.com/DragoAnt/MSBuildKit/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/DragoAnt/MSBuildKit/compare/v0.1.1...v0.2.0
+[0.1.1]: https://github.com/DragoAnt/MSBuildKit/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/DragoAnt/MSBuildKit/releases/tag/v0.1.0
