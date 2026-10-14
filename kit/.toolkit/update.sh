@@ -7,6 +7,19 @@
 {
 set -eu
 
+# Started from a .toolkit/ folder, run from a copy: Windows refuses to move a folder holding an open file.
+self_copy=""
+if [ "${1:-}" = "--from-copy" ]; then
+  self_copy=$(dirname "$0"); shift
+else
+  case "$(dirname "$0")" in
+    .toolkit|*/.toolkit|*\\.toolkit)
+      self_copy=$(mktemp -d)
+      cp "$0" "$self_copy/update.sh"
+      exec sh "$self_copy/update.sh" --from-copy "$@" ;;
+  esac
+fi
+
 repo="DragoAnt/MSBuildKit"
 version=""
 source=""
@@ -105,7 +118,7 @@ extract_zip() {
 }
 
 work=$(mktemp -d)
-trap 'rm -rf "$work"' EXIT INT TERM
+trap 'rm -rf "$work"; if [ -n "$self_copy" ]; then rm -f "$self_copy/update.sh"; rmdir "$self_copy" 2>/dev/null || true; fi' EXIT INT TERM
 kit_dir=""
 actual_sha=""
 

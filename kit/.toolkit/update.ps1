@@ -84,21 +84,21 @@ $work = Join-Path ([System.IO.Path]::GetTempPath()) ("msbuildkit-" + [guid]::New
 New-Item -ItemType Directory -Path $work | Out-Null
 try {
     $actualSha = ''
-    $kitDir = $null
+    $kitBuild = $null
     if ($Source) {
         if (Test-Path $Source -PathType Container) {
             if (-not (Test-Path (Join-Path $Source '.toolkit/msbuild/init.props'))) { Fail "'$Source' is not a kit build: no .toolkit/msbuild/init.props" }
-            $kitDir = (Resolve-Path $Source).Path
+            $kitBuild = (Resolve-Path $Source).Path
         }
         elseif (Test-Path $Source -PathType Leaf) {
             $actualSha = (Get-FileHash -Algorithm SHA256 $Source).Hash.ToLowerInvariant()
             if ($Sha256 -and $actualSha -ne $Sha256) { Fail "SHA-256 mismatch for '$Source': expected $Sha256, got $actualSha" }
-            $kitDir = Join-Path $work 'kit'
-            Expand-Archive -Path $Source -DestinationPath $kitDir
+            $kitBuild = Join-Path $work 'kit'
+            Expand-Archive -Path $Source -DestinationPath $kitBuild
         }
         else { Fail "-Source '$Source' does not exist" }
         if (-not $Version) {
-            $versionFile = Join-Path $kitDir '.toolkit/kit.version'
+            $versionFile = Join-Path $kitBuild '.toolkit/kit.version'
             $Version = if (Test-Path $versionFile) { (Get-Content $versionFile -TotalCount 1).Trim() } else { '0.0.0-local' }
         }
     }
@@ -121,11 +121,11 @@ try {
         $pinned = KitJsonValue 'sha256'
         if (-not $Sha256 -and (KitJsonValue 'version') -eq $Version -and $pinned) { $Sha256 = $pinned.ToLowerInvariant() }
         if ($Sha256 -and $actualSha -ne $Sha256) { Fail "SHA-256 mismatch for ${zipName}: expected $Sha256 (kit.json or -Sha256), got $actualSha" }
-        $kitDir = Join-Path $work 'kit'
-        Expand-Archive -Path $zipPath -DestinationPath $kitDir
+        $kitBuild = Join-Path $work 'kit'
+        Expand-Archive -Path $zipPath -DestinationPath $kitBuild
     }
 
-    $newToolkit = Join-Path $kitDir '.toolkit'
+    $newToolkit = Join-Path $kitBuild '.toolkit'
     if (-not (Test-Path (Join-Path $newToolkit 'msbuild/init.props'))) { Fail 'the kit build has no .toolkit/msbuild/init.props' }
     $partsPath = Join-Path $newToolkit 'kit.parts'
     if (-not (Test-Path $partsPath)) { Fail 'the kit build has no .toolkit/kit.parts' }
