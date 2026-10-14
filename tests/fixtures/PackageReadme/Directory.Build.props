@@ -11,6 +11,6 @@
     <SourceLinkGitLabHost Include="$(FixtureGitLabHost)" Condition="'$(FixtureGitLabHost)'!=''" />
   </ItemGroup>
 
-  <Import Project="$(MSBuildThisFileDirectory).toolkit/msbuild/init.props" />
+  <Import Project="$(MSBuildThisFileDirectory).mskit/msbuild/init.props" />
 
 </Project>

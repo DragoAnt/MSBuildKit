@@ -1,5 +1,5 @@
 <Project>
 
-  <Import Project="$(MSBuildThisFileDirectory).toolkit/msbuild/init.targets" />
+  <Import Project="$(MSBuildThisFileDirectory).mskit/msbuild/init.targets" />
 
 </Project>

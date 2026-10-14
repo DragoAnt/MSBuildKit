@@ -4,6 +4,6 @@
     <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
   </PropertyGroup>
 
-  <Import Project="$(MSBuildThisFileDirectory).toolkit/msbuild/init.props" />
+  <Import Project="$(MSBuildThisFileDirectory).mskit/msbuild/init.props" />
 
 </Project>

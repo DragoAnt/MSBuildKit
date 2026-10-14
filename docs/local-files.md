@@ -6,15 +6,15 @@ Three default parts keep values that must not be committed — connection string
 | --- | --- |
 | `%APPDATA%\Microsoft\UserSecrets\` (Windows), `~/.microsoft/usersecrets/` (Linux, macOS) | `MSKit_LocalSecretsBaseDirectory` |
 | `<that folder>/<UserSecretsId>/` for a project | `LocalSecretsDir` |
-| the templates: `.toolkit/.local/` | `MSKit_Templates` |
+| the templates: `.mskit/.local/` | `MSKit_Templates` |
 
-`update.sh` never touches `.toolkit/.local/`. Commit the templates with placeholders only — they reach every clone; the real values live only in the per-user folder.
+`update.sh` never touches `.mskit/.local/`. Commit the templates with placeholders only — they reach every clone; the real values live only in the per-user folder.
 
 ## Locals.Secrets — a project's `secrets.json`
 
 A project with a [`UserSecretsId`](https://learn.microsoft.com/aspnet/core/security/app-secrets#enable-secret-storage) gets, on a developer machine:
 
-1. the template `.toolkit/.local/<UserSecretsId>.secrets.json`, created as `{}` when missing;
+1. the template `.mskit/.local/<UserSecretsId>.secrets.json`, created as `{}` when missing;
 2. `secrets.json` in its `LocalSecretsDir`, copied from the template when missing (your edits there are kept);
 3. that file linked into the project as `appsettings.UserSecrets.json` (`UserSecretsLinkNamePrefix` changes the `appsettings` part), so it is one click away in the IDE.
 
@@ -35,7 +35,7 @@ For values MSBuild itself needs (a private feed's key, a signing password), turn
 </PropertyGroup>
 ```
 
-On a developer machine every project then imports `<user-secrets folder>/<MSKit_SlnSecretsId>/Directory.Secrets.props` (`MSKit_UseSlnSecretsTargets` does the same for `Directory.Secrets.targets`, in the targets phase), created from `.toolkit/.local/Directory.Secrets.props` when missing; the template is created as an empty `<Project>` when it is missing too. A file created during a build is imported from the next one on.
+On a developer machine every project then imports `<user-secrets folder>/<MSKit_SlnSecretsId>/Directory.Secrets.props` (`MSKit_UseSlnSecretsTargets` does the same for `Directory.Secrets.targets`, in the targets phase), created from `.mskit/.local/Directory.Secrets.props` when missing; the template is created as an empty `<Project>` when it is missing too. A file created during a build is imported from the next one on.
 
 | Property | Default | Effect |
 | --- | --- | --- |
@@ -53,4 +53,4 @@ A `LocalCompile` item compiles a file that lives in the project's `LocalSecretsD
 </ItemGroup>
 ```
 
-The project needs a `UserSecretsId`. The file is copied from the template `.toolkit/.local/LocalCompile/LocalSettings.cs` when it is missing; when the template is missing too, the kit writes a stub (`namespace <RootNamespace>;`) to it. This runs on every build, CI included, so the template must compile on its own. `LocalCompileTemplateDir` moves the template folder.
+The project needs a `UserSecretsId`. The file is copied from the template `.mskit/.local/LocalCompile/LocalSettings.cs` when it is missing; when the template is missing too, the kit writes a stub (`namespace <RootNamespace>;`) to it. This runs on every build, CI included, so the template must compile on its own. `LocalCompileTemplateDir` moves the template folder.

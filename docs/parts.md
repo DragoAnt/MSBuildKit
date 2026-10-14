@@ -1,6 +1,6 @@
 # Parts
 
-The kit is split into parts, one folder each under `.toolkit/msbuild/` (`DragoAnt.MSBuildKit.<Part>`; the trunk is `DragoAnt.MSBuildKit`). Default parts are always installed; optional ones are added with `update.sh --add <Part>` and recorded in `kit.json` ([Install and update](./install-and-update.md)). The list lives in `.toolkit/kit.parts`.
+The kit is split into parts, one folder each under `.mskit/msbuild/` (`DragoAnt.MSBuildKit.<Part>`; the trunk is `DragoAnt.MSBuildKit`). Default parts are always installed; optional ones are added with `update.sh --add <Part>` and recorded in `kit.json` ([Install and update](./install-and-update.md)). The list lives in `.mskit/kit.parts`.
 
 | Part | Installed | Requires | What it does | Page |
 | --- | --- | --- | --- | --- |
@@ -23,7 +23,7 @@ The kit is split into parts, one folder each under `.toolkit/msbuild/` (`DragoAn
 
 ## Load order
 
-`Directory.Build.props` imports `.toolkit/msbuild/init.props`, which imports each installed part's `init.props` in a fixed order; `Directory.Build.targets` imports `init.targets` the same way. A part that is not installed is skipped.
+`Directory.Build.props` imports `.mskit/msbuild/init.props`, which imports each installed part's `init.props` in a fixed order; `Directory.Build.targets` imports `init.targets` the same way. A part that is not installed is skipped.
 
 | Phase | Order |
 | --- | --- |

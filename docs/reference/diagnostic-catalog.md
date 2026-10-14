@@ -28,7 +28,7 @@ Every code the kit reports is also declared as an MSBuild item, `BuildDiagnostic
 
 ## Where the items live
 
-Each part declares the codes it reports in its own folder, `.toolkit/msbuild/DragoAnt.MSBuildKit.<Part>/diagnostic.descriptors.props`, which the part's `init.props` imports. A project therefore sees the descriptors of the parts it has installed and no others, and the `DefiningProjectFullPath` of an item names the part that owns the code; `.toolkit/kit.json` holds the kit version. The [code reference](./codes.md) lists which part reports which family.
+Each part declares the codes it reports in its own folder, `.mskit/msbuild/DragoAnt.MSBuildKit.<Part>/diagnostic.descriptors.props`, which the part's `init.props` imports. A project therefore sees the descriptors of the parts it has installed and no others, and the `DefiningProjectFullPath` of an item names the part that owns the code; `.mskit/kit.json` holds the kit version. The [code reference](./codes.md) lists which part reports which family.
 
 ```sh
 dotnet msbuild src/MyLibrary/MyLibrary.csproj -getItem:BuildDiagnosticDescriptor

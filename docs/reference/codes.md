@@ -278,7 +278,7 @@ Background: [Roslyn components](../roslyn.md).
 
 **`Project.CodeAnalyzer` part is not installed**
 
-`MSKITROSLYN001` (formerly `MSKIT_ROSLYN001`) (error) — the name matches the analyzer regex, but the `Project.CodeAnalyzer` part is not installed. `sh .toolkit/update.sh --add Project.CodeAnalyzer`, or rename the project, or set `MSKit_DisableCodeAnalyzerAutoDetect=true` in `Directory.Build.props` above the kit import.
+`MSKITROSLYN001` (formerly `MSKIT_ROSLYN001`) (error) — the name matches the analyzer regex, but the `Project.CodeAnalyzer` part is not installed. `sh .mskit/update.sh --add Project.CodeAnalyzer`, or rename the project, or set `MSKit_DisableCodeAnalyzerAutoDetect=true` in `Directory.Build.props` above the kit import.
 
 ### MSKITROSLYN002
 

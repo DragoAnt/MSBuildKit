@@ -13,7 +13,7 @@ Shared MSBuild settings for .NET repositories that publish NuGet packages: nuget
 - **Versions from release tags.** Tag `v1.4.0` and the packages are `1.4.0`; branch builds are `1.4.0-ci.<run>`, pull requests `1.4.0-pr.<n>.<run>`, local builds `9999.0.0`. [Versioning](./docs/versioning.md)
 - **Tests on Microsoft.Testing.Platform v2.** Projects named `*.Tests` become [xUnit v3](https://xunit.net/docs/getting-started/v3/microsoft-testing-platform) test projects with coverage, TRX and JUnit reports, an assertion library and [NSubstitute](https://nsubstitute.github.io/). [Testing](./docs/testing.md)
 - **Build checks that keep a repository consistent.** Target frameworks declared once, banned packages, prerelease dependencies on a stable branch, `TreatWarningsAsErrors` drift. [Build defaults and checks](./docs/build.md)
-- **Plain files, one update script.** The kit lives in your repository's `.toolkit/` folder, so every change shows up in a pull request; `update.sh` / `update.ps1` install a release after checking its SHA-256. It is not a NuGet package or an MSBuild SDK: nothing is restored at build time. [Install and update](./docs/install-and-update.md)
+- **Plain files, one update script.** The kit lives in your repository's `.mskit/` folder, so every change shows up in a pull request; `update.sh` / `update.ps1` install a release after checking its SHA-256. It is not a NuGet package or an MSBuild SDK: nothing is restored at build time. [Install and update](./docs/install-and-update.md)
 
 ## Install
 
@@ -29,7 +29,7 @@ Invoke-WebRequest https://github.com/DragoAnt/MSBuildKit/releases/latest/downloa
 pwsh ./update.ps1; Remove-Item update.ps1
 ```
 
-Then declare the next version in `Directory.Version.props` and commit `.toolkit/`. [Getting started](./docs/getting-started.md) walks through the first build, test and pack; [`samples/MinimalLibrary`](./samples/MinimalLibrary) is a complete repository with every check passing.
+Then declare the next version in `Directory.Version.props` and commit `.mskit/`. [Getting started](./docs/getting-started.md) walks through the first build, test and pack; [`samples/MinimalLibrary`](./samples/MinimalLibrary) is a complete repository with every check passing.
 
 ## Documentation
 

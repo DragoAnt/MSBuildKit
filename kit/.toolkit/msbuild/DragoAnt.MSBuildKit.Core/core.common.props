@@ -22,6 +22,7 @@
 
     <MSKit_ToolkitMSBuildDir Condition="'$(MSKit_ToolkitMSBuildDir)'==''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)../').Replace('\', '/').TrimEnd('/'))/</MSKit_ToolkitMSBuildDir>
     <MSKit_ToolkitDir Condition="'$(MSKit_ToolkitDir)'==''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)../../').Replace('\', '/').TrimEnd('/'))/</MSKit_ToolkitDir>
+    <MSKit_KitDirName Condition="'$(MSKit_KitDirName)'==''">$([System.IO.Path]::GetFileName($([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)../..'))))</MSKit_KitDirName>
 
     <_ProjectObjDir>$(BaseIntermediateOutputPath)</_ProjectObjDir>
     <_ProjectObjDir Condition="'$(_ProjectObjDir)'==''">obj</_ProjectObjDir>

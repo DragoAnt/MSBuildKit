@@ -7,6 +7,6 @@
     <PackageIconPath Condition="'$(FixtureIcon)'!=''">$(MSBuildThisFileDirectory)Icons/$(FixtureIcon)</PackageIconPath>
   </PropertyGroup>
 
-  <Import Project="$(MSBuildThisFileDirectory).toolkit/msbuild/init.props" />
+  <Import Project="$(MSBuildThisFileDirectory).mskit/msbuild/init.props" />
 
 </Project>

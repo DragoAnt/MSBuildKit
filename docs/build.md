@@ -35,10 +35,11 @@ Set `MSKit_IsDevEnv` yourself to build "as CI" locally (`-p:MSKit_IsDevEnv=False
 
 | Property | Value |
 | --- | --- |
-| `MSKit_SlnFileDirectory` | the folder of the `.slnx` being built (`SlnxFilePath`), else the folder that holds `.toolkit/`; ends with `/` |
+| `MSKit_SlnFileDirectory` | the folder of the `.slnx` being built (`SlnxFilePath`), else the folder that holds `.mskit/`; ends with `/` |
 | `MSKit_SlnFileName` | the solution name without extension, when building a `.slnx` |
 | `MSKit_GitRoot` | the nearest folder above the project with a `.git` (worktrees included) |
-| `MSKit_ToolkitDir`, `MSKit_ToolkitMSBuildDir` | `.toolkit/` and `.toolkit/msbuild/`, absolute, ending with `/` |
+| `MSKit_ToolkitDir`, `MSKit_ToolkitMSBuildDir` | the kit folder (`.mskit/` by default) and its `msbuild/`, absolute, ending with `/` |
+| `MSKit_KitDirName` | the kit folder's name, such as `.mskit` |
 | `MSKit_ProjectObjDir` | the project's `obj` folder, absolute |
 | `MSKit_Branch` | on GitHub Actions `GITHUB_HEAD_REF` (pull requests) or `GITHUB_REF_NAME`; else read from `.git/HEAD`; else `unknown-branch` |
 | `MSKit_IsStableBranch` | `true` when `MSKit_Branch` matches `MSKit_IsStableBranchRegex` (case-insensitive): the owner layer's `^(main\|release/.+)$`, the kit's own default `^(main\|master\|release/.+)$` |
