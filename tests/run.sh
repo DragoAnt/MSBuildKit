@@ -12,6 +12,7 @@ fixtures="$here/tests/fixtures/PackageChecks"
 readme_fixture="$here/tests/fixtures/PackageReadme"
 tfm_fixture="$here/tests/fixtures/TfmConstants"
 icon_fixture="$here/tests/fixtures/PackageIcon"
+apphost_fixture="$here/tests/fixtures/AppHost"
 out="$here/dist/selftest"
 run_tests=1
 nuget_fallback=fallback
@@ -41,7 +42,7 @@ if git -C "$here" rev-parse -q --verify 'refs/tags/v0.2.1^{commit}' > /dev/null 
 else
   echo "SKIP  the sample's v0.2.1 start (no v0.2.1 tag; fetch the tags)"
 fi
-for root in "$sample" "$fixtures" "$readme_fixture" "$icon_fixture"; do
+for root in "$sample" "$fixtures" "$readme_fixture" "$icon_fixture" "$apphost_fixture"; do
   sh "$kit/.toolkit/update.sh" --source "$kit" --root "$root" > "$out/install.log" || { cat "$out/install.log"; exit 1; }
 done
 sh "$kit/.toolkit/update.sh" --source "$kit" --root "$tfm_fixture" --kit-dir .toolkit > "$out/install.log" || { cat "$out/install.log"; exit 1; }
@@ -137,6 +138,7 @@ grep -q "MSKITPKG" "$out/checks-skip.log" && bad "MSKit_SkipPackageChecks=All di
 . "$here/tests/package-readme.sh"
 . "$here/tests/tfm-constants.sh"
 . "$here/tests/package-icon.sh"
+. "$here/tests/apphost.sh"
 . "$here/tests/codes.sh"
 . "$here/tests/docs.sh"
 if sh "$here/tests/nuget-isolation.test.sh" > "$out/nuget-isolation-unit.log" 2>&1; then pass "nuget isolation: the unit checks pass"
