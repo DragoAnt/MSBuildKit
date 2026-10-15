@@ -206,7 +206,20 @@ try {
             $rewritten = [regex]::Replace($text, $pattern, $KitDir.Replace('$', '$$'), 'Multiline')
             if ($rewritten -ceq $text) { continue }
             if ($Dry) { Say "  would rewrite $legacyName -> $KitDir in $f" }
-            else { [System.IO.File]::WriteAllText($path, $rewritten, $encoding); Say "rewrote $legacyName -> $KitDir in $f" }
+            else {
+                try { [System.IO.File]::WriteAllText($path, $rewritten, $encoding) }
+                catch { Fail "cannot write ${f}: $($_.Exception.Message); make it writable and run the update again" }
+                Say "rewrote $legacyName -> $KitDir in $f"
+            }
+        }
+    }
+    # An earlier run that stopped after the move left Directory.Build.* importing the old folder.
+    $heal = $false
+    if (-not $migrate -and $KitDir -cne $legacyName -and -not (Test-Path -LiteralPath $legacy)) {
+        $importPattern = '(?<=^|[\s/\\"''()=,;])' + [regex]::Escape($legacyName) + '[/\\]msbuild[/\\]init\.(props|targets)'
+        foreach ($f in 'Directory.Build.props', 'Directory.Build.targets') {
+            $path = Join-Path $Root $f
+            if ((Test-Path -LiteralPath $path -PathType Leaf) -and [regex]::IsMatch([System.IO.File]::ReadAllText($path), $importPattern, 'Multiline')) { $heal = $true }
         }
     }
 
@@ -214,6 +227,7 @@ try {
     $dbt = Join-Path $Root 'Directory.Build.targets'
     if ($DryRun) {
         if ($migrate) { Say "would move $legacyName/ to $KitDir/"; RewriteRefs -Dry }
+        if ($heal) { Say "Directory.Build.* still import $legacyName/, the kit is in $KitDir/"; RewriteRefs -Dry }
         Say "$changes file(s) under $KitDir/msbuild would change"
         if (-not (Test-Path $dbp)) { Say '  would create Directory.Build.props' }
         if (-not (Test-Path $dbt)) { Say '  would create Directory.Build.targets' }
@@ -238,6 +252,10 @@ try {
         }
         $kitJsonPath = Join-Path $toolkit 'kit.json'
         $currentMsbuild = Join-Path $toolkit 'msbuild'
+        RewriteRefs
+    }
+    elseif ($heal) {
+        Say "Directory.Build.* still import $legacyName/, the kit is in $KitDir/: finishing the move"
         RewriteRefs
     }
 

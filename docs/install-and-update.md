@@ -78,6 +78,13 @@ sh .toolkit/update.sh                           # the new script: moves .toolkit
 
 `update.ps1` works the same way. Commit after the second run.
 
+**A run that stopped after the move** (interrupted, or 0.3.0's `update.sh` stopped by a timeout) leaves the kit in `.mskit/` while `Directory.Build.props` / `.targets` still import `.toolkit/msbuild/init.*`, so the repository does not build. Run the update once more from the kit folder: when `Directory.Build.*` import `.toolkit/msbuild/init.*` and `.toolkit/` is gone, it rewrites `.toolkit` in the same four files and finishes. A run stopped by a signal says so and exits non-zero. A repository left this way by 0.3.0 holds 0.3.0's script, which cannot repair it, so take the new script first:
+
+```sh
+sh .mskit/update.sh --version <new version>   # 0.3.0's script: installs the new version, copies the new update.sh
+sh .mskit/update.sh                           # the new script: rewrites the imports
+```
+
 ## Updating from 0.2.0 or earlier
 
 An update started from 0.2.0 or earlier still runs the old script, which can stop with a `syntax error` after copying the files and before writing `kit.json` when the new `update.sh` differs in length (a CRLF checkout does). Run the same command once more; updates started from 0.2.1 on finish in one run.

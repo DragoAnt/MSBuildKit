@@ -118,7 +118,12 @@ extract_zip() {
 }
 
 work=$(mktemp -d)
-trap 'rm -rf "$work"; if [ -n "$self_copy" ]; then rm -f "$self_copy/update.sh"; rmdir "$self_copy" 2>/dev/null || true; fi' EXIT INT TERM
+trap 'rm -rf "$work"; if [ -n "$self_copy" ]; then rm -f "$self_copy/update.sh"; rmdir "$self_copy" 2>/dev/null || true; fi' EXIT
+# A signal trap that returns lets the script go on without $work, so a signal ends the run.
+stopped() { echo "update: error: stopped by $1 before the update finished; run the same command again to finish it" >&2; exit "$2"; }
+trap 'stopped SIGHUP 129' HUP
+trap 'stopped SIGINT 130' INT
+trap 'stopped SIGTERM 143' TERM
 kit_dir=""
 actual_sha=""
 
@@ -245,18 +250,29 @@ rewrite_refs() {
           line = substr(line, i + length(old))
         }
         print out line
-      }' "$root/$f" > "$work/rewrite"
+      }' "$root/$f" > "$work/rewrite" || fail "cannot rewrite $legacy_name -> $kit_name in $f; run the update again"
     cmp -s "$root/$f" "$work/rewrite" && continue
     if [ "${1:-}" = dry ]; then say "  would rewrite $legacy_name -> $kit_name in $f"
-    else cat "$work/rewrite" > "$root/$f"; say "rewrote $legacy_name -> $kit_name in $f"; fi
+    else
+      cat "$work/rewrite" > "$root/$f" || fail "cannot write $f; make it writable and run the update again"
+      say "rewrote $legacy_name -> $kit_name in $f"
+    fi
   done
 }
+
+# An earlier run that stopped after the move left Directory.Build.* importing the old folder.
+imports_legacy() {
+  grep -qE '(^|[[:space:]/\\"'"'"'()=,;])\.toolkit[/\\]msbuild[/\\]init\.(props|targets)' "$root/Directory.Build.props" "$root/Directory.Build.targets" 2>/dev/null
+}
+heal=0
+if [ "$migrate" -eq 0 ] && [ "$kit_name" != "$legacy_name" ] && [ ! -e "$legacy" ] && imports_legacy; then heal=1; fi
 
 dbp="$root/Directory.Build.props"
 dbt="$root/Directory.Build.targets"
 
 if [ "$dry_run" -eq 1 ]; then
   if [ "$migrate" -eq 1 ]; then say "would move $legacy_name/ to $kit_name/"; rewrite_refs dry; fi
+  if [ "$heal" -eq 1 ]; then say "Directory.Build.* still import $legacy_name/, the kit is in $kit_name/"; rewrite_refs dry; fi
   say "$changes file(s) under $kit_name/msbuild would change"
   [ -f "$dbp" ] || say "  would create Directory.Build.props"
   [ -f "$dbt" ] || say "  would create Directory.Build.targets"
@@ -273,6 +289,9 @@ if [ "$migrate" -eq 1 ]; then
     say "moved $legacy_name/ to $kit_name/"
   fi
   kit_json="$toolkit/kit.json"
+  rewrite_refs
+elif [ "$heal" -eq 1 ]; then
+  say "Directory.Build.* still import $legacy_name/, the kit is in $kit_name/: finishing the move"
   rewrite_refs
 fi
 
