@@ -1,7 +1,9 @@
 #!/bin/sh
 # The kit folder of update.sh and update.ps1: a fresh install writes .mskit/, --kit-dir picks another
 # name and kit.json remembers it, an older .toolkit/ install moves, and 0.2.1 reaches .mskit/ in two runs.
-# No dotnet, no network: every run installs from the working-tree kit. update.ps1 runs when pwsh exists.
+# A run stopped after the move, or by a signal, is finished by the next one.
+# No dotnet, no network: every run installs from the working-tree kit, a "download" from a local curl stand-in.
+# update.ps1 runs when pwsh exists.
 # Usage: sh tests/update-dir.test.sh
 set -eu
 
@@ -155,6 +157,43 @@ for impl in $impls; do
   status=0; upd "$impl" "$d" .toolkit --kit-dir .toolkit > "$d.log" 2>&1 || status=$?
   [ "$status" -eq 0 ] && [ ! -e "$d/.mskit" ] && [ "$(kitdir_of "$d/.toolkit/kit.json")" = ".toolkit" ] \
     && pass "$impl: --kit-dir .toolkit keeps the older folder and records it" || { bad "$impl: --kit-dir .toolkit: exit $status"; tail -n 3 "$d.log"; }
+
+  # --- 0.3.0 stopped after the move: the kit is in .mskit/, Directory.Build.* import .toolkit/ ---
+  d="$t/$impl-heal"; legacy "$d"
+  mv "$d/.toolkit" "$d/.mskit"
+  printf 'bin/\n.toolkit/msbuild/local/\nmy.toolkit/\n' > "$d/.gitignore"
+  mkdir -p "$d/.github"
+  printf 'version: 2\nupdates:\n  - package-ecosystem: nuget\n    directory: "/"\n    ignore-paths:\n      - .toolkit/**\n' > "$d/.github/dependabot.yml"
+  status=0; upd "$impl" "$d" .mskit --dry-run > "$d.dry.log" 2>&1 || status=$?
+  [ "$status" -eq 0 ] && has "$d.dry.log" "would rewrite" && has "$d/Directory.Build.props" .toolkit \
+    && pass "$impl: --dry-run on a half-moved kit says what it would rewrite and changes nothing" || { bad "$impl: dry run of the repair: exit $status"; tail -n 5 "$d.dry.log"; }
+  status=0; upd "$impl" "$d" .mskit > "$d.log" 2>&1 || status=$?
+  [ "$status" -eq 0 ] && [ "$(kitdir_of "$d/.mskit/kit.json")" = ".mskit" ] && [ ! -e "$d/.toolkit" ] \
+    && has "$d/Directory.Build.props" '$(MSBuildThisFileDirectory).mskit/msbuild/init.props' && ! has "$d/Directory.Build.props" .toolkit \
+    && has "$d/Directory.Build.targets" '$(MSBuildThisFileDirectory).mskit\msbuild\init.targets' && ! has "$d/Directory.Build.targets" .toolkit \
+    && pass "$impl: one more run repairs Directory.Build.* of a half-moved kit" || { bad "$impl: repair of a half-moved kit: exit $status"; tail -n 8 "$d.log"; }
+  if [ "$(tr -d '\r' < "$d/.gitignore")" = "$(printf 'bin/\n.mskit/msbuild/local/\nmy.toolkit/')" ] && has "$d/.github/dependabot.yml" '- .mskit/**' \
+    && has "$d.log" "rewrote" && ! has "$d.log" "add to Directory.Build"; then pass "$impl: the repair rewrites .gitignore and dependabot.yml and says so"
+  else bad "$impl: the repair: .gitignore $(tr '\n' '|' < "$d/.gitignore"), log:"; tail -n 8 "$d.log"; fi
+
+  d="$t/$impl-no-heal"; mkdir -p "$d"
+  upd "$impl" "$d" kit > "$d.seed.log" 2>&1 || true
+  printf '.toolkit/\n' > "$d/.gitignore"
+  status=0; upd "$impl" "$d" .mskit > "$d.log" 2>&1 || status=$?
+  [ "$status" -eq 0 ] && [ "$(tr -d '\r' < "$d/.gitignore")" = ".toolkit/" ] && ! has "$d.log" "rewrote" \
+    && pass "$impl: a kit already imported from .mskit/ leaves other .toolkit names alone" || { bad "$impl: an unrelated .toolkit name: exit $status, .gitignore $(cat "$d/.gitignore")"; tail -n 5 "$d.log"; }
+
+  # --- a reference that cannot be rewritten stops the run --------------------------------------
+  d="$t/$impl-readonly"; legacy "$d"
+  chmod a-w "$d/Directory.Build.props"
+  if [ -w "$d/Directory.Build.props" ]; then
+    echo "SKIP  update dir: $impl read-only Directory.Build.props (this user writes read-only files)"
+  else
+    status=0; upd "$impl" "$d" .toolkit > "$d.log" 2>&1 || status=$?
+    [ "$status" -ne 0 ] && has "$d.log" "cannot write Directory.Build.props" && ! has "$d.log" "done: DragoAnt.MSBuildKit" \
+      && pass "$impl: a Directory.Build.props it cannot write fails the run and names the file" || { bad "$impl: read-only Directory.Build.props: exit $status"; tail -n 5 "$d.log"; }
+  fi
+  chmod u+w "$d/Directory.Build.props"
 done
 
 # --- 0.2.1 -> this kit: the old updater installs, the new one it copied moves the folder ------
@@ -181,6 +220,55 @@ if git -C "$here" rev-parse -q --verify 'refs/tags/v0.2.1^{commit}' > /dev/null 
       && has "$d/Directory.Build.props" '$(MSBuildThisFileDirectory).mskit/msbuild/init.props' \
       && pass "$impl: run 2 (the new $script) moves the kit to .mskit/" || { bad "$impl: run 2 from 0.2.1: exit $status"; tail -n 8 "$d.run2.log"; }
   done
+
+  # --- the consumer's path: a tracked repo, run 2 without --source or --version downloads ------
+  if command -v git > /dev/null 2>&1; then
+    sh "$here/tools/pack-kit.sh" 9.9.9 "$t/releases/v9.9.9" > "$t/pack.log" 2>&1 || { bad "pack-kit.sh 9.9.9"; cat "$t/pack.log"; }
+    mkdir -p "$t/fake-curl" "$t/term-git"
+    cat > "$t/fake-curl/curl" <<EOF
+#!/bin/sh
+out=""; url=""
+while [ \$# -gt 0 ]; do case "\$1" in -o) out="\$2"; shift 2 ;; -*) shift ;; *) url="\$1"; shift ;; esac; done
+case "\$url" in https://github.com/*/releases/download/*) f="$t/releases/\${url##*/releases/download/}" ;; *) exit 22 ;; esac
+[ -f "\$f" ] || exit 22
+cp "\$f" "\$out"
+EOF
+    cat > "$t/term-git/git" <<EOF
+#!/bin/sh
+for a in "\$@"; do [ "\$a" = mv ] && kill -TERM \$PPID; done
+exec "$(command -v git)" "\$@"
+EOF
+    chmod +x "$t/fake-curl/curl" "$t/term-git/git"
+    consumer() {
+      d="$1"; rm -rf "$d"; mkdir -p "$d/.github"
+      sh "$t/v021/kit/.toolkit/update.sh" --source "$t/v021/kit" --root "$d" > "$d.seed.log" 2>&1
+      printf 'bin/\n.toolkit/msbuild/local/\n' > "$d/.gitignore"
+      printf 'version: 2\nupdates:\n  - package-ecosystem: nuget\n    directory: "/"\n    ignore-paths:\n      - .toolkit/**\n' > "$d/.github/dependabot.yml"
+      git -C "$d" init -q && git -C "$d" add -A && git -C "$d" -c user.name=t -c user.email=t@example.invalid commit -qm seed
+      (cd "$d" && sh .toolkit/update.sh --source "$kit" --version 9.9.9) > "$d.run1.log" 2>&1
+    }
+    moved() {
+      [ ! -e "$1/.toolkit" ] && [ "$(kitdir_of "$1/.mskit/kit.json")" = ".mskit" ] \
+        && has "$1/Directory.Build.props" '$(MSBuildThisFileDirectory).mskit/msbuild/init.props' && ! has "$1/Directory.Build.props" .toolkit \
+        && has "$1/Directory.Build.targets" '$(MSBuildThisFileDirectory).mskit/msbuild/init.targets' && ! has "$1/Directory.Build.targets" .toolkit \
+        && has "$1/.github/dependabot.yml" '- .mskit/**'
+    }
+
+    d="$t/sh-download"; consumer "$d"
+    status=0; (cd "$d" && PATH="$t/fake-curl:$PATH" sh .toolkit/update.sh) > "$d.run2.log" 2>&1 || status=$?
+    [ "$status" -eq 0 ] && has "$d.run2.log" "downloading" && has "$d.run2.log" "(git mv)" && moved "$d" \
+      && pass "sh: run 2 from .toolkit/ without --version downloads, moves the kit and rewrites the imports" || { bad "sh: run 2 that downloads: exit $status"; tail -n 8 "$d.run2.log"; }
+
+    d="$t/sh-download-term"; consumer "$d"
+    status=0; (cd "$d" && PATH="$t/term-git:$t/fake-curl:$PATH" sh .toolkit/update.sh) > "$d.run2.log" 2>&1 || status=$?
+    [ "$status" -ne 0 ] && has "$d.run2.log" "stopped by SIGTERM" && ! has "$d.run2.log" "No such file" \
+      && pass "sh: a run stopped by SIGTERM during the move exits $status and says to run it again" || { bad "sh: SIGTERM during the move: exit $status"; tail -n 8 "$d.run2.log"; }
+    status=0; (cd "$d" && PATH="$t/fake-curl:$PATH" sh .mskit/update.sh) > "$d.run3.log" 2>&1 || status=$?
+    [ "$status" -eq 0 ] && moved "$d" \
+      && pass "sh: the next run finishes the stopped move" || { bad "sh: the run after SIGTERM: exit $status"; tail -n 8 "$d.run3.log"; }
+  else
+    echo "SKIP  update dir: the download path (no git)"
+  fi
 else
   echo "SKIP  update dir: the 0.2.1 upgrade (no v0.2.1 tag; fetch the tags)"
 fi
