@@ -216,7 +216,7 @@ try {
     # An earlier run that stopped after the move left Directory.Build.* importing the old folder.
     $heal = $false
     if (-not $migrate -and $KitDir -cne $legacyName -and -not (Test-Path -LiteralPath $legacy)) {
-        $importPattern = '(?<=^|[\s/\\"''(=,;])' + [regex]::Escape($legacyName) + '[/\\]msbuild[/\\]init\.(props|targets)'
+        $importPattern = '(?<=^|[\s/\\"''()=,;])' + [regex]::Escape($legacyName) + '[/\\]msbuild[/\\]init\.(props|targets)'
         foreach ($f in 'Directory.Build.props', 'Directory.Build.targets') {
             $path = Join-Path $Root $f
             if ((Test-Path -LiteralPath $path -PathType Leaf) -and [regex]::IsMatch([System.IO.File]::ReadAllText($path), $importPattern, 'Multiline')) { $heal = $true }

@@ -262,7 +262,7 @@ rewrite_refs() {
 
 # An earlier run that stopped after the move left Directory.Build.* importing the old folder.
 imports_legacy() {
-  grep -qE '(^|[[:space:]/\\"'"'"'(=,;])\.toolkit[/\\]msbuild[/\\]init\.(props|targets)' "$root/Directory.Build.props" "$root/Directory.Build.targets" 2>/dev/null
+  grep -qE '(^|[[:space:]/\\"'"'"'()=,;])\.toolkit[/\\]msbuild[/\\]init\.(props|targets)' "$root/Directory.Build.props" "$root/Directory.Build.targets" 2>/dev/null
 }
 heal=0
 if [ "$migrate" -eq 0 ] && [ "$kit_name" != "$legacy_name" ] && [ ! -e "$legacy" ] && imports_legacy; then heal=1; fi
