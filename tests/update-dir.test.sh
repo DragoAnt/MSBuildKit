@@ -221,6 +221,27 @@ if git -C "$here" rev-parse -q --verify 'refs/tags/v0.2.1^{commit}' > /dev/null 
       && pass "$impl: run 2 (the new $script) moves the kit to .mskit/" || { bad "$impl: run 2 from 0.2.1: exit $status"; tail -n 8 "$d.run2.log"; }
   done
 
+  # --- a repository 0.3.0 left half moved still holds 0.3.0's script: two runs repair it -------
+  if git -C "$here" rev-parse -q --verify 'refs/tags/v0.3.0^{commit}' > /dev/null 2>&1; then
+    mkdir -p "$t/v030"
+    git -C "$here" archive v0.3.0 kit/.toolkit/update.sh kit/.toolkit/update.ps1 | tar -x -C "$t/v030"
+    for impl in $impls; do
+      d="$t/$impl-heal-030"; legacy "$d"
+      mv "$d/.toolkit" "$d/.mskit"
+      cp "$t/v030/kit/.toolkit/update.sh" "$t/v030/kit/.toolkit/update.ps1" "$d/.mskit/"
+      if [ "$impl" = sh ]; then run() { (cd "$d" && sh .mskit/update.sh --source "$kit" "$@"); }
+      else run() { (cd "$d" && pwsh -NoProfile -NonInteractive -File .mskit/update.ps1 -Source "$kit" "$@"); }; fi
+      status=0; run > "$d.run1.log" 2>&1 || status=$?
+      status2=0; run > "$d.run2.log" 2>&1 || status2=$?
+      [ "$status" -eq 0 ] && [ "$status2" -eq 0 ] && [ "$(kitdir_of "$d/.mskit/kit.json")" = ".mskit" ] \
+        && has "$d/Directory.Build.props" '$(MSBuildThisFileDirectory).mskit/msbuild/init.props' && ! has "$d/Directory.Build.props" .toolkit \
+        && ! has "$d/Directory.Build.targets" .toolkit && has "$d.run2.log" "rewrote" \
+        && pass "$impl: 0.3.0's script then the new one repair a half-moved kit" || { bad "$impl: repair from 0.3.0's script: exit $status/$status2"; tail -n 6 "$d.run2.log"; }
+    done
+  else
+    echo "SKIP  update dir: the repair from 0.3.0's script (no v0.3.0 tag; fetch the tags)"
+  fi
+
   # --- the consumer's path: a tracked repo, run 2 without --source or --version downloads ------
   if command -v git > /dev/null 2>&1; then
     sh "$here/tools/pack-kit.sh" 9.9.9 "$t/releases/v9.9.9" > "$t/pack.log" 2>&1 || { bad "pack-kit.sh 9.9.9"; cat "$t/pack.log"; }
