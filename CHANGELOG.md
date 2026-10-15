@@ -9,10 +9,12 @@ All notable changes to this project are documented here. The format follows [Kee
 - `manager/`: the first build of `mskit-manager`, the `DragoAnt.MSBuildKit.Manager` .NET tool (`net8.0`, `net10.0`, `RollForward=Major`) that will install, update and migrate the kit. This build has one command, `status [--json]`, which prints the tool version; the logo goes to stderr, only on a terminal and never with `--no-logo`, so `--json` output always parses. Each run writes a log under `<system temp>/mskit-manager/logs/`, named after the command, newest 20 kept. Not published yet.
 - `manager/`: the package model behind the coming `install` — readers for `mskit.package.json`, the trunk's `catalog.json` and a company or team `filter.json`; the part selection (core defaults, then the company filter, the team filter and the repository's `kit.json`, a later layer winning per part, with required and company-locked parts refused and `requires` closed); `kit.json` schema 2, which also reads the schema 1 that `update.sh` writes and keeps a `parts` array spread over several lines; and the install manifest. No command uses them yet.
 
+## [0.3.1] - 2026-10-15
+
 ### Fixed
 
 - `update.sh`: when a signal stopped a run (a `timeout` around the command, Ctrl+C, a closed terminal), the run removed its work folder and then carried on instead of ending. The case seen: the second run of the 0.2.1 upgrade (`sh .toolkit/update.sh`) was killed by `timeout` in the middle of the move to `.mskit/`, so the kit was moved but `Directory.Build.props` / `.targets` still imported `.toolkit/msbuild/init.*` and the repository did not build; the only message was `…/rewrite: No such file or directory`. A signal now ends the run at once with `stopped by SIGTERM …` and a non-zero exit, and a rewrite that cannot read or write a file fails the run and names the file. `update.ps1` was not affected.
-- `update.sh` and `update.ps1` finish a move an earlier run left half done: when the kit is in its folder, `.toolkit/` is gone and `Directory.Build.*` still import `.toolkit/msbuild/init.*`, the run rewrites `.toolkit` in `Directory.Build.props`, `Directory.Build.targets`, `.gitignore` and `.github/dependabot.yml`. A repository left broken by 0.3.0 still holds 0.3.0's script, so it takes two runs: the first installs 0.3.1 and copies in the new script, the second repairs the imports.
+- `update.sh` and `update.ps1` finish a move an earlier run left half done: when the kit is in its folder, `.toolkit/` is gone and `Directory.Build.*` still import `.toolkit/msbuild/init.*`, the run rewrites `.toolkit` in `Directory.Build.props`, `Directory.Build.targets`, `.gitignore` and `.github/dependabot.yml`. A repository left broken by 0.3.0 still holds 0.3.0's script, so it takes two runs: the first installs 0.3.1 and copies in the new script, the second repairs the imports ([#24](https://github.com/DragoAnt/MSBuildKit/pull/24)).
 
   ```sh
   sh .mskit/update.sh --version 0.3.1
@@ -96,7 +98,8 @@ All notable changes to this project are documented here. The format follows [Kee
 - `update.sh` and `update.ps1`: install or update `.toolkit/` from a SHA-256 checked release zip, with optional parts and a dry run.
 - `samples/MinimalLibrary`, the `tests/run.sh` self-test, and the CI and release workflows, with every action pinned to a full commit SHA.
 
-[Unreleased]: https://github.com/DragoAnt/MSBuildKit/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/DragoAnt/MSBuildKit/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/DragoAnt/MSBuildKit/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/DragoAnt/MSBuildKit/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/DragoAnt/MSBuildKit/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/DragoAnt/MSBuildKit/compare/v0.1.1...v0.2.0
