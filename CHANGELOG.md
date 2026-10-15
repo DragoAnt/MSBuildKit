@@ -9,6 +9,16 @@ All notable changes to this project are documented here. The format follows [Kee
 - `manager/`: the first build of `mskit-manager`, the `DragoAnt.MSBuildKit.Manager` .NET tool (`net8.0`, `net10.0`, `RollForward=Major`) that will install, update and migrate the kit. This build has one command, `status [--json]`, which prints the tool version; the logo goes to stderr, only on a terminal and never with `--no-logo`, so `--json` output always parses. Each run writes a log under `<system temp>/mskit-manager/logs/`, named after the command, newest 20 kept. Not published yet.
 - `manager/`: the package model behind the coming `install` — readers for `mskit.package.json`, the trunk's `catalog.json` and a company or team `filter.json`; the part selection (core defaults, then the company filter, the team filter and the repository's `kit.json`, a later layer winning per part, with required and company-locked parts refused and `requires` closed); `kit.json` schema 2, which also reads the schema 1 that `update.sh` writes and keeps a `parts` array spread over several lines; and the install manifest. No command uses them yet.
 
+### Fixed
+
+- `update.sh`: a run stopped by a signal (Ctrl+C, a `timeout`, a closed terminal) went on without its work folder. Stopped during the move from `.toolkit/`, it left the kit in `.mskit/` with `Directory.Build.props` / `.targets` still importing `.toolkit/msbuild/init.*`, so the repository did not build, and printed only `…/rewrite: No such file or directory`. A signal now ends the run with `stopped by SIGTERM …` and a non-zero exit, and a rewrite that cannot read or write a file fails the run and names the file. Affects upgrades from 0.2.1 with 0.3.0's `update.sh` that were interrupted (slow machines hit a `timeout`); `update.ps1` was not affected.
+- `update.sh` and `update.ps1` finish a move an earlier run left half done: when the kit is in its folder, `.toolkit/` is gone and `Directory.Build.*` still import `.toolkit/msbuild/init.*`, the run rewrites `.toolkit` in `Directory.Build.props`, `Directory.Build.targets`, `.gitignore` and `.github/dependabot.yml`. A repository left broken by 0.3.0 still holds 0.3.0's script, so it takes two runs: the first installs 0.3.1 and copies in the new script, the second repairs the imports.
+
+  ```sh
+  sh .mskit/update.sh --version 0.3.1
+  sh .mskit/update.sh
+  ```
+
 ## [0.3.0] - 2026-10-14
 
 ### Breaking changes
