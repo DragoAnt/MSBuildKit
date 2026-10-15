@@ -1,0 +1,5 @@
+<Project>
+
+  <Import Project="$(MSBuildThisFileDirectory).mskit/msbuild/init.props" />
+
+</Project>
