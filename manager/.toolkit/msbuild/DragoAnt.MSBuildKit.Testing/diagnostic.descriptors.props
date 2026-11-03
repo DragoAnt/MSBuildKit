@@ -1,0 +1,91 @@
+<Project>
+
+  <!-- The codes this part reports, one item each, for tools that read a build's diagnostics. -->
+  <ItemGroup>
+    <BuildDiagnosticDescriptor Include="MSKITTEST010"
+                               Title="Test project props imported before MSKit_TestingFramework is set"
+                               MessageFormat="MSKit_TestingFramework was not set when {0} was imported.%0AFix: set it BEFORE the Import:%0A  &lt;PropertyGroup&gt;%0A    &lt;MSKit_TestingFramework&gt;xunit.v3&lt;/MSKit_TestingFramework&gt;%0A  &lt;/PropertyGroup&gt;%0A  &lt;Import Project=&quot;{0}&quot; /&gt;"
+                               Description="%24(TestsProjectCommonPropsPath) was imported before MSKit_TestingFramework was set."
+                               Category="Testing"
+                               DefaultSeverity="Error"
+                               HelpLink="$(MSKit_CodesHelpBaseUrl)#mskittest010" />
+    <BuildDiagnosticDescriptor Include="MSKITTEST011"
+                               Title="MSKit_TestingFramework changed after the test project props import"
+                               MessageFormat="MSKit_TestingFramework changed after {0} was imported (at import: '{1}', final: '{2}').%0AFix: move the framework PropertyGroup above the Import."
+                               Description="MSKit_TestingFramework changed after %24(TestsProjectCommonPropsPath) was imported."
+                               Category="Testing"
+                               DefaultSeverity="Error"
+                               HelpLink="$(MSKit_CodesHelpBaseUrl)#mskittest011" />
+    <BuildDiagnosticDescriptor Include="MSKITTEST012"
+                               Title="No wiring for the testing framework"
+                               MessageFormat="No framework wiring found for MSKit_TestingFramework='{0}'.%0AFix: use a framework the kit ships (xunit.v3), or point MSKit_TestingFramework_CommonPropsPath at your own props file."
+                               Description="No wiring exists for the MSKit_TestingFramework of an explicit test project."
+                               Category="Testing"
+                               DefaultSeverity="Error"
+                               HelpLink="$(MSKit_CodesHelpBaseUrl)#mskittest012" />
+    <BuildDiagnosticDescriptor Include="MSKITTEST013"
+                               Title="IsTestsProject is set in the project"
+                               MessageFormat="csproj '{0}' declares &lt;IsTestsProject&gt; directly. That is set too late for the Microsoft.Testing.Platform wiring, which happens in the props phase.%0AFix: rename the project to match MSKit_TestsProjectNameRegex (default: names ending in .Tests), or replace the property with the explicit endpoint:%0A  &lt;PropertyGroup&gt;%0A    &lt;MSKit_TestingFramework&gt;xunit.v3&lt;/MSKit_TestingFramework&gt;%0A  &lt;/PropertyGroup&gt;%0A  &lt;Import Project=&quot;{1}&quot; /&gt;"
+                               Description="The csproj sets IsTestsProject directly, too late for the props-phase wiring."
+                               Category="Testing"
+                               DefaultSeverity="Error"
+                               HelpLink="$(MSKit_CodesHelpBaseUrl)#mskittest013" />
+    <BuildDiagnosticDescriptor Include="MSKITTEST014"
+                               Title="Test project is marked as a test helper library"
+                               MessageFormat="Project name '{0}' matches the tests auto-detect regex '{1}' but the project is marked as a test helper library. A project cannot be both.%0AFix one of:%0A  1. Rename the project so it no longer matches (e.g. 'Foo.Tests' to 'Foo.TestUtils')%0A  2. Override MSKit_TestsProjectNameRegex in Directory.Build.props%0A  3. Drop the IsTestsLibProject flag if this is a runnable test project"
+                               Description="The name matches the test-project regex, but the project is marked as a test helper library."
+                               Category="Testing"
+                               DefaultSeverity="Error"
+                               HelpLink="$(MSKit_CodesHelpBaseUrl)#mskittest014" />
+    <BuildDiagnosticDescriptor Include="MSKITTEST020"
+                               Title="Test library props imported before MSKit_TestingFramework is set"
+                               MessageFormat="MSKit_TestingFramework was not set when {0} was imported.%0AFix: set the framework PropertyGroup BEFORE the Import:%0A  &lt;PropertyGroup&gt;%0A    &lt;MSKit_TestingFramework&gt;xunit.v3&lt;/MSKit_TestingFramework&gt;%0A  &lt;/PropertyGroup&gt;%0A  &lt;Import Project=&quot;{0}&quot; /&gt;"
+                               Description="%24(TestsLibProjectCommonPropsPath) was imported before MSKit_TestingFramework was set."
+                               Category="Testing"
+                               DefaultSeverity="Error"
+                               HelpLink="$(MSKit_CodesHelpBaseUrl)#mskittest020" />
+    <BuildDiagnosticDescriptor Include="MSKITTEST021"
+                               Title="MSKit_TestingFramework changed after the test library props import"
+                               MessageFormat="MSKit_TestingFramework changed after {0} was imported.%0AAt import: '{1}'   csproj-final: '{2}'.%0AFix: move the framework PropertyGroup ABOVE the Import."
+                               Description="MSKit_TestingFramework changed after %24(TestsLibProjectCommonPropsPath) was imported."
+                               Category="Testing"
+                               DefaultSeverity="Error"
+                               HelpLink="$(MSKit_CodesHelpBaseUrl)#mskittest021" />
+    <BuildDiagnosticDescriptor Include="MSKITTEST022"
+                               Title="No helper-library wiring for the testing framework"
+                               MessageFormat="No LibCommonProps path resolved for MSKit_TestingFramework='{0}'.%0AFix: use a framework the kit ships (xunit.v3) or set MSKit_TestingFramework_LibCommonPropsPath to a custom file."
+                               Description="No helper-library wiring exists for MSKit_TestingFramework."
+                               Category="Testing"
+                               DefaultSeverity="Error"
+                               HelpLink="$(MSKit_CodesHelpBaseUrl)#mskittest022" />
+    <BuildDiagnosticDescriptor Include="MSKITTEST025"
+                               Title="MSKit_TestingFramework is not set"
+                               MessageFormat="Project '{0}' is a test project but MSKit_TestingFramework is not set.%0AFix: add to Directory.Build.props:%0A  &lt;MSKit_TestingFramework&gt;xunit.v3&lt;/MSKit_TestingFramework&gt;"
+                               Description="A test project or helper library has no MSKit_TestingFramework."
+                               Category="Testing"
+                               DefaultSeverity="Error"
+                               HelpLink="$(MSKit_CodesHelpBaseUrl)#mskittest025" />
+    <BuildDiagnosticDescriptor Include="MSKITTEST026"
+                               Title="No installed part wires the testing framework"
+                               MessageFormat="Project '{0}' has MSKit_TestingFramework='{1}' but no installed kit part wires that framework.%0AFix: use xunit.v3 (part DragoAnt.MSBuildKit.Testing.XUnit.v3), or set MSKit_TestingFramework_CommonPropsPath to your own wiring."
+                               Description="No installed part wires the MSKit_TestingFramework value."
+                               Category="Testing"
+                               DefaultSeverity="Error"
+                               HelpLink="$(MSKit_CodesHelpBaseUrl)#mskittest026" />
+    <BuildDiagnosticDescriptor Include="MSKITTEST030"
+                               Title="MSKit_TestsDir is empty"
+                               MessageFormat="MSKit_TestsDir is empty — cannot auto-emit InternalsVisibleTo for sibling .Tests projects.%0AFix: set MSKit_TestsDir in Directory.Build.props:%0A  &lt;PropertyGroup&gt;%0A    &lt;MSKit_TestsDir&gt;{0}tests&lt;/MSKit_TestsDir&gt;%0A  &lt;/PropertyGroup&gt;%0ATo disable auto InternalsVisibleTo, add to csproj:%0A  &lt;PropertyGroup&gt;%0A    &lt;InternalsVisibleToAllTestsProjects&gt;False&lt;/InternalsVisibleToAllTestsProjects&gt;%0A  &lt;/PropertyGroup&gt;"
+                               Description="MSKit_TestsDir is empty, so InternalsVisibleTo cannot be added."
+                               Category="Testing"
+                               DefaultSeverity="Warning"
+                               HelpLink="$(MSKit_CodesHelpBaseUrl)#mskittest030" />
+    <BuildDiagnosticDescriptor Include="MSKITTEST031"
+                               Title="MSKit_TestsDir does not exist"
+                               MessageFormat="MSKit_TestsDir='{0}' does not exist.%0AFix: point MSKit_TestsDir to an existing directory in Directory.Build.props:%0A  &lt;PropertyGroup&gt;%0A    &lt;MSKit_TestsDir&gt;{1}tests&lt;/MSKit_TestsDir&gt;%0A  &lt;/PropertyGroup&gt;%0ATo disable auto InternalsVisibleTo, add to csproj:%0A  &lt;PropertyGroup&gt;%0A    &lt;InternalsVisibleToAllTestsProjects&gt;False&lt;/InternalsVisibleToAllTestsProjects&gt;%0A  &lt;/PropertyGroup&gt;"
+                               Description="MSKit_TestsDir points at a folder that does not exist."
+                               Category="Testing"
+                               DefaultSeverity="Warning"
+                               HelpLink="$(MSKit_CodesHelpBaseUrl)#mskittest031" />
+  </ItemGroup>
+
+</Project>

@@ -9,6 +9,11 @@ All notable changes to this project are documented here. The format follows [Kee
 - `manager/`: the first build of `mskit-manager`, the `DragoAnt.MSBuildKit.Manager` .NET tool (`net8.0`, `net10.0`, `RollForward=Major`) that will install, update and migrate the kit. This build has one command, `status [--json]`, which prints the tool version; the logo goes to stderr, only on a terminal and never with `--no-logo`, so `--json` output always parses. Each run writes a log under `<system temp>/mskit-manager/logs/`, named after the command, newest 20 kept. Not published yet.
 - `manager/`: the package model behind the coming `install` — readers for `mskit.package.json`, the trunk's `catalog.json` and a company or team `filter.json`; the part selection (core defaults, then the company filter, the team filter and the repository's `kit.json`, a later layer winning per part, with required and company-locked parts refused and `requires` closed); `kit.json` schema 2, which also reads the schema 1 that `update.sh` writes and keeps a `parts` array spread over several lines; and the install manifest. No command uses them yet.
 
+### Changed
+
+- Newer default test package versions ([Testing](./docs/testing.md)): `xunit.v3`, `xunit.v3.mtp-v2`, `xunit.v3.assert` and `xunit.v3.extensibility.core` 4.0.2, `xunit.runner.visualstudio` 4.0.1, `Microsoft.NET.Test.Sdk` 18.11.0, `Microsoft.Testing.Extensions.TrxReport` 2.5.2 and `Microsoft.Testing.Extensions.CodeCoverage` 18.12.0. A repository that sets the `MSKit_PackageVersion_*` property keeps its own version.
+- `manager/`: `mskit-manager` is built against the .NET 10.0.14 security servicing (`Microsoft.Extensions.DependencyInjection` and `Microsoft.Extensions.Logging` 10.0.14).
+
 ## [0.3.1] - 2026-10-15
 
 ### Fixed

@@ -56,13 +56,13 @@ The kit provides these versions ([Build](./build.md#central-package-versions)); 
 
 | Package | Property | Version |
 | --- | --- | --- |
-| `xunit.v3`, `xunit.v3.mtp-v2` | `MSKit_PackageVersion_XunitV3` | `4.0.1` |
+| `xunit.v3`, `xunit.v3.mtp-v2` | `MSKit_PackageVersion_XunitV3` | `4.0.2` |
 | `xunit.v3.assert` | `MSKit_PackageVersion_XunitV3Assert` | `MSKit_PackageVersion_XunitV3` |
 | `xunit.v3.extensibility.core` | `MSKit_PackageVersion_XunitV3ExtensibilityCore` | `MSKit_PackageVersion_XunitV3` |
-| `xunit.runner.visualstudio` | `MSKit_PackageVersion_XunitRunnerVisualStudio` | `4.0.0` |
-| `Microsoft.NET.Test.Sdk` | `MSKit_PackageVersion_MicrosoftNetTestSdk` | `18.10.1` |
-| `Microsoft.Testing.Extensions.TrxReport` | `MSKit_PackageVersion_MicrosoftTestingExtensionsTrxReport` | `2.4.1` |
-| `Microsoft.Testing.Extensions.CodeCoverage` | `MSKit_PackageVersion_MicrosoftTestingExtensionsCodeCoverage` | `18.11.2` |
+| `xunit.runner.visualstudio` | `MSKit_PackageVersion_XunitRunnerVisualStudio` | `4.0.1` |
+| `Microsoft.NET.Test.Sdk` | `MSKit_PackageVersion_MicrosoftNetTestSdk` | `18.11.0` |
+| `Microsoft.Testing.Extensions.TrxReport` | `MSKit_PackageVersion_MicrosoftTestingExtensionsTrxReport` | `2.5.2` |
+| `Microsoft.Testing.Extensions.CodeCoverage` | `MSKit_PackageVersion_MicrosoftTestingExtensionsCodeCoverage` | `18.12.0` |
 | `AwesomeAssertions` | `MSKit_PackageVersion_AwesomeAssertions` | `9.6.0` |
 | `FluentAssertions` | `MSKit_PackageVersion_FluentAssertions` | `[7.2.2]` |
 | `Shouldly` | `MSKit_PackageVersion_Shouldly` | `4.3.0` |

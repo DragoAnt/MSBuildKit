@@ -20,7 +20,7 @@
     </Compile>
   </ItemGroup>
 
-  <!-- Create LocalCompile files in LocalSecretsDir from templates in .toolkit/.local/LocalCompile/.
+  <!-- Create LocalCompile files in LocalSecretsDir from templates in <kit folder>/.local/LocalCompile/.
        Templates contain the real code (may have ctor args, interface impls, etc.).
        Default namespace-only stub is generated only when a new LocalCompile item has no template yet. -->
   <Target Condition="'@(LocalCompileFile)'!=''" Name="CreateLocalCompileFiles">
