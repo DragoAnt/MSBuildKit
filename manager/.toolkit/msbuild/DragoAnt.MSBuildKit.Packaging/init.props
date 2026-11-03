@@ -24,4 +24,6 @@
     <MSKit_PackageReadmeTitle Condition="'$(MSKit_PackageReadmeTitle)'==''">auto</MSKit_PackageReadmeTitle>
   </PropertyGroup>
 
+  <Import Project="$(MSBuildThisFileDirectory)diagnostic.descriptors.props" />
+
 </Project>

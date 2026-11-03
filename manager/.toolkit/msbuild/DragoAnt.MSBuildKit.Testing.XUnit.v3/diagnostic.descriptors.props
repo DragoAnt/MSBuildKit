@@ -1,0 +1,14 @@
+<Project>
+
+  <!-- The codes this part reports, one item each, for tools that read a build's diagnostics. -->
+  <ItemGroup>
+    <BuildDiagnosticDescriptor Include="MSKITTEST005"
+                               Title="xUnit v3 needs net8.0 or later"
+                               MessageFormat="MSKit_TestingFramework='xunit.v3' requires net8.0 or later. Current target framework: {0}.%0AFix: target net8.0 or later in the test project."
+                               Description="An xUnit v3 test project targets a framework older than net8.0."
+                               Category="Testing"
+                               DefaultSeverity="Error"
+                               HelpLink="$(MSKit_CodesHelpBaseUrl)#mskittest005" />
+  </ItemGroup>
+
+</Project>
