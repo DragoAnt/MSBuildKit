@@ -12,7 +12,7 @@ All notable changes to this project are documented here. The format follows [Kee
 ### Changed
 
 - Newer default test package versions ([Testing](./docs/testing.md)): `xunit.v3`, `xunit.v3.mtp-v2`, `xunit.v3.assert` and `xunit.v3.extensibility.core` 4.0.2, `xunit.runner.visualstudio` 4.0.1, `Microsoft.NET.Test.Sdk` 18.11.0, `Microsoft.Testing.Extensions.TrxReport` 2.5.2 and `Microsoft.Testing.Extensions.CodeCoverage` 18.12.0. A repository that sets the `MSKit_PackageVersion_*` property keeps its own version.
-- `manager/`: `mskit-manager` is built against the .NET 10.0.14 security servicing (`Microsoft.Extensions.DependencyInjection` and `Microsoft.Extensions.Logging` 10.0.14).
+- `manager/`: `mskit-manager` is built against the .NET 10.0.15 servicing (`Microsoft.Extensions.DependencyInjection` and `Microsoft.Extensions.Logging` 10.0.15).
 
 ## [0.3.1] - 2026-10-15
 
