@@ -11,8 +11,13 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ### Changed
 
-- Newer default test package versions ([Testing](./docs/testing.md)): `xunit.v3`, `xunit.v3.mtp-v2`, `xunit.v3.assert` and `xunit.v3.extensibility.core` 4.0.2, `xunit.runner.visualstudio` 4.0.1, `Microsoft.NET.Test.Sdk` 18.11.0, `Microsoft.Testing.Extensions.TrxReport` 2.5.2 and `Microsoft.Testing.Extensions.CodeCoverage` 18.12.0. A repository that sets the `MSKit_PackageVersion_*` property keeps its own version.
 - `manager/`: `mskit-manager` is built against the .NET 10.0.15 servicing (`Microsoft.Extensions.DependencyInjection` and `Microsoft.Extensions.Logging` 10.0.15).
+
+## [0.3.2] - 2026-11-23
+
+### Changed
+
+- Newer default test package versions ([Testing](./docs/testing.md)): `xunit.v3`, `xunit.v3.mtp-v2`, `xunit.v3.assert` and `xunit.v3.extensibility.core` 4.0.2, `xunit.runner.visualstudio` 4.0.1, `Microsoft.NET.Test.Sdk` 18.11.0, `Microsoft.Testing.Extensions.TrxReport` 2.5.2 and `Microsoft.Testing.Extensions.CodeCoverage` 18.12.0. A repository that sets the `MSKit_PackageVersion_*` property keeps its own version.
 
 ## [0.3.1] - 2026-10-15
 
@@ -103,7 +108,8 @@ All notable changes to this project are documented here. The format follows [Kee
 - `update.sh` and `update.ps1`: install or update `.toolkit/` from a SHA-256 checked release zip, with optional parts and a dry run.
 - `samples/MinimalLibrary`, the `tests/run.sh` self-test, and the CI and release workflows, with every action pinned to a full commit SHA.
 
-[Unreleased]: https://github.com/DragoAnt/MSBuildKit/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/DragoAnt/MSBuildKit/compare/v0.3.2...HEAD
+[0.3.2]: https://github.com/DragoAnt/MSBuildKit/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/DragoAnt/MSBuildKit/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/DragoAnt/MSBuildKit/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/DragoAnt/MSBuildKit/compare/v0.2.0...v0.2.1
