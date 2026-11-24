@@ -6,6 +6,7 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ### Added
 
+- .NET 11 support: the self-test now builds, tests and packs `net11.0` on SDK 11, alone and multi-targeted with `net8.0` and `net10.0`, and CI runs on SDK 10 and SDK 11. The kit's MSBuild files did not need a change. To adopt it, install the .NET 11 SDK, set `sdk.version` in `global.json` to `11.0.100` and add `net11.0` to `TargetFrameworks` ([Getting started](./docs/getting-started.md#3-set-the-test-runner)).
 - `manager/`: the first build of `mskit-manager`, the `DragoAnt.MSBuildKit.Manager` .NET tool (`net8.0`, `net10.0`, `RollForward=Major`) that will install, update and migrate the kit. This build has one command, `status [--json]`, which prints the tool version; the logo goes to stderr, only on a terminal and never with `--no-logo`, so `--json` output always parses. Each run writes a log under `<system temp>/mskit-manager/logs/`, named after the command, newest 20 kept. Not published yet.
 - `manager/`: the package model behind the coming `install` — readers for `mskit.package.json`, the trunk's `catalog.json` and a company or team `filter.json`; the part selection (core defaults, then the company filter, the team filter and the repository's `kit.json`, a later layer winning per part, with required and company-locked parts refused and `requires` closed); `kit.json` schema 2, which also reads the schema 1 that `update.sh` writes and keeps a `parts` array spread over several lines; and the install manifest. No command uses them yet.
 

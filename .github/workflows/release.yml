@@ -37,8 +37,11 @@ jobs:
           dotnet-version: |
             8.0.x
             10.0.x
+            11.0.x
 
       - name: Self-test the kit
+        env:
+          MSBUILDKIT_TESTS_SDK_MAJOR: 11
         run: sh tests/run.sh
 
       - name: Pack the kit

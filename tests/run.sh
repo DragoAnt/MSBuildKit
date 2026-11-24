@@ -139,6 +139,7 @@ grep -q "MSKITPKG" "$out/checks-skip.log" && bad "MSKit_SkipPackageChecks=All di
 . "$here/tests/tfm-constants.sh"
 . "$here/tests/package-icon.sh"
 . "$here/tests/apphost.sh"
+. "$here/tests/net11.sh"
 . "$here/tests/codes.sh"
 . "$here/tests/docs.sh"
 if sh "$here/tests/nuget-isolation.test.sh" > "$out/nuget-isolation-unit.log" 2>&1; then pass "nuget isolation: the unit checks pass"

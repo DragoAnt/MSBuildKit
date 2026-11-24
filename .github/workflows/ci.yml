@@ -13,13 +13,16 @@ permissions:
 
 jobs:
   self-test:
-    name: Self-test (${{ matrix.os }})
+    name: Self-test (${{ matrix.os }}, SDK ${{ matrix.sdk }})
     strategy:
       fail-fast: false
       matrix:
         os:
           - ubuntu-latest
           - windows-latest
+        sdk:
+          - 10
+          - 11
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -33,9 +36,16 @@ jobs:
           dotnet-version: |
             8.0.x
             10.0.x
+            ${{ matrix.sdk == 11 && '11.0.x' || '' }}
+
+      - name: Pin the SDK
+        shell: bash
+        run: dotnet new globaljson --sdk-version ${{ matrix.sdk }}.0.100 --roll-forward latestFeature --force
 
       - name: Self-test the kit
         shell: bash
+        env:
+          MSBUILDKIT_TESTS_SDK_MAJOR: ${{ matrix.sdk }}
         run: sh tests/run.sh
 
       - name: Shell syntax
@@ -58,7 +68,7 @@ jobs:
         if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # v3.0.0
         with:
-          name: Sample tests (${{ matrix.os }})
+          name: Sample tests (${{ matrix.os }}, SDK ${{ matrix.sdk }})
           path: dist/selftest/TestResults/*.trx
           reporter: dotnet-trx
 
@@ -79,7 +89,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: self-test-${{ matrix.os }}
+          name: self-test-${{ matrix.os }}-sdk${{ matrix.sdk }}
           path: |
             dist/selftest
             dist/kit
