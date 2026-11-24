@@ -31,7 +31,7 @@ cmp -s "$out/tfm-defined.names" "$out/tfm-cleared.names" \
   && pass "tfm tfm.constants.targets clears every constant before redefining it" \
   || bad "tfm cleared and defined constants differ (diff $out/tfm-defined.names $out/tfm-cleared.names)"
 
-for v in 8 9 10; do
+for v in 8 9 10 11; do
   tfm_expect "Net$v.Tests" IsNET8_OR_GREATER True
   tfm_expect "Net$v.Tests" IsNET$v True
   tfm_expect "Net$v.Tests" TargetFrameworkVersionMajor "$v"
@@ -40,6 +40,7 @@ done
 tfm_expect Net8.Tests TestingPlatformDotnetTestSupport True
 tfm_expect Net9.Tests TestingPlatformDotnetTestSupport True
 tfm_expect Net10.Tests TestingPlatformDotnetTestSupport ""
+tfm_expect Net11.Tests TestingPlatformDotnetTestSupport ""
 
 tfm_expect Net6.Tests IsNET8_OR_GREATER ""
 tfm_validate Net6.Tests fail

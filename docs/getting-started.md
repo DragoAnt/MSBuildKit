@@ -1,6 +1,6 @@
 # Getting started
 
-From an empty repository to a packed library with passing tests. You need the [.NET SDK](https://dotnet.microsoft.com/download) 8 or later (the kit's own CI uses 10), and `sh` (Git Bash on Windows) or [PowerShell 7](https://learn.microsoft.com/powershell/scripting/install/installing-powershell).
+From an empty repository to a packed library with passing tests. You need the [.NET SDK](https://dotnet.microsoft.com/download) 8 or later (the kit's own CI uses 10 and 11), and `sh` (Git Bash on Windows) or [PowerShell 7](https://learn.microsoft.com/powershell/scripting/install/installing-powershell).
 
 ## 1 Install
 
@@ -61,6 +61,8 @@ Tests run on [Microsoft.Testing.Platform](https://learn.microsoft.com/dotnet/cor
   "test": { "runner": "Microsoft.Testing.Platform" }
 }
 ```
+
+To target `net11.0`, install the .NET 11 SDK and set `version` to `11.0.100`: `latestFeature` stays on the 10.0 SDKs, which cannot build it.
 
 ## 4 Projects
 

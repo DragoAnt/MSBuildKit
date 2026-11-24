@@ -13,13 +13,13 @@ Issues and pull requests are welcome.
 
 ## Build and test
 
-You need the .NET 10 SDK and the .NET 8 runtime, plus `sh` (Git Bash on Windows).
+You need the .NET 10 SDK and the .NET 8 runtime, plus `sh` (Git Bash on Windows). The `net11.0` checks in `tests/net11.sh` also need the .NET 11 SDK: they run when the SDK selected at the repository root is 11 or later and print `SKIP` otherwise. `MSBUILDKIT_TESTS_SDK_MAJOR=<major>` fails a run on any other SDK; CI sets it.
 
 ```sh
 sh tests/run.sh
 ```
 
-It installs the working-tree kit into the sample and the fixtures with `update.sh`, then checks the computed versions for local, branch, pull-request and tag builds, runs the sample's tests with coverage, inspects the packed nuspec, asserts that every `MSKITPKG` check fires on the fixtures, and runs `sh tools/docs-check.sh`. CI runs the same script on Linux and Windows.
+It installs the working-tree kit into the sample and the fixtures with `update.sh`, then checks the computed versions for local, branch, pull-request and tag builds, runs the sample's tests with coverage, inspects the packed nuspec, asserts that every `MSKITPKG` check fires on the fixtures, and runs `sh tools/docs-check.sh`. CI runs the same script on Linux and Windows, on SDK 10 and SDK 11.
 
 The tool has its own script:
 
